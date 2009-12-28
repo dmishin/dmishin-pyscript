@@ -1,5 +1,15 @@
 import sqlite3 as sql
 
+HELP_MESSAGE = """
+Type the SQL operator to execute it
+
+Special commands:
+  OPEN datafile
+  CLOSE
+  TABLES
+  HELP
+"""
+
 
 class REP:
     def __init__(self):
@@ -8,8 +18,11 @@ class REP:
         self.special_commands ={
             "OPEN": self.cmd_open,
             "CLOSE": self.cmd_close,
-            "TABLES": self.cmd_tables
+            "TABLES": self.cmd_tables,
+	    "HELP": self.cmd_help,
             };
+    def cmd_help(self, args):
+        print HELP_MESSAGE
 
     def cmd_tables(self, args):
         if len (args ) != 0:
@@ -54,6 +67,7 @@ class REP:
             print "Error executing special command:", msg
 
     def run(self):    
+        print "Type \"help\" to get help"
         while True:
             command = raw_input("SQL>");
             command = command.strip()
