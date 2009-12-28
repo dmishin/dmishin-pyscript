@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dic>
+<item>
+ <word>help</word>
+ <def>
+Hello. it is 鬱 a main help page. 
+See credits.
+ </def>
+</item>
+
+<item>
+  <word>credits</word>
+  <def>By shintyakov@gmail.com</def>
+</item>
+</dic>

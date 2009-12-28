@@ -1,0 +1,5 @@
+<geometry name="Test geom">
+    <point x="0" y="0"/>
+    <point x="0" y="1"/>
+    <point x="1" y="0"/>
+</geometry>
