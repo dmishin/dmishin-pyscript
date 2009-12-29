@@ -101,21 +101,11 @@ def numdivs(n):
 
 #print "Number of divisors of 6:", numdivs(6)
 #print "Number of divisors of 36:", numdivs(36)
-
-
-#print "number of divisors for consequent numbers:", map(numdivs, range(1,30))
-
 def findfirst(l, pred):
     "Finds first item in sequence, that makes the predicate true"
     for y in l:
         if pred(y):
             return y
-
-
-
-#print findfirst(allnums(),lambda x:numdivs(x)>100)
-
-
 
 def pow_mod(x,n,p):
     "returns x^n mod p"
@@ -286,9 +276,12 @@ def memoize(func, dic):
             return f
     return memoized
 
-def isperm(a,b):
+def isperm(a, b, p=10):
     "Checks, whether number a is permutation of number b"
-    if a%9!=b%9: return False
+    if p>2:
+        q=p-1
+        if (a-b)%q:
+            return False
     la=digits(a)
     la.sort()
     lb=digits(b)
