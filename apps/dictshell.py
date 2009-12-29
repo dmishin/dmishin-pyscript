@@ -16,7 +16,7 @@ import pickle
 # [] Native database client
 # [] Store window size
 # [] store history
-# [] Font depends on dataase or server
+# [] Font depends on database or server
 # [] better text navigation
 
 helptext="""Simple dictionary client.
