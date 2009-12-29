@@ -290,7 +290,7 @@ def isperm(a, b, p=10):
 
     
 def phi(x):
-    "Euler phi function: number of integers below x, mutuallt prime with x."
+    "Euler phi function: number of integers below x, mutually prime with x."
     rval=1
     dprev=1
     for d in pfaci(x):
