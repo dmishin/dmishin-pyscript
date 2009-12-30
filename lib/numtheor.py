@@ -3,6 +3,7 @@ import itertools
 
 
 def isprime(x):
+    "Check, whether the numer is prime. Complexity ~sqrt(p)/2"
     if x<2:
         return False
     if x==2:
@@ -24,7 +25,7 @@ def primes_gen():
         p+=2
 
 def primes(n):
-    "Table of prime numbers below n"
+    "Table of prime numbers below n. Uses seive."
     seive=[True]*n
     seive[0],seive[1]=False,False
     def strikeout(i):
@@ -97,7 +98,7 @@ def grp(l):
 def numdivs(n):
     "number of divisors"
     if n==1: return 1
-    return reduce(lambda a,b: a*b,[f[1]+1 for f in grp(pfac(n))])
+    return prod([f[1]+1 for f in grp(pfac(n))])
 
 #print "Number of divisors of 6:", numdivs(6)
 #print "Number of divisors of 36:", numdivs(36)
