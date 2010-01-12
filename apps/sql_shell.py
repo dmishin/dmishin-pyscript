@@ -4,10 +4,13 @@ HELP_MESSAGE = """
 Type the SQL operator to execute it
 
 Special commands:
-  OPEN datafile
+  OPEN datafile (use :memory: for memory db)
   CLOSE
   TABLES
   HELP
+  SHOW object_name
+  EXEC script
+  DUMP file_name : dump SQL code to the file
 """
 
 
@@ -22,6 +25,7 @@ class REP:
             "SHOW": self.cmd_show,
             "EXEC": self.cmd_exec,
     	    "HELP": self.cmd_help,
+            "DUMP": self.cmd_dump,
             };
     def cmd_help(self, args):
         print HELP_MESSAGE
@@ -32,7 +36,7 @@ class REP:
             print "Show <object_name>"
             return
         name = args[0]
-        self.cursor.execute("select SQL from sqlite_master where name='%s'"%name) #TODO: use normal substitution code
+        self.cursor.execute("select SQL from sqlite_master where name=?", (name,)) 
         for row in self.cursor:
             print row[0]
 
@@ -69,12 +73,32 @@ class REP:
                 fl = open(fname, "r")
                 script = fl.read()
                 fl.close()
-                self.exec_sql( script )
+                self.cursor.executescript( script )
+                self.connection.commit()
+                #read
+                for row in self.cursor:
+                    print row
+
             except IOError, msg:
                 print "Failed to read file %s with error %s"%(fname, msg)
             except Exception, msg:
                 print "Failed to execute script %s with error %s"%(fname, msg)
         
+    def cmd_dump(self, args):
+        "Dump SQL code to the file"
+        if len(args)!=1:
+            print "DUMP <fname>"
+            return
+        
+        try:
+            fl = open(args[0], "w")
+            self.cursor.execute("select SQL from sqlite_master")
+            for row in self.cursor:
+                fl.write(str(row[0]))
+                fl.write(";\n")
+            fl.close()
+        except IOError, e:
+            print "File IO failed:", e
     def cmd_close(self, args):
         if not self.connection:
             print "Nothing to CLOSE"
@@ -108,10 +132,13 @@ class REP:
             if "QUIT".find(cmd)==0:#quit
                break
 
-            if cmd in self.special_commands:
-                self.exec_special(command)
-            else:
-                self.exec_sql(command)
+            self.command( cmd, command)
+
+    def command(self, cmd, command):
+        if cmd in self.special_commands:
+            self.exec_special(command)
+        else:
+            self.exec_sql(command)
                 
     def exec_sql(self, command):
     #run sql
