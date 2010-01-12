@@ -19,10 +19,22 @@ class REP:
             "OPEN": self.cmd_open,
             "CLOSE": self.cmd_close,
             "TABLES": self.cmd_tables,
-	    "HELP": self.cmd_help,
+            "SHOW": self.cmd_show,
+            "EXEC": self.cmd_exec,
+    	    "HELP": self.cmd_help,
             };
     def cmd_help(self, args):
         print HELP_MESSAGE
+
+    def cmd_show(self, args):
+        "Show the SQL operator for the given object"
+        if len(args)!=1:
+            print "Show <object_name>"
+            return
+        name = args[0]
+        self.cursor.execute("select SQL from sqlite_master where name='%s'"%name) #TODO: use normal substitution code
+        for row in self.cursor:
+            print row[0]
 
     def cmd_tables(self, args):
         if len (args ) != 0:
@@ -45,6 +57,23 @@ class REP:
         
         self.connection = sql.connect(args[0])
         self.cursor = self.connection.cursor()
+
+    def cmd_exec(self, args):
+        "Execute SQL file"
+        if len(args) == 0:
+            print "EXEC files"
+            return
+        for fname in args:
+            try:
+                print "Executing %s ..."%fname
+                fl = open(fname, "r")
+                script = fl.read()
+                fl.close()
+                self.exec_sql( script )
+            except IOError, msg:
+                print "Failed to read file %s with error %s"%(fname, msg)
+            except Exception, msg:
+                print "Failed to execute script %s with error %s"%(fname, msg)
         
     def cmd_close(self, args):
         if not self.connection:

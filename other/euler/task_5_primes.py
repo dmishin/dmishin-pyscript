@@ -19,6 +19,24 @@ def insert_sorted(lst, value, key):
     pos = insert_pos(0, len(lst))
     lst.insert(pos, value)
 
+def insert_sorted_uniq(lst, value, key):
+    value_key = key(value)
+    def insert_pos(a, b):
+        l = b-a
+        if l == 0:
+            return a+1
+        if l == 1:
+            if key(lst[a])>value_key:
+                return a
+            else:
+                return a+1
+        mid = (b+a)/2
+        if key(lst[mid])> value_key:
+            return insert_pos(a,mid)
+        else:
+            return insert_pos(mid,b)
+    pos = insert_pos(0, len(lst))
+    lst.insert(pos, value)
 def test_insert_sorted():
     for i in range(100):
         lst = []
