@@ -3,78 +3,47 @@
 #include <math.h>
 #include <iostream>
 
-typedef double ftype;
+#include "vec2.h"
 
-class vec2
+class rot
 {
-public:
-    ftype x,y;
+    public:
+        vec2 v;
 
-    vec2( ftype x_, ftype y_): x(x_), y(y_){};
-    vec2(){};
-    
-    ftype norm2()const{return x*x+y*y; };
-    ftype norm()const{return sqrt(norm2());};
+        rot(){};
+        rot (ftype alpha): { set(alpha); };
 
-    ftype dist2( const vec2 &v)const;
-    ftype dist( const vec2 &v)const{ return sqrt(dist2(v)); };
+        ftype angle()const;
 
-    vec2& operator += (const vec2 &v)
-    {
-        x+=v.x;
-        y+=v.y;
-        return *this;
-    }
-    
-    vec2& operator -= (const vec2 &v)
-    {
-        x-=v.x;
-        y-=v.y;
-        return *this;
-    }
+        rot& small_rot( ftype alpha );
+        
+        ftype get_sin()const{return v.x;};
+        ftype get_cos()const{return v.y;};
 
-    vec2& operator *= (ftype f)
-    {
-        x*=f;
-        f*=f;
-    }
-
-    vec2 operator +( const vec2& v)const
-    {
-        return vec2( x+v.x, y+v.y);
-    }
-
-    vec2 operator -(const vec2& v)const
-    {
-        return vec2( x-v.x, y-v.y);
-    }
-
-    vec2 operator *( ftype k)const
-    {
-        return vec2( x*k,y*k);
-    }
-
-    vec2& normalize ()
-    {
-        (*this)*=(1/norm());
-        return *this;
-    }
-    vec2 normalized()const
-    {
-        ftype n = 1/norm();
-        return vec2( x*n, y*n);
-    }
-};
-
-ftype sqr( ftype x )
-{
-    return x*x;
-};
-
-ftype vec2::dist2( const vec2&v)const
-{
-    return sqr(x-v.x)+sqr(y-v.y);
+        vec2 apply( const vec2& v1)const
+        {
+            return vec2( v1.x*v.x-v1.y*v.y,  v1.x*v.y+v1.y*v.x);
+        }
+        void apply( const vec2& v1, vec2& b)
+        {
+            b.set(v1.x*v.x-v1.y*v.y,  v1.x*v.y+v1.y*v.x);
+        }
+        rot& set( ftype alpha);
 }
+
+
+rot& rot::set( ftype alpha )
+{
+    v.set(cos(alpha), sin(alpha));
+    return *this;
+}
+rot& rot::small_rot( ftype alpha)
+{
+    v.set(1-sqr(alpha)*0.5, alpha);
+    return *.this;
+}
+
+
 std::ostream & operator <<( std::ostream & s, vec2 v)
 {
     s<<"("<<v.x<<";"<<v.y<<")";
