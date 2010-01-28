@@ -1,7 +1,7 @@
 #include "grid.h"
 
 
-grid::cell & grid::get_cell( int ix, int iy)
+Grid::cell & Grid::get_cell( int ix, int iy)
 {
     if (ix <0 || ix >= w || iy<0 || iy>=h)
         return outer_cell;
@@ -12,3 +12,16 @@ grid::cell & grid::get_cell( int ix, int iy)
     }
 }
 
+void Grid::set_geometry(int cols, int rows, ftype width, ftype height)
+{
+    int num_cells = cols*rows;
+    
+}
+Grid::item_iterator::item_iterator( Grid & g, vec2 c, ftype r)
+    :grid(g), center(c), radius(r)
+{
+
+}
+Located & operator*()const;
+void go_next();
+bool is_finished()const;

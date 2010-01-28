@@ -2,7 +2,7 @@
 #define VEC_2_INCLUDED
 
 #include "common.h"
-
+//Lightweight class for a 2d vector
 class vec2
 {
 public:
