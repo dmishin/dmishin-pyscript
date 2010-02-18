@@ -15,7 +15,7 @@
 #include <string>
 
 #include "vec2.h"
-#include <pseudo_generator.hpp>
+#include "pseudo_generator.h"
 
 class ItemAcceptor;
 
@@ -66,7 +66,7 @@ class Grid{
 		Grid(): cells(0) {};
 		
 		Cell unallocated;
-		//typedef std::vector<Cell> Cells;
+
 		//Cells cells;
 		Cell* cells;
 

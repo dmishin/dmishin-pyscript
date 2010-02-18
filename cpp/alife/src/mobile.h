@@ -20,6 +20,9 @@
 #ifndef _MOBILE_H_
 #define _MOBILE_H_
 #include "grid.h"
+#include "rotation.h"
+#include "located.h"
+
 /**Additionally to the Located, Mobile can move*/
 class Mobile: public Located 
 {

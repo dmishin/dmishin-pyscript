@@ -10,35 +10,8 @@
 #define VEC2_INCLUDED
 
 #include <math.h>
-
-typedef float ftype;
-
-
-template <typename T>
-T sqr( T x )
-{
-	return x*x;
-};
-
-template <typename T>
-T min( T x, T y)
-{
-	if (x>y) return y;
-	else     return x;
-}
-template <typename T>
-T max( T x, T y)
-{
-	if (x<y) return y;
-	else     return x;
-}
-
-template <typename T>
-T limit( T x, T min_value, T max_value)
-{
-	return min(max(x, min_value), max_value);
-}
-
+//definitions for the base floating-point type.
+#include "ftype.h"
 
 class vec2
 {
@@ -84,45 +57,6 @@ class vec2
 		};
 };
 
-class rotation{
-	private:
-		rotation( ftype c, ftype s): v(c, s){};
-		
-	public:
-		vec2 v; //con_sin vector
-
-		explicit rotation( ftype alpha ): v( cos(alpha), sin( alpha ) ) {};
-		
-		rotation(){};
-
-		ftype angle()const{
-			return (ftype)atan2(v.x, v.y);
-		}
-
-		void normalize(){
-			v.normalize();
-		}
-
-		void set( ftype alpha ){
-			v = vec2( cos(alpha), sin(alpha));
-		}
-
-		void setSmall( ftype alpha){
-			v = vec2( 1-sqr(alpha)*(ftype)0.5, alpha);
-		}
-
-		rotation operator +( const rotation &r)const{
-			return rotation( v.x * r.v.x - v.y * r.v.y, v.x * r.v.y + v.y * r.v.x );
-		}
-		
-		rotation operator -( const rotation &r)const{
-			return rotation( v.x*r.v.x+v.y*r.v.y, -v.x*r.v.y+v.y*r.v.x );
-		}
-
-		vec2 apply( const vec2 &vec)const{
-			return vec2( vec.x*v.x - vec.y*v.y, vec.x*v.y + vec.y*v.x);
-		}
-};
 //Some helper geometry fucntions
 inline
 bool in_rect(const vec2& v, ftype x0, ftype y0, ftype x1, ftype y1)
