@@ -25,6 +25,10 @@
 
 class World
 {
+ public:
+	//some global parameters
+	ftype viskosity;
+	ftype getViskosity()const{ return viskosity; };
 public:
 	typedef std::vector<Mobile*> Mobiles; 
 

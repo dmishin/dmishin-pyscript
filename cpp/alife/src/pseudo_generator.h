@@ -128,19 +128,6 @@ test_generator::value_type test_generator::value()
 /****************************************************
  Helper templates
  */
-
-/**Base generator class*/
-
-/*
-template< typename T>
-class generator{
-	public:
-		typedef T value_type;
-		T next(){ throw std::logic_error("Method \"next\" not implemented"); };
-		bool stopped()const{ throw std::logic_error("Method \"stopped\" not implemented"); };
-};
-*/
-//#include <iterator>
 template<typename generator>
 class generator_iterator: 
 	public std::iterator<std::input_iterator_tag, typename generator::value_type>{

@@ -34,3 +34,11 @@ Mobile * World::findNearestMobile( const vec2& p, ftype maxDist)
 	}
 	return static_cast<Mobile*>(best);
 }
+
+World::World( vec2 size, ftype cellSize )
+{
+	this->size = size;
+	//init grids
+	//TODO
+	viskosity = 1.0;
+}

@@ -144,4 +144,16 @@ ftype dist(const vec2& v1, const vec2& v2)
 {
 	return (v1-v2).norm();
 }
+
+/**Pseudo-scalar vector product*/
+inline
+ftype psrod(const vec2& v1, const vec2& v2)
+{
+   return v1.x*v2.y - v1.y*v2.x;
+}
+/**scalar product*/
+inline ftype sprod( const vec2& v1, const vec2& v2)
+{
+   return v1.x*v2.x+v1.y*v2.y;
+}
 #endif
