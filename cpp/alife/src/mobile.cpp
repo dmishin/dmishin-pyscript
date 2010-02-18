@@ -19,7 +19,7 @@
 
 #include "mobile.h"
 #include "world.h"
-Mobile::Mobile( const vec2 & v, ftype angle=0)
+Mobile::Mobile( const vec2 & v, ftype angle)
 :Located( v ), rot(angle), speed( 0, 0), rotationSpeed(0)
 {
 	mass = 1;

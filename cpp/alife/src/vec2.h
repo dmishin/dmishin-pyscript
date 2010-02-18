@@ -15,7 +15,7 @@
 
 class vec2
 {
-	public:
+ public:
 		ftype x,y;
 
 		vec2( ftype nx, ftype ny): x(nx), y(ny) {};

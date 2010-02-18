@@ -19,15 +19,12 @@
 
 #ifndef _MOBILE_H_
 #define _MOBILE_H_
-<<<<<<< HEAD:cpp/alife/src/mobile.h
 #include "grid.h"
 #include "rotation.h"
 #include "located.h"
-
-=======
-#include "located.h"
 #include "vec2.h"
->>>>>>> f34d2bb3a2205e49e872812392561b836eb8da81:cpp/alife/src/mobile.h
+
+
 /**Additionally to the Located, Mobile can move*/
 
 class World;

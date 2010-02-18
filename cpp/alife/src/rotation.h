@@ -3,6 +3,7 @@
 #define _ROTATION_H_INCLUDED_
 #include "vec2.h"
 #include <math.h>
+
 class rotation{
  private:
  rotation( ftype c, ftype s): v(c, s){};
@@ -10,14 +11,15 @@ class rotation{
  public:
    ftype sin()const{ return v.y; };
    ftype cos()const{ return v.x; };
+
    vec2 v; //con_sin vector
 
-   explicit rotation( ftype alpha ): v( cos(alpha), sin( alpha ) ) {};
+   explicit rotation( ftype alpha ): v( ::cos(alpha), ::sin( alpha ) ) {};
 		
    rotation(){};
 
    ftype angle()const{
-      return (ftype)atan2(v.x, v.y);
+	 return (ftype)::atan2(v.x, v.y);
    }
 
    void normalize(){
@@ -25,7 +27,7 @@ class rotation{
    }
 
    void set( ftype alpha ){
-      v = vec2( cos(alpha), sin(alpha));
+	 v = vec2( ::cos(alpha), ::sin(alpha));
    }
 
    void setSmall( ftype alpha){
@@ -35,9 +37,30 @@ class rotation{
    rotation operator +( const rotation &r)const{
       return rotation( v.x * r.v.x - v.y * r.v.y, v.x * r.v.y + v.y * r.v.x );
    }
+
+   rotation& operator +=( const rotation& r){
+	 *this = *this+r;
+	 return *this;
+   }
 		
    rotation operator -( const rotation &r)const{
       return rotation( v.x*r.v.x+v.y*r.v.y, -v.x*r.v.y+v.y*r.v.x );
+   }
+   rotation & operator -=( const rotation& r){
+	 *this = *this - r;
+	 return *this;
+   }
+
+   /**Add an angle to the rotation*/
+   rotation& add( ftype angle ){
+	 return *this += rotation( angle );
+   }
+
+   /**Add small angle (faster, because does not uses sin and cos)*/
+   rotation& addSmall( ftype angle ){
+	 rotation r;
+	 r.setSmall( angle );
+	 return *this += angle;
    }
 
    vec2 apply( const vec2 &vec)const{

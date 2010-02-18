@@ -16,10 +16,7 @@
 
 #include "vec2.h"
 #include "pseudo_generator.h"
-<<<<<<< HEAD:cpp/alife/src/grid.h
-=======
 #include "located.h"
->>>>>>> f34d2bb3a2205e49e872812392561b836eb8da81:cpp/alife/src/grid.h
 
 class ItemAcceptor;
 
