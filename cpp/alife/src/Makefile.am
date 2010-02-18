@@ -1,3 +1,3 @@
 bin_PROGRAMS = alife
-test_SOURCES = 
+alife_SOURCES = alife_glut.cpp item-acceptor.cpp mobile.cpp grid.cpp main.cpp simulator.cpp world.cpp
 
