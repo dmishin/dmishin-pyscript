@@ -19,15 +19,23 @@
 
 #ifndef _MOBILE_H_
 #define _MOBILE_H_
+<<<<<<< HEAD:cpp/alife/src/mobile.h
 #include "grid.h"
 #include "rotation.h"
 #include "located.h"
 
+=======
+#include "located.h"
+#include "vec2.h"
+>>>>>>> f34d2bb3a2205e49e872812392561b836eb8da81:cpp/alife/src/mobile.h
 /**Additionally to the Located, Mobile can move*/
+
+class World;
+
 class Mobile: public Located 
 {
 public:
-	Mobile( const vec2 & v, ftype angle=0): Located( v ), rot(angle){};
+	Mobile( const vec2 & v, ftype angle=0);
 
 	void simulate( ftype dt);//simulate Mobile movement for a given interval of time
 	const rotation& getRotation()const{ return rot;};
@@ -40,7 +48,16 @@ protected:
 	ftype mass;
 	ftype inertion;
 
+	ftype rotationFriction;
+	ftype movementFriction;
+
+	World* world;
+
 	void addForce();
+	//Apply force at specified location.
+	//Location is in the absolute coordinates
+	void applyForceA( ftype dt, const vec2& force, const vec2& applyAt);
+	void setWorld( World& w){ world = &w; };
 private:
 
 };

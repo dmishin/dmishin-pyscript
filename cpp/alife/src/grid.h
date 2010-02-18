@@ -16,24 +16,12 @@
 
 #include "vec2.h"
 #include "pseudo_generator.h"
+<<<<<<< HEAD:cpp/alife/src/grid.h
+=======
+#include "located.h"
+>>>>>>> f34d2bb3a2205e49e872812392561b836eb8da81:cpp/alife/src/grid.h
 
 class ItemAcceptor;
-
-class Located{
-	protected:
-		vec2 pos;
-	public:
-		explicit Located( const vec2& p ): pos(p){};
-		Located (ftype x, ftype y):pos(x,y){};
-		Located(){};
-
-		vec2& getPos(){
-			return pos;
-		}
-		const vec2& getPos()const{
-			return pos;
-		}
-};
 
 class Grid{
 	private:

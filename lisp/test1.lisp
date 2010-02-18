@@ -13,8 +13,15 @@
 (when-my (> 2 1) 
   (prt "Hello!"))
 
-(defmacro progn-prt (&rest args)
+(defun forall (fun lst)
+  (if lst
+    (progn
+      (funcall fun (car lst))
+      (forall fun (cdr lst)))))
+(forall (function prt) (list 1 2 3 4 9 :aaauu))
 
+(defun progp (&rest args)
+  (forall (function prt) args))
 
 
 (let ((lst (list 1 2 3 :SIN :hello)))

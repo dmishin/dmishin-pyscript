@@ -354,3 +354,13 @@ def ispal(x, p=10):
         powten/=(p*p)
         if dh != dl:
             return False
+
+
+def confrac(num, den):
+    "numeric continuous fraction"
+    c=[]
+    while den!=0:
+        r = num/den
+        c.append(r)
+        den,num=num%den,den
+    return c
