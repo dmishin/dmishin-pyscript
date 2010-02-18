@@ -15,25 +15,10 @@
 #include <string>
 
 #include "vec2.h"
-#include <pseudo_generator.hpp>
+#include "pseudo_generator.h"
+#include "located.h"
 
 class ItemAcceptor;
-
-class Located{
-	protected:
-		vec2 pos;
-	public:
-		explicit Located( const vec2& p ): pos(p){};
-		Located (ftype x, ftype y):pos(x,y){};
-		Located(){};
-
-		vec2& getPos(){
-			return pos;
-		}
-		const vec2& getPos()const{
-			return pos;
-		}
-};
 
 class Grid{
 	private:
