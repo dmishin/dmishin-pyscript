@@ -248,12 +248,47 @@ public:
 		initialize(); 
 	};
 	template <typename A1, typename A2, typename A3, typename A4, typename A5>
-	generator_iterator(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5)
-		:g(a1, a2, a3, a4, a5)
-	{			 
+            generator_iterator(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5)
+            :g(a1, a2, a3, a4, a5)
+            {			 
 		initialize(); 
-	};
+            };
 };
+        
+///////////////////////////////////////////
+//Utility cuntions
+template<class generator, class unary_func>
+    typename unary_func::result_type map_sum( generator& gen, const unary_func & f, typename unary_func::result_type init = 0)
+{
+    typename unary_func::result_type val( init );
+    for( typename generator::value_type x; gen( x ); ){//iterate over generated values...
+        val += f( x );
+    }
+    return val;
+}
+
+/**Copy values from the generator to the inut iterator*/
+ template<class generator, class output_iter>
+     output_iter gen_copy(generator & g, output_iter itr)
+{
+    for(typename generator::value_type x; g( x ); ++itr){
+        (*itr) = x;
+    }
+    return itr;
+};
+
+/**Copy values from the generator to the inut iterator, not more than specified*/
+ template<class generator, class output_iter>
+     output_iter gen_copy(generator & g, output_iter itr, output_iter itr_end)
+{
+    for(typename generator::value_type x; g( x ) && itr != itr_end; ++itr){
+        (*itr) = x;
+    }
+    return itr;
+};
+
+
+
 
 
 #endif
