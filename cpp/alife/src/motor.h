@@ -4,9 +4,26 @@
 
 #include "vec2.h"
 #include "ftype.h"
+#include "located.h"
 
-class Motor
+class Motor: public Located
 {
+ protected:
+  vec2 direction;
+  ftype force;
+
+ public:
+  Motor ( const vec2& pos
+		  , const vec2& dir);
+
+  /* misc getters */
+  const vec2& getDirection()const{ return direction; };
+  vec2 getForce()const{ return direction* force;};
+  const vec2& getDIrection()const{ return direction;};
+  ftype getForceValue()const{ return force; };
+
+  /*Sets amount of the force, produced by motor*/
+  void setForceValue( ftype f ) {force = f;};
 };
 
 #endif

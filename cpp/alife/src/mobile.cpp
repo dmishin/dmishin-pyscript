@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+#include <math.h>
 #include "mobile.h"
 #include "world.h"
 #include "motor.h"
@@ -29,6 +29,8 @@ Mobile::Mobile( const vec2 & v, ftype angle)
 	movementFriction = 0.1;
 	rotationFriction = 0.1;
 	world = NULL;
+	numMotors = 0;
+	motors = NULL;
 }
 void Mobile::simulate( ftype dt )
 {
@@ -51,10 +53,10 @@ void Mobile::simFriction( ftype dt )
 	speed *= ( 1 - movementFrictionForce/speed.norm() / mass * dt);
 	rotationSpeed -= - sign(rotationSpeed)*rotationFrictionForce / inertion * dt;
 }
-void simMotors( ftype dt )
+void Mobile::simMotors( ftype dt )
 {
 	for( int i = 0; i<numMotors; ++i){
-		Motor & m = motors[i];
+		Motor & m = *(motors[i]);
 		applyForceR( dt, m.getForce(), m.getPos());
 	}
 }
