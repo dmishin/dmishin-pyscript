@@ -35,7 +35,7 @@ void Mobile::simulate( ftype dt )
 	rot.add( dt*rotationSpeed );
 	applyLimits();
 	//Simulate forces
-	simMotors();
+	simMotors( dt );
 	//friction
 	simFriction( dt );
 }
@@ -45,11 +45,18 @@ void Mobile::simFriction( ftype dt )
 	ftype rotationFrictionForce = 1/sqr(rotationSpeed)*rotationFriction*world->getViskosity();
 
 }
+void simMotors( ftype dt )
+{
+}
 void Mobile::applyForceA( ftype dt, const vec2& force, const vec2& applyAt)
 {
 	vec2 l = applyAt - pos;
-	speed += force* (1/mass);
+	speed += force* (1/mass) * dt;
+
 	ftype rotationForce = psprod( l, force );
-	rotationSpeed.add( rotationForce/inertion );
+	rotationSpeed += rotationForce/inertion * dt;
 }
 
+void Mobile::applyLimits()
+{//TODO
+}

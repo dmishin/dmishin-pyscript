@@ -32,29 +32,33 @@ class World;
 class Mobile: public Located 
 {
 public:
-	Mobile( const vec2 & v, ftype angle=0);
+    Mobile( const vec2 & v, ftype angle=0);
 
-	void simulate( ftype dt);//simulate Mobile movement for a given interval of time
-	const rotation& getRotation()const{ return rot;};
-	ftype getAngle()const{ return rot.angle();};
+    void simulate( ftype dt);//simulate Mobile movement for a given interval of time
+    const rotation& getRotation()const{ return rot;};
+    ftype getAngle()const{ return rot.angle();};
 protected:
-	vec2 speed;
-	rotation rot;
-	ftype rotationSpeed;
+    vec2 speed;
+    rotation rot;
+    ftype rotationSpeed;
 	
-	ftype mass;
-	ftype inertion;
+    ftype mass;
+    ftype inertion;
 
-	ftype rotationFriction;
-	ftype movementFriction;
+    ftype rotationFriction;
+    ftype movementFriction;
 
-	World* world;
+    World* world;
 
-	void addForce();
-	//Apply force at specified location.
-	//Location is in the absolute coordinates
-	void applyForceA( ftype dt, const vec2& force, const vec2& applyAt);
-	void setWorld( World& w){ world = &w; };
+    void addForce();
+    //Apply force at specified location.
+    //Location is in the absolute coordinates
+    void applyForceA( ftype dt, const vec2& force, const vec2& applyAt);
+    void setWorld( World& w){ world = &w; };
+
+    void simMotors( ftype dt );
+    void simFriction( ftype dt);
+    void applyLimits();
 private:
 
 };

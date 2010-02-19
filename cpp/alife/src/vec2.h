@@ -63,16 +63,20 @@ bool in_rect(const vec2& v, ftype x0, ftype y0, ftype x1, ftype y1)
 {
 	return v.x >= x0 && v.x<=x1 && v.y>=y0 && v.y<=y1;
 };
+/*check that point is inside rectang;*/
 inline
 bool in_rect(const vec2& v, const vec2& p0, const vec2& p1)
 {
 	return in_rect(v, p0.x, p0.y, p1.x, p1.y);
 };
+/**squared distance */
 inline
 ftype dist2(const vec2& v1, const vec2& v2)
 {
 	return (v1-v2).norm2();
 }
+
+/*distance between vectors*/
 inline
 ftype dist(const vec2& v1, const vec2& v2)
 {
@@ -81,7 +85,7 @@ ftype dist(const vec2& v1, const vec2& v2)
 
 /**Pseudo-scalar vector product*/
 inline
-ftype psrod(const vec2& v1, const vec2& v2)
+ftype psprod(const vec2& v1, const vec2& v2)
 {
    return v1.x*v2.y - v1.y*v2.x;
 }
