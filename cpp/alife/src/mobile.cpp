@@ -19,6 +19,8 @@
 
 #include "mobile.h"
 #include "world.h"
+#include "motor.h"
+
 Mobile::Mobile( const vec2 & v, ftype angle)
 :Located( v ), rot(angle), speed( 0, 0), rotationSpeed(0)
 {
@@ -44,10 +46,19 @@ void Mobile::simFriction( ftype dt )
 	ftype movementFrictionForce = 1/speed.norm2()*movementFriction*world->getViskosity();
 	ftype rotationFrictionForce = 1/sqr(rotationSpeed)*rotationFriction*world->getViskosity();
 
+	//apply friction forces
+	//speed -= speed/speed.norm() * movementFrictionForce / mass * dt;
+	speed *= ( 1 - movementFrictionForce/speed.norm() / mass * dt);
+	rotationSpeed -= - sign(rotationSpeed)*rotationFrictionForce / inertion * dt;
 }
 void simMotors( ftype dt )
 {
+	for( int i = 0; i<numMotors; ++i){
+		Motor & m = motors[i];
+		applyForceR( dt, m.getForce(), m.getPos());
+	}
 }
+/**Apply force at relative coord*/
 void Mobile::applyForceA( ftype dt, const vec2& force, const vec2& applyAt)
 {
 	vec2 l = applyAt - pos;
@@ -55,6 +66,16 @@ void Mobile::applyForceA( ftype dt, const vec2& force, const vec2& applyAt)
 
 	ftype rotationForce = psprod( l, force );
 	rotationSpeed += rotationForce/inertion * dt;
+}
+/**Apply force at relative coords*/
+void Mobile::applyForceR( ftype dt, const vec2& force, const vec2& applyAt)
+{
+	vec2 l = rot.apply(applyAt);
+	speed += rot.apply(force)* (1/mass) * dt;
+
+	ftype rotationForce = psprod( applyAt, force );
+	rotationSpeed += rotationForce/inertion * dt;
+
 }
 
 void Mobile::applyLimits()
