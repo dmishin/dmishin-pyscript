@@ -128,20 +128,21 @@ test_generator::value_type test_generator::value()
 /****************************************************
  Helper templates
  */
+
 template<typename generator>
 class generator_iterator: 
-	public std::iterator<std::input_iterator_tag, typename generator::value_type>{
+    public std::iterator<std::input_iterator_tag, typename generator::value_type>{
 private:
-	typedef enum{
-		status_has_value,//generator called, and some actual value is received.
+    typedef enum{
+	    status_has_value,//generator called, and some actual value is received.
 		status_stopped//generarator finished, value is not actual.
 	} iterator_state_type;
+    
+    iterator_state_type status;
+    generator g;
 		
-	iterator_state_type status;
-	generator g;
-		
-	typename generator::value_type 
-			cur_value; //value_type is declared in the iterator class
+    typename generator::value_type 
+	cur_value; //value_type is declared in the iterator class
 		
 	/*Read first value to the buffer and update status*/
 	void initialize(){
@@ -213,6 +214,14 @@ public:
 
 	//default constructor is end constructor
 	generator_iterator(): status(status_stopped){ };
+
+        //copy-constructor
+        generator_iterator( const generator_iterator & gi)
+	: g( gi.g ),
+	  cur_value( gi.cur_value ),
+	  status (gi.status)
+	{
+	}
 
 	//construct from existing generator
 	generator_iterator(const generator& _g)
