@@ -116,21 +116,21 @@ void GlutGuiViewport:: draw()
 		
       }while (! gen.stopped() );
     */
-/*
+
     Grid::rectangle_iterator end, itr(grid, ptTopLeft, ptBottomRight);
     while (itr != end){
 	put ( **itr );
 	++itr;
     };
-*/
 
+/*
   Grid::rectangle_generator gen1( grid, ptTopLeft, ptBottomRight);
   Grid::rectangle_generator gen;
   gen = Grid::rectangle_generator( grid, ptTopLeft, ptBottomRight);
   for( Located* mob; gen( mob ); ){
       put( static_cast<Mobile&>(*mob) );
   }
-
+*/
 
     /*
       Grid::rectangle_iterator e, i=grid.genItemsInRect(ptTopLeft, ptBottomRight);

@@ -210,6 +210,7 @@ public:
 		return !((*this) == i);
 	};
 
+
 	/**Constructors*/
 
 	//default constructor is end constructor
@@ -230,34 +231,42 @@ public:
 		initialize();
 	}
 
+//Note: passing by value can cause serious problems.
+//when trying to pass value by reference (because adapter would pass by value)
+//Either use passing by pointer,
+//or do not use them at all.
+
 	//using generator own constructors
 	template <typename A1>
-	generator_iterator(A1 a)
+	generator_iterator(A1 &a)
 		:g(a)
 	{ 
 		initialize(); 
 	};
 
 	template <typename A1, typename A2>
-	generator_iterator(A1 a1, A2 a2)
+	generator_iterator(A1 &a1, A2 &a2)
 		:g(a1, a2)
 	{			 
 		initialize(); 
 	};
+
 	template <typename A1, typename A2, typename A3>
-	generator_iterator(A1 a1, A2 a2, A3 a3)
+	generator_iterator(A1 &a1, A2 &a2, A3 &a3)
 		:g(a1, a2, a3)
 	{			 
 		initialize(); 
 	};
+
 	template <typename A1, typename A2, typename A3, typename A4>
-	generator_iterator(A1 a1, A2 a2, A3 a3, A4 a4)
+	generator_iterator(A1 &a1, A2 &a2, A3 &a3, A4 &a4)
 		:g(a1, a2, a3, a4)
 	{			 
 		initialize(); 
 	};
+
 	template <typename A1, typename A2, typename A3, typename A4, typename A5>
-            generator_iterator(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5)
+            generator_iterator(A1 &a1, A2 &a2, A3 &a3, A4 &a4, A5 &a5)
             :g(a1, a2, a3, a4, a5)
             {			 
 		initialize(); 

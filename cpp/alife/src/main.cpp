@@ -37,7 +37,7 @@ int main( int argc, char* argv[])
 {
 	Grid g;
 	g.setGeometry( 10,10, 10, 10);
-	for(int i =0; i<1; ++i){
+	for(int i =0; i<100; ++i){
 		g.putItem( new Mobile( vec2(frnd()*10, frnd()*10), frnd()*2*3.1415 ));
 	}
 	std::cout<<g.toStr();
