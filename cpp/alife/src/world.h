@@ -33,6 +33,7 @@ public:
     typedef std::vector<Mobile*> Mobiles; 
 
     World( vec2 size, ftype cellSize );
+    const vec2& getSize()const{ return size; };
 	
     //Basic operation on world
     Mobile * findNearestMobile( const vec2& p, ftype maxDist);
@@ -66,7 +67,8 @@ public:
     void getFoodSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight, World::FoodSnapshot& buffer)const;
 
     void addMobile( Mobile* mob );
-
+    const World::Mobiles& getMobiles()const{ return mobiles;};
+    
 protected:
 
 private:

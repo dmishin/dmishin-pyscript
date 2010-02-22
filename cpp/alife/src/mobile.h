@@ -36,6 +36,7 @@ public:
     Mobile( const vec2 & v, ftype angle=0);
 
     void simulate( ftype dt);//simulate Mobile movement for a given interval of time
+    void setWorld( World& w){ world = &w; };
 protected:
     vec2 speed;
     ftype rotationSpeed;
@@ -55,10 +56,11 @@ protected:
     //Location is in the absolute coordinates
     void applyForceA( ftype dt, const vec2& force, const vec2& applyAt);
 	void applyForceR( ftype dt, const vec2& force, const vec2& applyAt);
-    void setWorld( World& w){ world = &w; };
+
 
     void simMotors( ftype dt );
     void simFriction( ftype dt);
+	void simBrain( ftype dt );
     void applyLimits();
 private:
 

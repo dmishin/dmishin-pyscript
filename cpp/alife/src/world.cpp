@@ -73,6 +73,7 @@ void World::getFoodSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight, W
 
 void World::addMobile( Mobile* mob )
 {
+    mob->setWorld( *this );
     mobiles.push_back( mob );
     gridMobiles.putItem( mob );
 }
