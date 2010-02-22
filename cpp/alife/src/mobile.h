@@ -21,8 +21,8 @@
 #define _MOBILE_H_
 #include "grid.h"
 #include "rotation.h"
-#include "located.h"
 #include "vec2.h"
+#include "oriented.h"
 
 
 /**Additionally to the Located, Mobile can move*/
@@ -30,17 +30,14 @@
 class World;
 class Motor;
 
-class Mobile: public Located 
+class Mobile: public Oriented
 {
 public:
     Mobile( const vec2 & v, ftype angle=0);
 
     void simulate( ftype dt);//simulate Mobile movement for a given interval of time
-    const rotation& getRotation()const{ return rot;};
-    ftype getAngle()const{ return rot.angle();};
 protected:
     vec2 speed;
-    rotation rot;
     ftype rotationSpeed;
 	
     ftype mass;

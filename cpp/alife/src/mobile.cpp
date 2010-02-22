@@ -22,7 +22,7 @@
 #include "motor.h"
 
 Mobile::Mobile( const vec2 & v, ftype angle)
-:Located( v ), rot(angle), speed( 0, 0), rotationSpeed(0)
+:Oriented( v, angle ), speed( 0, 0), rotationSpeed(0)
 {
 	mass = 1;
 	inertion = 1;

@@ -24,26 +24,34 @@
 #include "limits.h"
 #include "stdlib.h"
 #include "mobile.h"
+#include "world.h"
+#include "glut_viewport.h"
 
 std::ostream& operator <<( std::ostream & s, const vec2 &v)
 {
 	s<<"{"<<v.x<<";"<<v.y<<"}";
+	return s;
 }
+
 ftype frnd( )
 {
 	return static_cast<ftype>(rand())/static_cast<ftype>(INT_MAX);
 }
+
 int main( int argc, char* argv[])
 {
-	Grid g;
-	g.setGeometry( 10,10, 10, 10);
-	for(int i =0; i<100; ++i){
-		g.putItem( new Mobile( vec2(frnd()*10, frnd()*10), frnd()*2*3.1415 ));
-	}
-	std::cout<<g.toStr();
+	World w( vec2( 10, 10), 1);
 
-	initialize( argc, argv, g);
-	start_glut_loop();
-	std::cout<<"Finished executio"<<std::endl;
+	for(int i =0; i<100; ++i){
+		w.addMobile( new Mobile( vec2(frnd()*10, frnd()*10), frnd()*2*3.1415 ));
+	}
+
+	GlutGuiViewport vp( w, vec2(5,5), 10 );
+	vp.setActive();
+	
+	GlutGuiViewport::init( argc, argv );
+	GlutGuiViewport::startLoop();
+		
+	std::cout<<"Finished execution."<<std::endl;
 	return 0;
 }
