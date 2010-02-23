@@ -112,8 +112,12 @@ void GlutGuiViewport::deactivate()
 void GlutGuiViewport::init( int argc, char* argv[])
 {
     glutInit(&argc, argv);
+    glutInitDisplayMode( GLUT_DOUBLE );
     glutCreateWindow("UI with glut");
     glutDisplayFunc(GLUT_display);
+    // here is the setting of the idle function
+    glutIdleFunc(GLUT_display);
+	
     glutReshapeFunc(GLUT_reshape);
 }
 
@@ -143,5 +147,6 @@ void GLUT_display()
     if (GlutGuiViewport::getActiveViewport())
 	GlutGuiViewport::getActiveViewport()->draw();
 
-    glFlush();  /* Single buffered, so needs a flush. */
+//    glFlush();  /* Single buffered, so needs a flush. */
+    glutSwapBuffers();/*in double-buffered mode, swapping*/
 }
