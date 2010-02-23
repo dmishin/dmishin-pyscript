@@ -29,6 +29,7 @@
 
 class World;
 class Motor;
+class Brain;
 
 class Mobile: public Oriented
 {
@@ -37,8 +38,15 @@ public:
 
     void simulate( ftype dt);//simulate Mobile movement for a given interval of time
     void setWorld( World& w){ world = &w; };
+    void setBrain( Brain& b){ brain = &b; };
 	void setSpeed( const vec2& spd){ speed = spd; };
 	void setRotationSpeed( ftype b ){ rotationSpeed = b;};
+    //iterface for connecting with controller
+    int getMotorCount()const;
+    int getSensorCount()const;
+
+    void setMotor( int idx, ftype value);
+    ftype getSensor( int idx)const;
 protected:
     vec2 speed;
     ftype rotationSpeed;
@@ -52,6 +60,8 @@ protected:
     World* world;
 	Motor **motors;
 	int numMotors;
+
+    Brain* brain;
 
     void addForce();
     //Apply force at specified location.

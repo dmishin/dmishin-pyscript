@@ -60,7 +60,7 @@ void Mobile::simFriction( ftype dt )
     //apply friction forces
     //speed -= speed/speed.norm() * movementFrictionForce / mass * dt;
     speed *= ( 1 - movementFrictionForce / mass * dt);
-    rotationSpeed -= - sign(rotationSpeed)*rotationFrictionForce / inertion * dt;
+    rotationSpeed -= sign(rotationSpeed)*rotationFrictionForce / inertion * dt;
 }
 void Mobile::simMotors( ftype dt )
 {

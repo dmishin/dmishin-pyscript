@@ -63,7 +63,7 @@ int main( int argc, char* argv[])
 	  Mobile* mob = new Mobile( vec2(frnd()*10, frnd()*10), frnd()*2*3.1415 );
 	  w.addMobile( mob );
 	  mob->setSpeed( vec2(frnd()*2-1, frnd()*2-1));
-		
+	  mob->setRotationSpeed( frnd()*2-1 );
 	}
 	//Simulator for processing the data
 
