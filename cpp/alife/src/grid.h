@@ -115,9 +115,9 @@ public:
 	BEGIN_GENERATOR_STATES
 	state1
 	END_GENERATOR_STATES;
+	Grid* grid;
 	vec2 center;
 	ftype r;
-	Grid* grid;
 	//state
 	ftype max_cell_radius;
 	int ix0, ix1, iy0, iy1, ix, iy;

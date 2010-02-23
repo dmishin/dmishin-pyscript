@@ -218,9 +218,7 @@ public:
 
         //copy-constructor
         generator_iterator( const generator_iterator & gi)
-	: g( gi.g ),
-	  cur_value( gi.cur_value ),
-	  status (gi.status)
+	:  status (gi.status), g( gi.g ),cur_value( gi.cur_value )
 	{
 	}
 
@@ -296,13 +294,13 @@ template<class generator, class unary_func>
 };
 
 /**Copy values from the generator to the inut iterator, not more than specified*/
- template<class generator, class output_iter>
-     output_iter gen_copy(generator & g, output_iter itr, output_iter itr_end)
+template<class generator, class output_iter>
+output_iter gen_copy(generator & g, output_iter itr, output_iter itr_end)
 {
-    for(typename generator::value_type x; g( x ) && itr != itr_end; ++itr){
-        (*itr) = x;
-    }
-    return itr;
+  for(typename generator::value_type x; g( x ) && itr != itr_end; ++itr){
+    (*itr) = x;
+  }
+  return itr;
 };
 
 
