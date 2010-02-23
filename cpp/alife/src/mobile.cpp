@@ -43,6 +43,7 @@ void Mobile::simulate( ftype dt )
     applyLimits();
     //Simulate forces
     simMotors( dt );
+
     //friction
     simFriction( dt );
 
@@ -53,12 +54,12 @@ void Mobile::simBrain( ftype dt )
 }
 void Mobile::simFriction( ftype dt )
 {
-    ftype movementFrictionForce = 1/speed.norm2()*movementFriction*world->getViskosity();
-    ftype rotationFrictionForce = 1/sqr(rotationSpeed)*rotationFriction*world->getViskosity();
-
+    ftype movementFrictionForce = speed.norm()*movementFriction*world->getViskosity();
+    ftype rotationFrictionForce = sqr(rotationSpeed)*rotationFriction*world->getViskosity();
+	//TODO uneffective computation
     //apply friction forces
     //speed -= speed/speed.norm() * movementFrictionForce / mass * dt;
-    speed *= ( 1 - movementFrictionForce/speed.norm() / mass * dt);
+    speed *= ( 1 - movementFrictionForce / mass * dt);
     rotationSpeed -= - sign(rotationSpeed)*rotationFrictionForce / inertion * dt;
 }
 void Mobile::simMotors( ftype dt )

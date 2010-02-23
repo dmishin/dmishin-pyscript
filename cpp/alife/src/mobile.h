@@ -37,6 +37,8 @@ public:
 
     void simulate( ftype dt);//simulate Mobile movement for a given interval of time
     void setWorld( World& w){ world = &w; };
+	void setSpeed( const vec2& spd){ speed = spd; };
+	void setRotationSpeed( ftype b ){ rotationSpeed = b;};
 protected:
     vec2 speed;
     ftype rotationSpeed;

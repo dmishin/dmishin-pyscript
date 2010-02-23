@@ -26,6 +26,7 @@
 #include "mobile.h"
 #include "world.h"
 #include "glut_viewport.h"
+#include "simulator.h"
 
 std::ostream& operator <<( std::ostream & s, const vec2 &v)
 {
@@ -38,15 +39,41 @@ ftype frnd( )
 	return static_cast<ftype>(rand())/static_cast<ftype>(INT_MAX);
 }
 
+//Callable for running the simulator
+struct simulator_runner
+{
+  Simulator* sim;
+  simulator_runner( Simulator& s): sim(&s){};
+  void operator()(){ 
+    std::cout<<"Started simulation\n";
+    std::cout.flush();
+    sim->simulate();
+    std::cout<<"Finished simulation\n";
+    std::cout.flush();
+  };
+};
+
+#include <boost/thread.hpp>
+
 int main( int argc, char* argv[])
 {
 	World w( vec2( 10, 10), 1);
 
 	for(int i =0; i<100; ++i){
-		w.addMobile( new Mobile( vec2(frnd()*10, frnd()*10), frnd()*2*3.1415 ));
+	  Mobile* mob = new Mobile( vec2(frnd()*10, frnd()*10), frnd()*2*3.1415 );
+	  w.addMobile( mob );
+	  mob->setSpeed( vec2(frnd()*2-1, frnd()*2-1));
+		
 	}
+	//Simulator for processing the data
 
-	GlutGuiViewport vp( w, vec2(5,5), 10 );
+	Simulator simulator;
+	simulator.setWorld( w );
+	simulator.setDt( 0.0001 );
+
+	boost::thread simThread = boost::thread( simulator_runner( simulator ));
+	
+	GlutGuiViewport vp( w, vec2(5,5), 30 );
 	vp.setActive();
 	
 	GlutGuiViewport::init( argc, argv );
