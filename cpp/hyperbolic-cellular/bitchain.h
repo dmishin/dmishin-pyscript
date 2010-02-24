@@ -16,6 +16,7 @@ public:
     };
     int size()const{ return numValues; };
     bitchain& append( bitchain::PieceType32 d){
+	if( size()>maxIdx())
 	numValues+=1;
 	setValue( numValues-1, d );
 	return *this;
@@ -28,6 +29,25 @@ public:
     bitchain::PieceType32 operator[](int idx)const{
 	return getValue( idx );
     };
+    template<class iter>
+    void copyTo(typename iter& begin){
+	for(int i =0;i<size();++i){
+	    *begin = getValue( i );
+	    ++begin;
+	}
+    };
+
+    bool operator==( const bitchain& b)const{
+	//slow
+	if (size() != b.size())
+	    return false;
+	for(int i =0; i<size(); ++i){
+	    if ((*this)[i] != b[i])
+		return false;
+	}
+	return true;
+    }
+    
 private:
     static int valuesInPiece(){
 	return sizeof(PieceType32)/VALUE_BITS;
@@ -52,7 +72,7 @@ private:
 	data[pieceIdx] &= ~(valueMask() << valueOffset);
 	data[pieceIdx] |= ((val & valueMask())<<valueOffset);
     };
- 
+    
 };
 
 #endif
