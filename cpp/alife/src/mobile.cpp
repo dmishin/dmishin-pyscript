@@ -16,68 +16,81 @@
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+#include <math.h>
+#include "ftype.h"
 #include "mobile.h"
 #include "world.h"
 #include "motor.h"
 
 Mobile::Mobile( const vec2 & v, ftype angle)
-:Located( v ), rot(angle), speed( 0, 0), rotationSpeed(0)
+ :Oriented( v, angle ), speed( 0, 0), rotationSpeed(0)
 {
-	mass = 1;
-	inertion = 1;
-	movementFriction = 0.1;
-	rotationFriction = 0.1;
-	world = NULL;
+    mass = 1;
+    inertion = 1;
+    movementFriction = 0.1;
+    rotationFriction = 0.1;
+    world = NULL;
+    numMotors = 0;
+    motors = NULL;
 }
 void Mobile::simulate( ftype dt )
 {
-	//simulate movement
-	pos += speed*dt;
-	rot.add( dt*rotationSpeed );
-	applyLimits();
-	//Simulate forces
-	simMotors( dt );
-	//friction
-	simFriction( dt );
+    //simulate AI of the bot
+    simBrain( dt );
+    //simulate movement
+    pos += speed*dt;
+    rot.add( dt*rotationSpeed );
+    applyLimits();
+    //Simulate forces
+    simMotors( dt );
+
+    //friction
+    simFriction( dt );
+
+}
+void Mobile::simBrain( ftype dt )
+{
+//TODO
 }
 void Mobile::simFriction( ftype dt )
 {
-	ftype movementFrictionForce = 1/speed.norm2()*movementFriction*world->getViskosity();
-	ftype rotationFrictionForce = 1/sqr(rotationSpeed)*rotationFriction*world->getViskosity();
-
-	//apply friction forces
-	//speed -= speed/speed.norm() * movementFrictionForce / mass * dt;
-	speed *= ( 1 - movementFrictionForce/speed.norm() / mass * dt);
-	rotationSpeed -= - sign(rotationSpeed)*rotationFrictionForce / inertion * dt;
+    ftype movementFrictionForce = speed.norm()*movementFriction*world->getViskosity();
+    ftype rotationFrictionForce = sqr(rotationSpeed)*rotationFriction*world->getViskosity();
+	//TODO uneffective computation
+    //apply friction forces
+    //speed -= speed/speed.norm() * movementFrictionForce / mass * dt;
+    speed *= ( 1 - movementFrictionForce / mass * dt);
+    rotationSpeed -= - sign(rotationSpeed)*rotationFrictionForce / inertion * dt;
 }
-void simMotors( ftype dt )
+void Mobile::simMotors( ftype dt )
 {
-	for( int i = 0; i<numMotors; ++i){
-		Motor & m = motors[i];
-		applyForceR( dt, m.getForce(), m.getPos());
-	}
+    for( int i = 0; i<numMotors; ++i){
+	Motor & m = *(motors[i]);
+	applyForceR( dt, m.getForce(), m.getPos());
+    }
 }
-/**Apply force at relative coord*/
+/**Apply force at absolute coordinate*/
 void Mobile::applyForceA( ftype dt, const vec2& force, const vec2& applyAt)
 {
-	vec2 l = applyAt - pos;
-	speed += force* (1/mass) * dt;
+    vec2 l = applyAt - pos;
+    speed += force* (1/mass) * dt;
 
-	ftype rotationForce = psprod( l, force );
-	rotationSpeed += rotationForce/inertion * dt;
+    ftype rotationForce = psprod( l, force );
+    rotationSpeed += rotationForce/inertion * dt;
 }
 /**Apply force at relative coords*/
 void Mobile::applyForceR( ftype dt, const vec2& force, const vec2& applyAt)
 {
-	vec2 l = rot.apply(applyAt);
-	speed += rot.apply(force)* (1/mass) * dt;
+    vec2 l = rot.apply(applyAt);
+    speed += rot.apply(force)* (1/mass) * dt;
 
-	ftype rotationForce = psprod( applyAt, force );
-	rotationSpeed += rotationForce/inertion * dt;
+    ftype rotationForce = psprod( applyAt, force );
+    rotationSpeed += rotationForce/inertion * dt;
 
 }
 
 void Mobile::applyLimits()
-{//TODO
+{
+    pos.x = limit( pos.x, ftype(0), world->getSize().x);
+    pos.y = limit( pos.y, ftype(0), world->getSize().y);
 }

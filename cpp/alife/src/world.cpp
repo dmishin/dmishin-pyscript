@@ -35,10 +35,45 @@ Mobile * World::findNearestMobile( const vec2& p, ftype maxDist)
 	return static_cast<Mobile*>(best);
 }
 
-World::World( vec2 size, ftype cellSize )
+World::World( vec2 _size, ftype cellSize )
 {
-	this->size = size;
+	size = _size;
 	//init grids
+	int numCols = static_cast<int>(size.x/cellSize);
+	int numRows = static_cast<int>(size.y/cellSize);
+
+	gridMobiles.setGeometry( numCols, numRows, size.x, size.y);
+	gridFood.setGeometry( numCols, numRows, size.x, size.y);
+
 	//TODO
+//set default world parameters
 	viskosity = 1.0;
+	
+}
+
+//get all bots inside rectangle
+void World::getMobilesSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight, World::MobilesSnapshot&buffer)const
+{
+//TODO: get read access to the grid
+    buffer.resize(0);
+	Grid::rectangle_generator gen( const_cast<Grid&>(gridMobiles), ptTopLeft, ptBottomRight);
+	for(Located* loc; gen( loc );){
+		buffer.push_back( static_cast<Oriented&>( *loc ) );
+	}
+}
+void World::getFoodSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight, World::FoodSnapshot& buffer)const
+{
+//TODO: get read access to the grid
+    buffer.resize(0);
+    Grid::rectangle_generator gen( const_cast<Grid&>(gridFood), ptTopLeft, ptBottomRight);
+    for(Located* loc; gen( loc );){
+	buffer.push_back( static_cast<Located&>( *loc ) );
+    }
+}
+
+void World::addMobile( Mobile* mob )
+{
+    mob->setWorld( *this );
+    mobiles.push_back( mob );
+    gridMobiles.putItem( mob );
 }

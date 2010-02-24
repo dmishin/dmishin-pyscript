@@ -18,5 +18,43 @@
  */
 
 #include "simulator.h"
+#include <stdlib.h>
+#include <stdexcept>
+#include "world.h"
 
+Simulator::Simulator()
+{
+    world = NULL;
+    dt = (ftype)1e-5;
+    simulatedSteps = 0;
+    simulatedTime = 0;
+    stopRequest = false;
+}
 
+void Simulator::simulate()
+{
+    if ( !world ){
+	throw std::logic_error("Failed to start simulation: world not set");
+    }
+
+    while(! isStopRequested() ){
+	simulateStep( dt );
+	simulatedSteps ++;
+	simulatedTime += dt;
+    }
+
+    stopRequest = false;//stop request fulfilled
+}
+
+void Simulator::simulateStep( ftype dt )
+{
+    World::Mobiles::const_iterator i, e=world->getMobiles().end();
+    for( i = world->getMobiles().begin(); i!=e; ++i){
+	(*i)->simulate( dt );
+    }
+}
+
+bool Simulator::isStopRequested()
+{
+    return stopRequest;
+}

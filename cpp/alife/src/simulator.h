@@ -20,14 +20,35 @@
 #ifndef _SIMULATOR_H_
 #define _SIMULATOR_H_
 /**Simulator performs simulation of the world*/
+#include "ftype.h"
+
+class World;
+
 class Simulator
 {
 public:
-
+    Simulator();
+    void setWorld( World& w){ world = & w; };
+    void setDt( ftype dt1 ){ dt = dt1; };
+    //execution control
+    void simulate();
+    void requestStop(){ stopRequest = true; };
+    //get statistics
+    int getSimulatedSteps()const{ return simulatedSteps; };
+    double getSimulatedTime()const{ return simulatedTime; };
+    
 protected:
 
 private:
-
+    World * world;
+    ftype dt;
+    int simulatedSteps;
+    double simulatedTime;
+    
+    volatile bool stopRequest;
+private:
+    void simulateStep( ftype dt );
+    bool isStopRequested();
 };
 
 #endif // _SIMULATOR_H_

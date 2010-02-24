@@ -21,25 +21,26 @@
 #define _MOBILE_H_
 #include "grid.h"
 #include "rotation.h"
-#include "located.h"
 #include "vec2.h"
+#include "oriented.h"
 
 
 /**Additionally to the Located, Mobile can move*/
 
 class World;
+class Motor;
 
-class Mobile: public Located 
+class Mobile: public Oriented
 {
 public:
     Mobile( const vec2 & v, ftype angle=0);
 
     void simulate( ftype dt);//simulate Mobile movement for a given interval of time
-    const rotation& getRotation()const{ return rot;};
-    ftype getAngle()const{ return rot.angle();};
+    void setWorld( World& w){ world = &w; };
+	void setSpeed( const vec2& spd){ speed = spd; };
+	void setRotationSpeed( ftype b ){ rotationSpeed = b;};
 protected:
     vec2 speed;
-    rotation rot;
     ftype rotationSpeed;
 	
     ftype mass;
@@ -49,15 +50,19 @@ protected:
     ftype movementFriction;
 
     World* world;
+	Motor **motors;
+	int numMotors;
 
     void addForce();
     //Apply force at specified location.
     //Location is in the absolute coordinates
     void applyForceA( ftype dt, const vec2& force, const vec2& applyAt);
-    void setWorld( World& w){ world = &w; };
+	void applyForceR( ftype dt, const vec2& force, const vec2& applyAt);
+
 
     void simMotors( ftype dt );
     void simFriction( ftype dt);
+	void simBrain( ftype dt );
     void applyLimits();
 private:
 

@@ -33,6 +33,13 @@ T limit( T x, T min_value, T max_value)
 	return min(max(x, min_value), max_value);
 }
 
+inline
+int sign( ftype x)
+{
+  if (x >0 ) return 1;
+  else if (x<0) return -1;
+  else return 0;
+}
 
 
 #endif

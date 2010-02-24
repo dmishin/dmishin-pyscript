@@ -128,20 +128,21 @@ test_generator::value_type test_generator::value()
 /****************************************************
  Helper templates
  */
+
 template<typename generator>
 class generator_iterator: 
-	public std::iterator<std::input_iterator_tag, typename generator::value_type>{
+    public std::iterator<std::input_iterator_tag, typename generator::value_type>{
 private:
-	typedef enum{
-		status_has_value,//generator called, and some actual value is received.
+    typedef enum{
+	    status_has_value,//generator called, and some actual value is received.
 		status_stopped//generarator finished, value is not actual.
 	} iterator_state_type;
+    
+    iterator_state_type status;
+    generator g;
 		
-	iterator_state_type status;
-	generator g;
-		
-	typename generator::value_type 
-			cur_value; //value_type is declared in the iterator class
+    typename generator::value_type 
+	cur_value; //value_type is declared in the iterator class
 		
 	/*Read first value to the buffer and update status*/
 	void initialize(){
@@ -209,10 +210,17 @@ public:
 		return !((*this) == i);
 	};
 
+
 	/**Constructors*/
 
 	//default constructor is end constructor
 	generator_iterator(): status(status_stopped){ };
+
+        //copy-constructor
+        generator_iterator( const generator_iterator & gi)
+	:  status (gi.status), g( gi.g ),cur_value( gi.cur_value )
+	{
+	}
 
 	//construct from existing generator
 	generator_iterator(const generator& _g)
@@ -221,34 +229,42 @@ public:
 		initialize();
 	}
 
+//Note: passing by value can cause serious problems.
+//when trying to pass value by reference (because adapter would pass by value)
+//Either use passing by pointer,
+//or do not use them at all.
+
 	//using generator own constructors
 	template <typename A1>
-	generator_iterator(A1 a)
+	generator_iterator(A1 &a)
 		:g(a)
 	{ 
 		initialize(); 
 	};
 
 	template <typename A1, typename A2>
-	generator_iterator(A1 a1, A2 a2)
+	generator_iterator(A1 &a1, A2 &a2)
 		:g(a1, a2)
 	{			 
 		initialize(); 
 	};
+
 	template <typename A1, typename A2, typename A3>
-	generator_iterator(A1 a1, A2 a2, A3 a3)
+	generator_iterator(A1 &a1, A2 &a2, A3 &a3)
 		:g(a1, a2, a3)
 	{			 
 		initialize(); 
 	};
+
 	template <typename A1, typename A2, typename A3, typename A4>
-	generator_iterator(A1 a1, A2 a2, A3 a3, A4 a4)
+	generator_iterator(A1 &a1, A2 &a2, A3 &a3, A4 &a4)
 		:g(a1, a2, a3, a4)
 	{			 
 		initialize(); 
 	};
+
 	template <typename A1, typename A2, typename A3, typename A4, typename A5>
-            generator_iterator(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5)
+            generator_iterator(A1 &a1, A2 &a2, A3 &a3, A4 &a4, A5 &a5)
             :g(a1, a2, a3, a4, a5)
             {			 
 		initialize(); 
@@ -278,13 +294,13 @@ template<class generator, class unary_func>
 };
 
 /**Copy values from the generator to the inut iterator, not more than specified*/
- template<class generator, class output_iter>
-     output_iter gen_copy(generator & g, output_iter itr, output_iter itr_end)
+template<class generator, class output_iter>
+output_iter gen_copy(generator & g, output_iter itr, output_iter itr_end)
 {
-    for(typename generator::value_type x; g( x ) && itr != itr_end; ++itr){
-        (*itr) = x;
-    }
-    return itr;
+  for(typename generator::value_type x; g( x ) && itr != itr_end; ++itr){
+    (*itr) = x;
+  }
+  return itr;
 };
 
 
