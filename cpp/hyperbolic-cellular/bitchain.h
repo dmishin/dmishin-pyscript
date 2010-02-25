@@ -29,8 +29,9 @@ public:
     bitchain::PieceType32 operator[](int idx)const{
 	return getValue( idx );
     };
-    template<class iter>
-    void copyTo(typename iter& begin){
+
+    template<class iter_type>
+    void copyTo(iter_type& begin){
 	for(int i =0;i<size();++i){
 	    *begin = getValue( i );
 	    ++begin;
@@ -65,7 +66,7 @@ private:
 	int valueOffset = valueIdx*VALUE_BITS;
 	return (data[pieceIdx]>>valueOffset)&valueMask();
     };
-    PieceType32 setValue( int idx, bitchain::PieceType32 val ){
+    void setValue( int idx, bitchain::PieceType32 val ){
 	int pieceIdx = idx/valuesInPiece(); 
 	int valueIdx = idx%valuesInPiece(); //index of the value in the piece
 	int valueOffset = valueIdx*VALUE_BITS;
