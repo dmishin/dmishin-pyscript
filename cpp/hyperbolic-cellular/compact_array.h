@@ -14,13 +14,13 @@ public:
 
     static const int items_in_piece = sizeof(piece_type)/item_bits;
     static const int num_pieces = DIVIDE_UP( num_items, items_in_piece );
-    static const piece_type item_mask = (piece_type(1)<<item_bits-1);
+    static const piece_type item_mask = (piece_type(1)<<item_bits)-1;
 
     static const int used_bits = item_bits*items_in_piece;
-    static const piece_type used_bits_mask = ~(~piece_type(0)<<used_bits);
+    static const piece_type used_bits_mask = ~((~piece_type(0))<<used_bits);
 
     piece_type data[num_pieces];
-    piece_type get(int idx){
+    piece_type get(int idx)const{
 	int piece_idx = idx/items_in_piece;
 	int offset = item_bits*(piece_idx%items_in_piece);
 	return (data[piece_idx]>>offset)&item_mask;
@@ -29,6 +29,29 @@ public:
 	int piece_idx = idx/items_in_piece;
 	int offset = item_bits*(piece_idx%items_in_piece);
 	data[piece_idx] = (data[piece_idx] & ~(item_mask<<offset)) | (val<<offset);
+    };
+    void zero(){
+	for(int i = 0;i<num_pieces;++i){ data[i]=0; };
+    }
+    struct item_setter{
+
+	int idx;
+	compact_array &array;
+
+	item_setter(compact_array &arr, int _idx)
+	    :idx(_idx),array(arr)
+	    {};
+	
+	operator piece_type(){
+	    return array.get( idx );
+	};
+	item_setter& operator=(const piece_type& v){
+	    array.set( idx, v);
+	    return *this;
+	}; 
+    };
+    item_setter operator[](int idx){
+	return item_setter(*this, idx);
     };
 };
 
