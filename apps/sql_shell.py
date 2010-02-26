@@ -148,6 +148,8 @@ class REP:
         try:
             self.cursor.execute( command )
             self.connection.commit()
+            if self.cursor.lastrowid != None:
+                print "##Last row ID=%s"%self.cursor.lastrowid
             #read
             for row in self.cursor:
                 print row
