@@ -45,6 +45,9 @@ public:
     int size()const{
 	return chainLen;
     }
+    int maxSize()const{
+	return MAX_CHAIN;
+    };
     
     /**Returns type of the new node to be created*/
     NodeType getNewNodeType()const{

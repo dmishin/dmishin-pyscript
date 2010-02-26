@@ -40,7 +40,8 @@ class JM:
         apath = os.path.abspath( path )
         if not os.path.exists( path ):
             raise ValueError, "File %s not found"%path
-#find media
+        #Detect media for this file, basin on its absolute path
         media = self.find_media( apath )
+        
 
 
