@@ -23,7 +23,7 @@
 #include "rotation.h"
 #include "vec2.h"
 #include "oriented.h"
-
+#include "body.h"
 
 /**Additionally to the Located, Mobile can move*/
 
@@ -31,23 +31,32 @@ class World;
 class Motor;
 class Brain;
 
-class Mobile: public Oriented
+
+
+class Mobile: public Oriented, public Body
 {
 public:
+    static const int NUM_MOTORS = 4;
+    static const int NUM_SENSORS = 2;
+
     Mobile( const vec2 & v, ftype angle=0);
 
     void simulate( ftype dt);//simulate Mobile movement for a given interval of time
     void setWorld( World& w){ world = &w; };
     void setBrain( Brain& b){ brain = &b; };
-	void setSpeed( const vec2& spd){ speed = spd; };
-	void setRotationSpeed( ftype b ){ rotationSpeed = b;};
-    //iterface for connecting with controller
-    int getMotorCount()const;
-    int getSensorCount()const;
+    void setSpeed( const vec2& spd){ speed = spd; };
+    void setRotationSpeed( ftype b ){ rotationSpeed = b;};
 
-    void setMotor( int idx, ftype value);
-    ftype getSensor( int idx)const;
+
+    //Body impelmentation
+    virtual int getNumMotors()const {return NUM_MOTORS; };
+    virtual int getNumSensors()const; {return NUM_SENSORS; };
+    virtual void setMotor( int idx, ftype value);
+    virtual ftype getSensor( int idx)const;
+    
+
 protected:
+//Physical state
     vec2 speed;
     ftype rotationSpeed;
 	
@@ -56,23 +65,26 @@ protected:
 
     ftype rotationFriction;
     ftype movementFriction;
+    ftype energy;
+
 
     World* world;
-	Motor **motors;
-	int numMotors;
+
+    Motor motors[NUM_MOTORS];
 
     Brain* brain;
 
     void addForce();
+
     //Apply force at specified location.
     //Location is in the absolute coordinates
-    void applyForceA( ftype dt, const vec2& force, const vec2& applyAt);
-	void applyForceR( ftype dt, const vec2& force, const vec2& applyAt);
+    void applyForceA( ftype dt, const vec2& force, const vec2& applyAt); //absolute coordinates
+    void applyForceR( ftype dt, const vec2& force, const vec2& applyAt);// relative coordinates
 
 
     void simMotors( ftype dt );
     void simFriction( ftype dt);
-	void simBrain( ftype dt );
+    void simBrain( ftype dt );
     void applyLimits();
 private:
 

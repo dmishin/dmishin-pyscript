@@ -48,6 +48,7 @@ World::World( vec2 _size, ftype cellSize )
 	//TODO
 //set default world parameters
 	viskosity = 1.0;
+	energyConsumptionRate = 0.01;
 	
 }
 

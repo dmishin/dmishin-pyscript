@@ -29,9 +29,10 @@ Mobile::Mobile( const vec2 & v, ftype angle)
     inertion = 1;
     movementFriction = 0.1;
     rotationFriction = 0.1;
+    energy = 1;
+
     world = NULL;
-    numMotors = 0;
-    motors = NULL;
+    brain = NULL;
 }
 void Mobile::simulate( ftype dt )
 {
@@ -50,13 +51,15 @@ void Mobile::simulate( ftype dt )
 }
 void Mobile::simBrain( ftype dt )
 {
+    if (! brain ) return;
+    brain->simulate( &this, dt);
 //TODO
 }
 void Mobile::simFriction( ftype dt )
 {
     ftype movementFrictionForce = speed.norm()*movementFriction*world->getViskosity();
     ftype rotationFrictionForce = sqr(rotationSpeed)*rotationFriction*world->getViskosity();
-	//TODO uneffective computation
+    //TODO uneffective computation
     //apply friction forces
     //speed -= speed/speed.norm() * movementFrictionForce / mass * dt;
     speed *= ( 1 - movementFrictionForce / mass * dt);
@@ -64,9 +67,11 @@ void Mobile::simFriction( ftype dt )
 }
 void Mobile::simMotors( ftype dt )
 {
-    for( int i = 0; i<numMotors; ++i){
-	Motor & m = *(motors[i]);
+    if (! motors ) return;
+    for( int i = 0; i<NUM_MOTORS; ++i){
+	Motor & m = motors[i];
 	applyForceR( dt, m.getForce(), m.getPos());
+	energy -= dt * abs(m.getForceValue()) * world->getEnergyConsumptionRate();
     }
 }
 /**Apply force at absolute coordinate*/
@@ -78,6 +83,7 @@ void Mobile::applyForceA( ftype dt, const vec2& force, const vec2& applyAt)
     ftype rotationForce = psprod( l, force );
     rotationSpeed += rotationForce/inertion * dt;
 }
+
 /**Apply force at relative coords*/
 void Mobile::applyForceR( ftype dt, const vec2& force, const vec2& applyAt)
 {
@@ -91,6 +97,29 @@ void Mobile::applyForceR( ftype dt, const vec2& force, const vec2& applyAt)
 
 void Mobile::applyLimits()
 {
-    pos.x = limit( pos.x, ftype(0), world->getSize().x);
-    pos.y = limit( pos.y, ftype(0), world->getSize().y);
+    if (pos.x<0){
+	pos.x = -pos.x;
+	speed.x = -speed.x;
+    }else if( pos.x>world->getSize().x){
+	pos.x = 2*world->getSize().x - pos.x;
+	speed.x = -speed.x;
+    }
+    if (pos.y<0){
+	pos.y = -pos.y;
+	speed.y = -speed.y;
+    }else if( pos.y>world->getSize().y){
+	pos.y = 2*world->getSize().y - pos.y;
+	speed.y = -speed.y;
+    }
+}
+
+void Mobile::setMotor( int idx, ftype value)
+{
+    assert( idx >= 0 && idx < NUM_MOTORS );
+    motors[idx].setForceValue( value );
+}
+ftype Mobile::getSensor( int idx)const
+{
+    assert( idx >= 0 && idx< NUM_SENSORS );
+    return 0;//TODO: sensors nto yet implemented
 }

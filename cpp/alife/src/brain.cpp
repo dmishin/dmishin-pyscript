@@ -7,4 +7,3 @@ Brain::Brain()
 Brain::~Brain()
 {
 }
-

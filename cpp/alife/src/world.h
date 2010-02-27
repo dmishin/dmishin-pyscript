@@ -28,7 +28,9 @@ class World
 public:
     //some global parameters
     ftype viskosity;
+	ftype energyConsumptionRate;
     ftype getViskosity()const{ return viskosity; };
+	ftype getEnergyConsumptionRate()const{ return energyConsumptionRate; };
 public:
     typedef std::vector<Mobile*> Mobiles; 
 
