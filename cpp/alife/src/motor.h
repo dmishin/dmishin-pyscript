@@ -8,22 +8,21 @@
 
 class Motor: public Located
 {
- protected:
-  vec2 direction;
-  ftype force;
+protected:
+    vec2 direction;
+    ftype force;
 
- public:
-  Motor ( const vec2& pos
-		  , const vec2& dir);
+public:
+    Motor ( const vec2& pos
+	    , const vec2& dir);
 
-  /* misc getters */
-  const vec2& getDirection()const{ return direction; };
-  vec2 getForce()const{ return direction* force;};
-  const vec2& getDIrection()const{ return direction;};
-  ftype getForceValue()const{ return force; };
+    /* misc getters */
+    const vec2& getDirection()const{ return direction; };
+    vec2 getForce()const{ return direction* force;};
+    ftype getForceValue()const{ return force; };
 
-  /*Sets amount of the force, produced by motor*/
-  void setForceValue( ftype f ) {force = f;};
+    /*Sets amount of the force, produced by motor*/
+    void setForceValue( ftype f ) {force = f;};
 };
 
 #endif
