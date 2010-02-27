@@ -24,11 +24,11 @@
 #include "vec2.h"
 #include "oriented.h"
 #include "body.h"
+#include "motor.h"
 
 /**Additionally to the Located, Mobile can move*/
 
 class World;
-class Motor;
 class Brain;
 
 
@@ -50,7 +50,7 @@ public:
 
     //Body impelmentation
     virtual int getNumMotors()const {return NUM_MOTORS; };
-    virtual int getNumSensors()const; {return NUM_SENSORS; };
+    virtual int getNumSensors()const {return NUM_SENSORS; };
     virtual void setMotor( int idx, ftype value);
     virtual ftype getSensor( int idx)const;
     

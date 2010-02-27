@@ -17,10 +17,13 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <math.h>
+#include <stdlib.h>
+#include <cassert>
 #include "ftype.h"
 #include "mobile.h"
 #include "world.h"
 #include "motor.h"
+#include "brain.h"
 
 Mobile::Mobile( const vec2 & v, ftype angle)
  :Oriented( v, angle ), speed( 0, 0), rotationSpeed(0)
@@ -52,7 +55,7 @@ void Mobile::simulate( ftype dt )
 void Mobile::simBrain( ftype dt )
 {
     if (! brain ) return;
-    brain->simulate( &this, dt);
+    brain->simulate( *this, dt);
 //TODO
 }
 void Mobile::simFriction( ftype dt )

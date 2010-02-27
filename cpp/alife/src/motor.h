@@ -15,6 +15,7 @@ protected:
 public:
     Motor ( const vec2& pos
 	    , const vec2& dir);
+    Motor(){};
 
     /* misc getters */
     const vec2& getDirection()const{ return direction; };

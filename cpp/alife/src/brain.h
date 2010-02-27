@@ -11,3 +11,4 @@ public:
     virtual ~Brain();
     virtual void simulate( Body & mob, ftype dt)=0;
 };
+#endif
