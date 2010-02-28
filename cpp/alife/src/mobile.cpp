@@ -34,8 +34,18 @@ Mobile::Mobile( const vec2 & v, ftype angle)
     rotationFriction = 0.1;
     energy = 1;
 
+	initMotors();
+	
     world = NULL;
     brain = NULL;
+}
+void Mobile::initMotors()
+{
+	/*Two motors at the top, <> and tvo at the bottom*/
+	motors[0] = Motor( vec2(1, -1), vec2(0, -1));
+	motors[1] = Motor( vec2(-1, -1), vec2(0, -1));
+	motors[2] = Motor( vec2( 0, 1), vec2(1, 0));
+	motors[3] = Motor( vec2( 0, 1), vec2(-1, 0));
 }
 void Mobile::simulate( ftype dt )
 {

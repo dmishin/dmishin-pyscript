@@ -87,6 +87,8 @@ protected:
     void simBrain( ftype dt );
     void applyLimits();
 private:
+/**Initialize motor positions and directions*/
+	void initMotors();
 
 };
 

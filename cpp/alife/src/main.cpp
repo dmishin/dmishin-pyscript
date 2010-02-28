@@ -27,6 +27,7 @@
 #include "world.h"
 #include "glut_viewport.h"
 #include "simulator.h"
+#include "random_brain.h"
 
 std::ostream& operator <<( std::ostream & s, const vec2 &v)
 {
@@ -61,6 +62,8 @@ int main( int argc, char* argv[])
 
 	for(int i =0; i<100; ++i){
 	  Mobile* mob = new Mobile( vec2(frnd()*10, frnd()*10), frnd()*2*3.1415 );
+	  Brain* brn = new RandomBrain();
+	  mob->setBrain( *brn );
 	  w.addMobile( mob );
 	  mob->setSpeed( vec2(frnd()*2-1, frnd()*2-1));
 	  mob->setRotationSpeed( frnd()*2-1 );
@@ -69,7 +72,7 @@ int main( int argc, char* argv[])
 
 	Simulator simulator;
 	simulator.setWorld( w );
-	simulator.setDt( 0.0001 );
+	simulator.setDt( 0.001 );
 
 	boost::thread simThread = boost::thread( simulator_runner( simulator ));
 	

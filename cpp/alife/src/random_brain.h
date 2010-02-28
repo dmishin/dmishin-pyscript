@@ -11,5 +11,8 @@ public:
   RandomBrain();
   virtual ~RandomBrain(){};
   virtual void simulate( Body& body, ftype dt);
+private:
+    /*called to set random motor*/
+    void randomSet( Body& b );
 };
 #endif
