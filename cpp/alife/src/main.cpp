@@ -61,12 +61,13 @@ int main( int argc, char* argv[])
 	World w( vec2( 10, 10), 1);
 
 	for(int i =0; i<100; ++i){
-	  Mobile* mob = new Mobile( vec2(frnd()*10, frnd()*10), frnd()*2*3.1415 );
+//	  Mobile* mob = new Mobile( vec2(frnd()*10, frnd()*10), frnd()*2*3.1415 );
+		Mobile* mob = new Mobile( vec2(5,5), 0 );
 	  Brain* brn = new RandomBrain();
 	  mob->setBrain( *brn );
 	  w.addMobile( mob );
-	  mob->setSpeed( vec2(frnd()*2-1, frnd()*2-1));
-	  mob->setRotationSpeed( frnd()*2-1 );
+//	  mob->setSpeed( vec2(frnd()*2-1, frnd()*2-1));
+//	  mob->setRotationSpeed( frnd()*2-1 );
 	}
 	//Simulator for processing the data
 
