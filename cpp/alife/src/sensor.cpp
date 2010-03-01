@@ -2,12 +2,6 @@
 #include "grid.h"
 #include "world.h"
 
-ftype sensibility(ftype x, ftype y, ftype d0, ftype dphi)
-{
-    ftype kd = 1/(sqr(r/d0)*3+1);
-    ftype kr = 1;
-    return kd*kr;
-}
 
 
 void Sensor::update(Mobile& mob, World& w, ftype dt)
@@ -29,5 +23,6 @@ ftype Sensor::operator(Food& food)const
     vec2 dz = absoluteRotation.apply_back( food.getPos() - absoluteRotation );
     //calculate responce
     
-    return sensibility(dz.x, dz.y, innerRadius, radius);
+    ftype r2 = dz.norm2();
+    ftype alpha = 
 }
