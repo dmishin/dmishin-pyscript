@@ -22,6 +22,7 @@
 #include <vector>
 #include "mobile.h"
 #include "grid.h"
+#include "food.h"
 
 class World
 {
@@ -56,14 +57,14 @@ public:
 	Grid::circular_generator g( gridFood, p, r);
 	ftype s = 0;
 	for(Located *mob = 0; g(mob); ){
-	    s += func( *mob );
+	    s += func( static_cast<Food&>(*mob) );
 	}
 	return s;
     };
 
 /** Get positions of the all bots inside given area*/
     typedef std::vector<Oriented> MobilesSnapshot;
-    typedef std::vector<Located> FoodSnapshot;
+    typedef std::vector<Food> FoodSnapshot;
 
     void getMobilesSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight, World::MobilesSnapshot&buffer)const;
     void getFoodSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight, World::FoodSnapshot& buffer)const;

@@ -5,10 +5,10 @@
 #include <math.h>
 
 class rotation{
- private:
- rotation( ftype c, ftype s): v(c, s){};
+private:
+    rotation( ftype c, ftype s): v(c, s){};
 		
- public:
+public:
     ftype sin()const{ return v.y; };
     ftype cos()const{ return v.x; };
 
@@ -64,8 +64,13 @@ class rotation{
         return *this += r;
     }
 
+    /**Rotate vector by spsecified amount*/
     vec2 apply( const vec2 &vec)const{
         return vec2( vec.x*v.x - vec.y*v.y, vec.x*v.y + vec.y*v.x);
+    }
+    /**Rotate vector in the opposite direction*/
+    vec2 apply_back( const vec2 &vec)const{
+        return vec2( vec.x*v.x + vec.y*v.y, -vec.x*v.y + vec.y*v.x);
     }
 };
 
