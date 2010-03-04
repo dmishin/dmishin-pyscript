@@ -5,12 +5,12 @@
 class RandomBrain: public Brain
 {
 private:
-  ftype t;
+    ftype t;
 public:
-  static const ftype SWITCH_TIME=5;
-  RandomBrain();
-  virtual ~RandomBrain(){};
-  virtual void simulate( Body& body, ftype dt);
+    static const ftype SWITCH_TIME=5;
+    RandomBrain();
+    virtual ~RandomBrain(){};
+    virtual void simulate( Body& body, ftype dt);
 private:
     /*called to set random motor*/
     void randomSet( Body& b );

@@ -25,6 +25,7 @@
 #include "oriented.h"
 #include "body.h"
 #include "motor.h"
+#include "sensor.h"
 
 /**Additionally to the Located, Mobile can move*/
 
@@ -37,11 +38,12 @@ class Mobile: public Oriented, public Body
 {
 public:
     static const int NUM_MOTORS = 4;
-    static const int NUM_SENSORS = 2;
+    static const int NUM_SENSORS = 3; //2 food + energy
+	static const int NUM_FOOD_SENSORS = 2;
 
     Mobile( const vec2 & v, ftype angle=0);
 
-    void simulate( ftype dt);//simulate Mobile movement for a given interval of time
+    void simulate( ftype dt);//simulate Monbile movement for a given interval of time
     void setWorld( World& w){ world = &w; };
     void setBrain( Brain& b){ brain = &b; };
     void setSpeed( const vec2& spd){ speed = spd; };
@@ -71,6 +73,7 @@ protected:
     World* world;
 
     Motor motors[NUM_MOTORS];
+	Sensor foodSensors[ NUM_FOOD_SENSORS ];
 
     Brain* brain;
 
@@ -85,11 +88,13 @@ protected:
     void simMotors( ftype dt );
     void simFriction( ftype dt);
     void simBrain( ftype dt );
+	void simSensors( ftype dt );
+	
     void applyLimits();
 private:
 /**Initialize motor positions and directions*/
 	void initMotors();
-
+	void initSensors();
 };
 
 #endif // _MOBILE_H_

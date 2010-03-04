@@ -54,8 +54,10 @@ def BNF():
         expop = Literal( "^" )
         pi    = CaselessLiteral( "PI" )
         
+        braced = lpar+expr+rpar
+        funcall = ident+braced        
         expr = Forward()
-        atom = (Optional("-") + ( pi | e | fnumber | ident + lpar + expr + rpar ).setParseAction( pushFirst ) | ( lpar + expr.suppress() + rpar )).setParseAction(pushUMinus) 
+        atom = (Optional("-") + ( pi | e | fnumber | funcall ).setParseAction( pushFirst ) | ( lpar + expr.suppress() + rpar )).setParseAction(pushUMinus) 
         
         # by defining exponentiation as "atom [ ^ factor ]..." instead of "atom [ ^ atom ]...", we get right-to-left exponents, instead of left-to-righ
         # that is, 2^3^2 = 2^(3^2), not (2^3)^2.

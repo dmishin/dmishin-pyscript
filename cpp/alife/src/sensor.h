@@ -14,13 +14,14 @@ private:
     //sensor parameters
     ftype innerRadius;//below this radius, responce does not grows
     ftype radius;//maximal radius
-    ftype respo
+
 
     ftype sensibility;//general sensibility koefficien
 public:
     Sensor():value(0){};
     Sensor(const vec2& pos, ftype angle): Oriented(pos,angle), value(0){};
     
+    void setParameters(ftype sensibility, ftype _radius);
     //sensor paramters
     void setShape
 

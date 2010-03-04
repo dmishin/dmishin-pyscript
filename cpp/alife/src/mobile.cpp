@@ -47,8 +47,19 @@ void Mobile::initMotors()
 	motors[2] = Motor( vec2( 0, 1), vec2(1, 0));
 	motors[3] = Motor( vec2( 0, 1), vec2(-1, 0));
 }
+void Mobile::initSensors()
+{
+	/*Two food sensors, left and right*/
+	foodSensors[0] = Sensor( vec2( ));
+	foodSensors[0].setParameters( 1, 3 );
+
+	foodSensors[1] = Sensor();
+	foodSensors[1].setParameters( 1, 3 );
+}
 void Mobile::simulate( ftype dt )
 {
+	//world perception
+	simSensors( dt );
     //simulate AI of the bot
     simBrain( dt );
     //simulate movement
@@ -57,10 +68,18 @@ void Mobile::simulate( ftype dt )
     applyLimits();
     //Simulate forces
     simMotors( dt );
-
     //friction
     simFriction( dt );
 
+}
+void Mobile::simSensors( ftype dt )
+{
+	//update values of the sensors which need this
+	//TODO: add some minimal sensor update time? Sensors can be computationally hard
+	assert( world );
+	for (int i = 0; i< NUM_FOOD_SENSORS; ++i){
+		foodSensors[i].update( *this, *world, dt );
+	}
 }
 void Mobile::simBrain( ftype dt )
 {
@@ -134,5 +153,12 @@ void Mobile::setMotor( int idx, ftype value)
 ftype Mobile::getSensor( int idx)const
 {
     assert( idx >= 0 && idx< NUM_SENSORS );
-    return 0;//TODO: sensors nto yet implemented
+	switch( idx ){
+		case 0: return foodSensors[0].getValue();
+		case 1: return foodSensors[1].getValue();
+		case 3: return energy; //energy sensor
+		default:
+			assert( false );
+	};
+    return 0;
 }

@@ -24,14 +24,27 @@
 #include "grid.h"
 #include "food.h"
 
+/**Utility helper functions*/
+template<class function_class, class argument_type>
+ftype calcGridFunction( Grid& g, const vec2& center, ftype radius, function_class& f)
+{
+    Grid::circular_generator g( g, center, radius);
+    ftype s = 0;
+    for(Located *mob = 0; g(mob); ){
+	s += func( static_cast<argument_type&>(*mob) );
+    }
+    return s;
+};
+
+
 class World
 {
 public:
     //some global parameters
     ftype viskosity;
-	ftype energyConsumptionRate;
+    ftype energyConsumptionRate;
     ftype getViskosity()const{ return viskosity; };
-	ftype getEnergyConsumptionRate()const{ return energyConsumptionRate; };
+    ftype getEnergyConsumptionRate()const{ return energyConsumptionRate; };
 public:
     typedef std::vector<Mobile*> Mobiles; 
 
@@ -44,22 +57,12 @@ public:
     /**Accumulate function value. Fucntion must take const Mobile& */
     template<class function_class>
     ftype calcMobFunction(const vec2 & p, ftype r, function_class & func){
-	Grid::circular_generator g( gridMobiles, p, r);
-	ftype s = 0;
-	for(Located *mob = 0; g(mob); ){
-	    s += func( static_cast<Mobile&>(*mob) );
-	}
-	return s;
+	return calcGridFunction<function_class, Mobile>( gridMobiles, p, r, func);
     };
 
     template<class function_class>
     ftype calcFoodFunction(const vec2 & p, ftype r, function_class & func){
-	Grid::circular_generator g( gridFood, p, r);
-	ftype s = 0;
-	for(Located *mob = 0; g(mob); ){
-	    s += func( static_cast<Food&>(*mob) );
-	}
-	return s;
+	return calcGridFunction<function_class, Food>(gridFood, p, r, func);
     };
 
 /** Get positions of the all bots inside given area*/
@@ -83,5 +86,7 @@ private:
     Mobiles mobiles;
 
 };
+
+
 
 #endif // _WORLD_H_
