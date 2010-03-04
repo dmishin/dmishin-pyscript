@@ -9,7 +9,7 @@ class Food:public Located
     ftype value;
 public:
     Food(){};
-    Food( const vec2& pos, ftype _value=1):Locaed(pos),value(_value){};
+    Food( const vec2& pos, ftype _value=1):Located(pos),value(_value){};
     ftype getValue()const{return value;}
 };
 #endif

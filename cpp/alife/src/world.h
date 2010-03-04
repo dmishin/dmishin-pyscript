@@ -26,9 +26,9 @@
 
 /**Utility helper functions*/
 template<class function_class, class argument_type>
-ftype calcGridFunction( Grid& g, const vec2& center, ftype radius, function_class& f)
+ftype calcGridFunction( Grid& grid, const vec2& center, ftype radius, function_class& func)
 {
-    Grid::circular_generator g( g, center, radius);
+    Grid::circular_generator g( grid, center, radius);
     ftype s = 0;
     for(Located *mob = 0; g(mob); ){
 	s += func( static_cast<argument_type&>(*mob) );

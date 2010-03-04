@@ -68,7 +68,7 @@ void World::getFoodSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight, W
     buffer.resize(0);
     Grid::rectangle_generator gen( const_cast<Grid&>(gridFood), ptTopLeft, ptBottomRight);
     for(Located* loc; gen( loc );){
-	buffer.push_back( static_cast<Located&>( *loc ) );
+	buffer.push_back( static_cast<Food&>( *loc ) );
     }
 }
 

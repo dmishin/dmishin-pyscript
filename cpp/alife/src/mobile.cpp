@@ -50,11 +50,9 @@ void Mobile::initMotors()
 void Mobile::initSensors()
 {
 	/*Two food sensors, left and right*/
-	foodSensors[0] = Sensor( vec2( ));
-	foodSensors[0].setParameters( 1, 3 );
+	foodSensors[0] = Sensor( vec2(0.7,0.7), atan2(1,2), /*sens*/1, /*r*/3 );
+	foodSensors[1] = Sensor( vec2(-0.7, 0.7), atan2(-1,2), /*sens*/1, /*r*/3 );
 
-	foodSensors[1] = Sensor();
-	foodSensors[1].setParameters( 1, 3 );
 }
 void Mobile::simulate( ftype dt )
 {

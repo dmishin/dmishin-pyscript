@@ -1,7 +1,7 @@
 #include "sensor.h"
 #include "grid.h"
 #include "world.h"
-
+#include "mobile.h"
 
 
 void Sensor::update(Mobile& mob, World& w, ftype dt)
@@ -19,13 +19,13 @@ ftype Sensor:: getValue()const
 {
     return value;
 }
-ftype Sensor::operator(Food& food)const
+ftype Sensor::operator()(Food& food)const
 {
     //TODO: ineffective computation
 
     //calculate sensor response to a food item
     //food item in the sensor's local coordinate system
-    vec2 dz = absoluteRotation.apply_back( food.getPos() - absoluteRotation );
+    vec2 dz = absoluteRotation.apply_back( food.getPos() - absolutePos );
     //calculate responce
     
     ftype r2 = dz.norm2(); //distance to the item, squared
@@ -37,7 +37,7 @@ ftype Sensor::operator(Food& food)const
     return sensibility * distResp * angleResp;	   
 }
 
-void Sensor::setParameters( ftype _sensibility, ftype _radius, ftype _angle)
+void Sensor::setParameters( ftype _sensibility, ftype _radius)
 {
     sensibility = _sensibility;
     radius = _radius;
