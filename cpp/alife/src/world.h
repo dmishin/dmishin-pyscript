@@ -72,10 +72,11 @@ public:
     void getMobilesSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight, World::MobilesSnapshot&buffer)const;
     void getFoodSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight, World::FoodSnapshot& buffer)const;
 
+	int getNumBots()const{ return bots.size();};
     void addMobile( Mobile* mob );
     const World::Mobiles& getMobiles()const{ return mobiles;};
  
-/** Receive messages fomr bots*/
+/** Receive messages from bots*/
 	void reportDeadBot( Mobile& mob); //called, when mobile is dead
 protected:
 

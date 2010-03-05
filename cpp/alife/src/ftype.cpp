@@ -1,6 +1,6 @@
 #include "ftype.h"
-#iclude "stdlib.h"
-
+#include <stdlib.h>
+#include <limits.h>
 ftype frnd( )
 {
     return static_cast<ftype>(rand()/static_cast<double>(INT_MAX));

@@ -1,39 +1,37 @@
 bin_PROGRAMS = alife
 alife_SOURCES = \
-	alife_glut.cpp \
-	alife_glut.h \
-	body.h \
-	brain.cpp \
-	brain.h \
-	food.h \
-	ftype.cpp \
-	ftype.h \
-	glut_viewport.cpp \
-	glut_viewport.h \
-	grid.cpp \
-	grid.h \
-	item-acceptor.cpp \
-	item-acceptor.h \
-	located.h \
+	world.h \
 	main.cpp \
-	matrix_brain.cpp \
-	matrix_brain.h \
-	mobile.cpp \
-	mobile.h \
 	motor.cpp \
-	motor.h \
-	oriented.h \
-	pseudo_generator.h \
-	random_brain.cpp \
-	random_brain.h \
+	grid.h \
 	random_choise.cpp \
-	random_choise.h \
-	rotation.h \
+	vec2.h \
+	glut_viewport.h \
+	ftype.h \
 	sensor.cpp \
+	random_brain.h \
+	oriented.h \
+	rotation.h \
 	sensor.h \
 	simulator.cpp \
+	random_choise.h \
+	located.h \
+	mobile.cpp \
+	matrix_brain.cpp \
+	grid.cpp \
+	pseudo_generator.h \
+	body.h \
+	ftype.cpp \
+	motor.h \
+	food.h \
+	alife_glut.h \
+	alife_glut.cpp \
+	matrix_brain.h \
+	random_brain.cpp \
 	simulator.h \
-	vec2.h \
+	brain.cpp \
 	world.cpp \
-	world.h 
+	glut_viewport.cpp \
+	mobile.h \
+	brain.h 
 alife_LDFLAGS = -lglut -lboost_thread-mt
