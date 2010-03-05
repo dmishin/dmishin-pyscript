@@ -1,6 +1,7 @@
 #include "matrix_brain.h"
 #include "body.h"
 #include <boost/numeric/ublas/operation.hpp>
+#include <algorithm>
 using namespace boost::numeric::ublas;
 
 
@@ -82,13 +83,53 @@ void MatrixBrain::randomInit()
 }
 void MatrixBrain::resetState()
 {
-    for(int i = 0; i<Z.size(); ++i){
-	Z[i] = 0;
+    for(int i = 0; i<numStates; ++i){
+	X[i+numSensors] = 0;
     };
+}
+/**Matrix manipulation utilities*/
+void clearRandomLine( MatrixBrain::Matrix & m)
+{/**fills some random line with zeros*/
+    int lineIdx = rand()%m.size1();
+    for( int i =0; i<m.size2(); ++i){
+	m(lineIdx, i) = 0;
+    };
+}
+
+void addRelativeNoise( MatrixBrain::Matrix & m, ftype amount)
+{/**add relative noise to the matrix*/
+    //TODO: ineffective code...
+    MatrixBrain::Matrix::iterator i,e = m.end1();
+    for( i = m.begin1(); i!=e; ++i ){
+	(*i) = (*i)*(1+frnd(-amount, amount));
+    };
+}
+
+void addConstantNoise( MatrixBrain::Matrix & m, ftype amount)
+{
+   //TODO: ineffective code...
+    MatrixBrain::Matrix::iterator i,e = m.end1();
+    for( i = m.begin1(); i!=e; ++i ){
+	(*i) = (*i) + frnd(-amount, amount);
+    };
+}
+void addPinNoise( MatrixBrain::MatrixBrain &m, ftype amount, int count = 1)
+{
+    assert( count >=0);
+    int i,j;
+    while( count ){
+	i = rand()%m.size1();
+	j = rand()%m.size2();
+	m(i,j) = frnd( -amount, amount);
+    }
 }
 /**single mutation*/
 void MatrixBrain::mutate()
 {
+    const int RELATIVE_NOISE_AMOUNT = 0.1;
+    const int CONSTANT_NOISE_AMOUNT = 0.01;
+    const int PIN_NOISE_AMOUNT = 5;
+
     static RandomChoise mutationType;
     enum MutationType{
 	DELETION, NOISE, PIN_NOISE
@@ -101,11 +142,22 @@ void MatrixBrain::mutate()
     };
     switch( mutationType.get()){
 	case DELETION:
-	    //clear some random line
+	    //clear some random line from A and B
+	    clearRandomLine( A );
+	    clearRandomLine( B );
+	    break;
 	case NOISE:
 	    //add noise to matrices
+	    addRelativeNoise( A, frnd(0, RELATIVE_NOISE_AMOUNT));
+	    addRelativeNoise( B, frnd(0, RELATIVE_NOISE_AMOUNT));
+	    addConstantNoise( A, frnd(0, CONSTANT_NOISE_AMOUNT));
+	    addConstantNoise( B, frnd(0, CONSTANT_NOISE_AMOUNT));
+	    break;
 	case PIN_NOISE:
 	    //set random big values
+	    addPinNoise( A, PIN_NOISE_AMOUNT);
+	    addPinNoise( B, PIN_NOISE_AMOUNT);
+	    break;
 	default:
 	    assert( false );
     };
@@ -113,5 +165,56 @@ void MatrixBrain::mutate()
 /**Create child from two parents*/
 void MatrixBrain::makeChild(const MatrixBrain &a, const MatrixBrain &b)
 {
+    static RandomChoise childChoise;
+    enum ChildType{
+	CHILD_BLEND, CHILD_MIX
+    };
+    if (childChoise.empty()){
+	childChoise.add( 0.5, CHILD_BLEND);
+	child_blend.add( 0.5, CHILD_MIX);
+    };
+    switch( childChoise.get() ){
+	case CHILD_MIX:
+	    //Merge matrices with random koefficient
+	    mixParenst( a, b);
+	    break;
+	case CHILD_BLEND:
+	    //take some lines from one matrix and other lines from anouther.
+	    blendParents( a, b, frand(0, 1) );
+	    break;
+	default: assert( false );
+    };
 }
 
+void MatrixBrain::blendParents( const MatrixBrain &a, const MatrixBrain &b, ftype k)
+{
+    std::fill(A.begin1(), A.end1(), 0);
+    std::fill(B.begin1(), B.end1(), 0);
+    A += a.A*(k);
+    A += b.A*(1-k);
+    B += a.B*(k);
+    B += b/B*(1-k);
+}
+
+void MatrixBrain::assertCompatible( const MatrixBrain &a)
+{
+    assert(a.numSensors == numSensors);
+    assert(a.numStates == numStates);
+    assert(a.numIntermediateValues == numIntermediateValues);
+    assert(a.numOutputs == numOutputs);
+}
+void mixMatrices( const MatrixBrain::Matrix& a, const MatrixBrain::Matrix &b, MatrixBrain::Matrix &c)
+{
+    for(int i  = 0; i < a.size1(); ++i){
+	//decidem whether this row is got from the 
+	const MatrixBrain::Matrix &useMatrix = *(rand()%2 ? &a : &b);
+	row(a, i) = row( useMatrix, i);
+    }
+}
+void MatrixBrain::mixParents( const MatrixBrain &a, const MatrixBrain &b)
+{
+    assertCompatible( a );
+    assertCompatible( b );
+    mixMatrices( a.A, b.A, A);
+    mixMatrices( a.B, b.B, B);
+}
