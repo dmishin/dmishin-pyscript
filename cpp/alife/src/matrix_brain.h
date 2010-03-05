@@ -25,6 +25,15 @@ public:
     Matrix A;
     Matrix B;
     virtual void simulate( Body & mob, ftype dt);
+
+    /**Completely random initialization*/
+    void randomInit();
+    /**single mutation*/
+    void mutate();
+    /**Create child from two parents*/
+    void makeChild(const MatrixBrain &a, const MatrixBrain &b);
+    /**Set integrator state to zero*/
+    void resetState();
 };
 
 #endif

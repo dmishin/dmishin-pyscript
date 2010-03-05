@@ -35,10 +35,6 @@ std::ostream& operator <<( std::ostream & s, const vec2 &v)
 	return s;
 }
 
-ftype frnd( )
-{
-	return static_cast<ftype>(rand())/static_cast<ftype>(INT_MAX);
-}
 
 //Callable for running the simulator
 struct simulator_runner
