@@ -69,30 +69,33 @@ void Mobile::simulate( ftype dt )
     //friction
     simFriction( dt );
 
+    if (energy <= 0){//Bot is dead.
+	world->reportDeadBot( &this );
+    }
+
 }
 void Mobile::simSensors( ftype dt )
 {
-	//update values of the sensors which need this
-	//TODO: add some minimal sensor update time? Sensors can be computationally hard
-	assert( world );
-	for (int i = 0; i< NUM_FOOD_SENSORS; ++i){
-		foodSensors[i].update( *this, *world, dt );
-	}
+    //update values of the sensors which need this
+    //TODO: add some minimal sensor update time? Sensors can be computationally hard
+    assert( world );
+    for (int i = 0; i< NUM_FOOD_SENSORS; ++i){
+	foodSensors[i].update( *this, *world, dt );
+    }
 }
 void Mobile::simBrain( ftype dt )
 {
     if (! brain ) return;
     brain->simulate( *this, dt);
-//TODO
 }
 void Mobile::simFriction( ftype dt )
 {
     ftype movementFrictionForce = speed.norm()*movementFriction*world->getViskosity();
     ftype rotationFrictionForce = sqr(rotationSpeed)*rotationFriction*world->getViskosity();
-    //TODO uneffective computation
+    //TODO uneffective computation, rotation speed can increase for big gaps
     //apply friction forces
     //speed -= speed/speed.norm() * movementFrictionForce / mass * dt;
-    speed *= ( 1 - movementFrictionForce / mass * dt);
+    speed *= max(0, ( 1 - movementFrictionForce / mass * dt));
     rotationSpeed -= sign(rotationSpeed)*rotationFrictionForce / inertion * dt;
 }
 void Mobile::simMotors( ftype dt )

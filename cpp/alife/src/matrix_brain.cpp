@@ -67,6 +67,7 @@ void makeRandomMatrix( ftype firstRowIntensity, ftype intensityDecrease, MatrixB
 	k = k*intensityDecrease;//next line would be 10% less intensive
     }
 }
+
 /**Completely random initialization*/
 void MatrixBrain::randomInit()
 {
@@ -81,6 +82,7 @@ void MatrixBrain::randomInit()
     /*Set initial values for integrator*/
     resetState();
 }
+
 void MatrixBrain::resetState()
 {
     for(int i = 0; i<numStates; ++i){

@@ -74,7 +74,9 @@ public:
 
     void addMobile( Mobile* mob );
     const World::Mobiles& getMobiles()const{ return mobiles;};
-    
+ 
+/** Receive messages fomr bots*/
+	void reportDeadBot( Mobile& mob); //called, when mobile is dead
 protected:
 
 private:

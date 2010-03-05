@@ -78,3 +78,9 @@ void World::addMobile( Mobile* mob )
     mobiles.push_back( mob );
     gridMobiles.putItem( mob );
 }
+
+void World::reportDeadBot( Mobile& mob )
+{
+	//Called from the dead bot.
+	//TODO: remove bot from the grid and from the list
+}
