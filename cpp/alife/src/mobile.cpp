@@ -70,7 +70,7 @@ void Mobile::simulate( ftype dt )
     simFriction( dt );
 
     if (energy <= 0){//Bot is dead.
-	world->reportDeadBot( &this );
+	world->reportDeadBot( *this );
     }
 
 }
@@ -95,7 +95,7 @@ void Mobile::simFriction( ftype dt )
     //TODO uneffective computation, rotation speed can increase for big gaps
     //apply friction forces
     //speed -= speed/speed.norm() * movementFrictionForce / mass * dt;
-    speed *= max(0, ( 1 - movementFrictionForce / mass * dt));
+    speed *= max(ftype(0), ( 1 - movementFrictionForce / mass * dt));
     rotationSpeed -= sign(rotationSpeed)*rotationFrictionForce / inertion * dt;
 }
 void Mobile::simMotors( ftype dt )

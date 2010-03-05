@@ -2,6 +2,7 @@
 #include "body.h"
 #include <boost/numeric/ublas/operation.hpp>
 #include <algorithm>
+#include "random_choise.h"
 using namespace boost::numeric::ublas;
 
 
@@ -101,7 +102,7 @@ void clearRandomLine( MatrixBrain::Matrix & m)
 void addRelativeNoise( MatrixBrain::Matrix & m, ftype amount)
 {/**add relative noise to the matrix*/
     //TODO: ineffective code...
-    MatrixBrain::Matrix::iterator i,e = m.end1();
+    MatrixBrain::Matrix::iterator1 i,e = m.end1();
     for( i = m.begin1(); i!=e; ++i ){
 	(*i) = (*i)*(1+frnd(-amount, amount));
     };
@@ -110,12 +111,12 @@ void addRelativeNoise( MatrixBrain::Matrix & m, ftype amount)
 void addConstantNoise( MatrixBrain::Matrix & m, ftype amount)
 {
    //TODO: ineffective code...
-    MatrixBrain::Matrix::iterator i,e = m.end1();
+    MatrixBrain::Matrix::iterator1 i,e = m.end1();
     for( i = m.begin1(); i!=e; ++i ){
 	(*i) = (*i) + frnd(-amount, amount);
     };
 }
-void addPinNoise( MatrixBrain::MatrixBrain &m, ftype amount, int count = 1)
+void addPinNoise( MatrixBrain::Matrix &m, ftype amount, int count = 1)
 {
     assert( count >=0);
     int i,j;
@@ -173,16 +174,16 @@ void MatrixBrain::makeChild(const MatrixBrain &a, const MatrixBrain &b)
     };
     if (childChoise.empty()){
 	childChoise.add( 0.5, CHILD_BLEND);
-	child_blend.add( 0.5, CHILD_MIX);
+	childChoise.add( 0.5, CHILD_MIX);
     };
     switch( childChoise.get() ){
 	case CHILD_MIX:
 	    //Merge matrices with random koefficient
-	    mixParenst( a, b);
+	    mixParents( a, b);
 	    break;
 	case CHILD_BLEND:
 	    //take some lines from one matrix and other lines from anouther.
-	    blendParents( a, b, frand(0, 1) );
+	    blendParents( a, b, frnd(0, 1) );
 	    break;
 	default: assert( false );
     };
@@ -195,7 +196,7 @@ void MatrixBrain::blendParents( const MatrixBrain &a, const MatrixBrain &b, ftyp
     A += a.A*(k);
     A += b.A*(1-k);
     B += a.B*(k);
-    B += b/B*(1-k);
+    B += b.B*(1-k);
 }
 
 void MatrixBrain::assertCompatible( const MatrixBrain &a)
@@ -210,7 +211,7 @@ void mixMatrices( const MatrixBrain::Matrix& a, const MatrixBrain::Matrix &b, Ma
     for(int i  = 0; i < a.size1(); ++i){
 	//decidem whether this row is got from the 
 	const MatrixBrain::Matrix &useMatrix = *(rand()%2 ? &a : &b);
-	row(a, i) = row( useMatrix, i);
+	row(c, i) = row( useMatrix, i);
     }
 }
 void MatrixBrain::mixParents( const MatrixBrain &a, const MatrixBrain &b)
