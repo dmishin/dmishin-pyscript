@@ -26,7 +26,7 @@
 #include "brain.h"
 
 Mobile::Mobile( const vec2 & v, ftype angle)
- :Oriented( v, angle ), speed( 0, 0), rotationSpeed(0)
+    :Oriented( v, angle ), speed( 0, 0), rotationSpeed(0)
 {
     mass = 1;
     inertion = 1;
@@ -34,30 +34,30 @@ Mobile::Mobile( const vec2 & v, ftype angle)
     rotationFriction = 0.1;
     energy = 1;
 
-	initMotors();
+    initMotors();
 	
     world = NULL;
     brain = NULL;
 }
 void Mobile::initMotors()
 {
-	/*Two motors at the top, <> and tvo at the bottom*/
-	motors[0] = Motor( vec2(1, -1), vec2(0, -1));
-	motors[1] = Motor( vec2(-1, -1), vec2(0, -1));
-	motors[2] = Motor( vec2( 0, 1), vec2(1, 0));
-	motors[3] = Motor( vec2( 0, 1), vec2(-1, 0));
+    /*Two motors at the top, <> and tvo at the bottom*/
+    motors[0] = Motor( vec2(1, -1), vec2(0, -1));
+    motors[1] = Motor( vec2(-1, -1), vec2(0, -1));
+    motors[2] = Motor( vec2( 0, 1), vec2(1, 0));
+    motors[3] = Motor( vec2( 0, 1), vec2(-1, 0));
 }
 void Mobile::initSensors()
 {
-	/*Two food sensors, left and right*/
-	foodSensors[0] = Sensor( vec2(0.7,0.7), atan2(1,2), /*sens*/1, /*r*/3 );
-	foodSensors[1] = Sensor( vec2(-0.7, 0.7), atan2(-1,2), /*sens*/1, /*r*/3 );
+    /*Two food sensors, left and right*/
+    foodSensors[0] = Sensor( vec2(0.7,0.7), atan2(1,2), /*sens*/1, /*r*/3 );
+    foodSensors[1] = Sensor( vec2(-0.7, 0.7), atan2(-1,2), /*sens*/1, /*r*/3 );
 
 }
 void Mobile::simulate( ftype dt )
 {
-	//world perception
-	simSensors( dt );
+    //world perception
+    simSensors( dt );
     //simulate AI of the bot
     simBrain( dt );
     //simulate movement
@@ -154,12 +154,12 @@ void Mobile::setMotor( int idx, ftype value)
 ftype Mobile::getSensor( int idx)const
 {
     assert( idx >= 0 && idx< NUM_SENSORS );
-	switch( idx ){
-		case 0: return foodSensors[0].getValue();
-		case 1: return foodSensors[1].getValue();
-		case 3: return energy; //energy sensor
-		default:
-			assert( false );
-	};
+    switch( idx ){
+	case 0: return foodSensors[0].getValue();
+	case 1: return foodSensors[1].getValue();
+	case 2: return energy; //energy sensor
+	default:
+	    assert( false );
+    };
     return 0;
 }

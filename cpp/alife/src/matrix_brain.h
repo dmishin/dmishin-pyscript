@@ -9,7 +9,7 @@
 #include "ftype.h"
 
 
-class MatrixBrain
+class MatrixBrain: public Brain
 {
 private:
     static ftype nlf( ftype x );
