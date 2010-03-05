@@ -37,6 +37,21 @@ GlutGuiViewport::GlutGuiViewport(World &w, const vec2& c, ftype z):
 {
 }
 
+void GlutGuiViewport::drawFood( Located& item )
+{
+    //drawing a triangle
+    const vec2 &pos = item.getPos();
+    
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+	
+    glTranslatef(pos.x, pos.y, 0);
+//    glRotatef(item.getAngle()*(180/M_PI), 0,0,1);
+    drawFoodIcon();
+	
+    glPopMatrix();
+}
 //called to draw one item
 void GlutGuiViewport::drawMobile( Oriented& item)
 {
@@ -54,7 +69,24 @@ void GlutGuiViewport::drawMobile( Oriented& item)
 	
     glPopMatrix();
 }
+void GlutGuiViewport::drawFoodIcon()
+{
+   ftype iconSize = 0.1;
 
+    glBegin(GL_TRIANGLES);
+
+    glColor3f(0.0, 1.0, 0.0);  /* green */
+
+    glVertex3f( 0, -iconSize, 0);
+    glVertex3f( iconSize, 0, 0);
+    glVertex3f( 0, iconSize, 0);
+
+    glVertex3f( 0, -iconSize, 0);
+    glVertex3f( -iconSize, 0, 0);
+    glVertex3f( 0, iconSize, 0);
+
+    glEnd();
+}
 void GlutGuiViewport::drawIcon()
 {
     ftype iconSize = 0.5;
@@ -78,11 +110,19 @@ void GlutGuiViewport:: draw()
     world.getMobilesSnapshot( ptTopLeft, ptBottomRight, displayedMobiles);
 //then draw them
 //Such approach is used to make parallel execution more effective (drawing is ecpected to be much slower than getting snapshot)
-    
-    World::MobilesSnapshot::iterator i, e=displayedMobiles.end();
-    for( i = displayedMobiles.begin(); i!=e; ++i){
-	drawMobile( *i );
-    }
+	{
+	    World::MobilesSnapshot::iterator i, e=displayedMobiles.end();
+	    for( i = displayedMobiles.begin(); i!=e; ++i){
+		drawMobile( *i );
+	    }
+	}
+	    {
+		world.getFoodSnapshot( ptTopLeft, ptBottomRight, displayedFood);
+		World::FoodSnapshot::iterator i, e = displayedFood.end();
+		for( i = displayedFood.begin(); i!=e; ++i){
+		    drawFood( *i );
+		}
+	    }
 }
 
 /**Called to set this viewport active*/

@@ -78,6 +78,10 @@ void World::addMobile( Mobile* mob )
     mobiles.push_back( mob );
     gridMobiles.putItem( mob );
 }
+void World::addFood( Food* f )
+{
+	gridFood.putItem( f );
+}
 
 void World::reportDeadBot( Mobile& mob )
 {

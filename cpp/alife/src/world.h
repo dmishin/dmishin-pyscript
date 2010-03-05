@@ -50,6 +50,7 @@ public:
 
     World( vec2 size, ftype cellSize );
     const vec2& getSize()const{ return size; };
+	vec2 center()const{ return size*ftype(0.5);};
 	
     //Basic operation on world
     Mobile * findNearestMobile( const vec2& p, ftype maxDist);
@@ -73,6 +74,7 @@ public:
     void getFoodSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight, World::FoodSnapshot& buffer)const;
 
     void addMobile( Mobile* mob );
+	void addFood( Food* f );
     const World::Mobiles& getMobiles()const{ return mobiles;};
  
 /** Receive messages fomr bots*/

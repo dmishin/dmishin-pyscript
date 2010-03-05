@@ -23,8 +23,11 @@ private:
 
 //buffer, used for getting information about observed mobiles
     World::MobilesSnapshot displayedMobiles;
+    World::FoodSnapshot displayedFood;
 
-    void drawMobile( Oriented& item);
+    void drawMobile( Oriented &item);
+    void drawFood( Located &item);
+
 
 public:
 
@@ -43,6 +46,8 @@ public:
 private:
     /**draw one icon, at the center*/
     void drawIcon();
+    void drawFoodIcon();
+
 
     /**called, when viewport become unactive*/
     void deactivate();
