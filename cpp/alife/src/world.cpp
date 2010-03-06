@@ -22,17 +22,11 @@
 
 Mobile * World::findNearestMobile( const vec2& p, ftype maxDist)
 {
-	Grid::circular_generator gen(gridMobiles, p, maxDist);
-	Located* best = 0;
-	ftype bestD = maxDist;
-	for ( Located* mob=0; gen( mob ); ){
-		ftype d = dist( mob->getPos(), p);
-		if (d<= bestD){
-			bestD = d;
-			best = mob;
-		}
-	}
-	return static_cast<Mobile*>(best);
+	return static_cast<Mobile*>( gridFood.findNearestItem( p, maxDist ) );
+}
+Food* World::findNearestFood( const vec2& p, ftype maxDist)
+{
+	return static_cast<Food*>( gridFood.findNearestItem( p, maxDist ) );
 }
 
 World::World( vec2 _size, ftype cellSize )
@@ -87,4 +81,10 @@ void World::reportDeadBot( Mobile& mob )
 {
 	//Called from the dead bot.
 	//TODO: remove bot from the grid and from the list
+}
+void World::foodEaten( Food* food, Mobile* mob) //called by mobile, when it eats one food item
+{
+	//TODO: remove food item from the grid
+	gridFood.removeItem( food );
+	delete food;
 }

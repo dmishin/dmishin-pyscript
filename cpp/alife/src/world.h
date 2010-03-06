@@ -50,10 +50,11 @@ public:
 
     World( vec2 size, ftype cellSize );
     const vec2& getSize()const{ return size; };
-	vec2 center()const{ return size*ftype(0.5);};
+    vec2 center()const{ return size*ftype(0.5);};
 	
     //Basic operation on world
     Mobile * findNearestMobile( const vec2& p, ftype maxDist);
+    Food* findNearestFood( const vec2& p, ftype maxDist);
 
     /**Accumulate function value. Fucntion must take const Mobile& */
     template<class function_class>
@@ -73,13 +74,14 @@ public:
     void getMobilesSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight, World::MobilesSnapshot&buffer)const;
     void getFoodSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight, World::FoodSnapshot& buffer)const;
 
-	int getNumBots()const{ return bots.size();};
+    int getNumBots()const{ return mobiles.size();};
     void addMobile( Mobile* mob );
-	void addFood( Food* f );
+    void addFood( Food* f );
     const World::Mobiles& getMobiles()const{ return mobiles;};
  
 /** Receive messages from bots*/
-	void reportDeadBot( Mobile& mob); //called, when mobile is dead
+    void reportDeadBot( Mobile& mob); //called, when mobile is dead
+    void foodEaten( Food* food, Mobile* mob); //called by mobile, when it eats one food item
 protected:
 
 private:

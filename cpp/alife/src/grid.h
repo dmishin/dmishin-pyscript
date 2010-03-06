@@ -68,6 +68,7 @@ public:
 		
     void putItem( Located * item);
     void removeItem( Located * item);
+    Located* findNearestItem( const vec2& p, ftype maxDist);
 
     /**update positions of all Located items in cells*/
     void update();

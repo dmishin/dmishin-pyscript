@@ -69,10 +69,21 @@ void Mobile::simulate( ftype dt )
     //friction
     simFriction( dt );
 
+	//food eating behavior
+	tryEatFood();
     if (energy <= 0){//Bot is dead.
 	world->reportDeadBot( *this );
     }
 
+}
+void Mobile::tryEatFood()
+{
+    //TODO: instead of eating constantly, make some pause? Food searching may be slow.
+    Food* pFood = world->findNearestFood( getPos(), FOOD_EATING_RADIUS );
+    if (pFood){//some food found
+	energy = min( ftype(1), energy + pFood->getValue() );
+	world->foodEaten( pFood, this);
+    }
 }
 void Mobile::simSensors( ftype dt )
 {

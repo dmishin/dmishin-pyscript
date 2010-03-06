@@ -92,7 +92,19 @@ std::string Grid::toStr()const
     os<<"}";
     return os.str();
 }
-
+Located* Grid::findNearestItem( const vec2& p, ftype maxDist)
+{
+    Grid::circular_generator gen(*this, p, maxDist);
+    Located* best = 0;
+    ftype bestD = maxDist;
+    for ( Located* mob=0; gen( mob ); ){
+	ftype d = dist( mob->getPos(), p);
+	if (d<= bestD){
+	    bestD = d;
+	    best = mob;
+	}
+    }
+}
 
 ///Rectangle generator
 Located* Grid::rectangle_generator::operator()()

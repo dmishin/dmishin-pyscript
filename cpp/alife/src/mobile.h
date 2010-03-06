@@ -39,7 +39,8 @@ class Mobile: public Oriented, public Body
 public:
     static const int NUM_MOTORS = 4;
     static const int NUM_SENSORS = 3; //2 food + energy
-	static const int NUM_FOOD_SENSORS = 2;
+    static const int NUM_FOOD_SENSORS = 2;
+    static const ftype FOOD_EATING_RADIUS = 0.1;
 
     Mobile( const vec2 & v, ftype angle=0);
 
@@ -88,13 +89,14 @@ protected:
     void simMotors( ftype dt );
     void simFriction( ftype dt);
     void simBrain( ftype dt );
-	void simSensors( ftype dt );
+    void simSensors( ftype dt );
+    void tryEatFood();
 	
     void applyLimits();
 private:
 /**Initialize motor positions and directions*/
-	void initMotors();
-	void initSensors();
+    void initMotors();
+    void initSensors();
 };
 
 #endif // _MOBILE_H_
