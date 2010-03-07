@@ -19,14 +19,16 @@
 
 #include "world.h"
 #include <algorithm>
+#include <boost/shared_ptr.hpp>
 
-Mobile * World::findNearestMobile( const vec2& p, ftype maxDist)
+MobilePtr World::findNearestMobile( const vec2& p, ftype maxDist)
 {
-	return static_cast<Mobile*>( gridFood.findNearestItem( p, maxDist ) );
+	
+	return boost::static_pointer_cast<Mobile>( gridFood.findNearestItem( p, maxDist ) );
 }
-Food* World::findNearestFood( const vec2& p, ftype maxDist)
+FoodPtr World::findNearestFood( const vec2& p, ftype maxDist)
 {
-	return static_cast<Food*>( gridFood.findNearestItem( p, maxDist ) );
+	return boost::static_pointer_cast<Food>( gridFood.findNearestItem( p, maxDist ) );
 }
 
 World::World( vec2 _size, ftype cellSize )
@@ -51,30 +53,30 @@ void World::getMobilesSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight
 {
 //TODO: get read access to the grid
     buffer.resize(0);
-	Grid::rectangle_generator gen( const_cast<Grid&>(gridMobiles), ptTopLeft, ptBottomRight);
-	for(Located* loc; gen( loc );){
-		buffer.push_back( static_cast<Oriented&>( *loc ) );
-	}
+    Grid::rectangle_generator gen( const_cast<Grid&>(gridMobiles), ptTopLeft, ptBottomRight);
+    for(GridItemPtr loc; gen( loc );){
+	buffer.push_back( boost::static_pointer_cast<Mobile>( loc ) );
+    }
 }
 void World::getFoodSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight, World::FoodSnapshot& buffer)const
 {
 //TODO: get read access to the grid
     buffer.resize(0);
     Grid::rectangle_generator gen( const_cast<Grid&>(gridFood), ptTopLeft, ptBottomRight);
-    for(Located* loc; gen( loc );){
+    for(GridItemPtr loc; gen( loc );){
 	buffer.push_back( static_cast<Food&>( *loc ) );
     }
 }
 
-void World::addMobile( Mobile* mob )
+void World::addMobile( MobilePtr mob )
 {
     mob->setWorld( *this );
     mobiles.push_back( mob );
     gridMobiles.putItem( mob );
 }
-void World::addFood( Food* f )
+void World::addFood( FoodPtr f )
 {
-	gridFood.putItem( f );
+    gridFood.putItem( f );
 }
 
 void World::reportDeadBot( Mobile& mob )
@@ -82,9 +84,7 @@ void World::reportDeadBot( Mobile& mob )
 	//Called from the dead bot.
 	//TODO: remove bot from the grid and from the list
 }
-void World::foodEaten( Food* food, Mobile* mob) //called by mobile, when it eats one food item
+void World::foodEaten( FoodPtr food, Mobile &mob) //called by mobile, when it eats one food item
 {
-	//TODO: remove food item from the grid
-	gridFood.removeItem( food );
-	delete food;
+    gridFood.removeItem( food );
 }

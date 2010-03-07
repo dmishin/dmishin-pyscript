@@ -36,14 +36,14 @@ void Grid::setGeometry( int cols, int rows, ftype width, ftype height)
     cellSize = vec2(width/numCols, height/numRows);
 }
 
-void Grid::putItem( Located * item)
+void Grid::putItem( GridItemPtr item)
 {
     const vec2 & location = item->getPos();
     Cell& cell = cellRef( index_x( location.x ), index_y( location.y ) );
     cell.add( item );
 }
 
-void Grid::removeItem( Located * item)
+void Grid::removeItem( GridItemPtr item)
 {
     const vec2 & location = item->getPos();
     Cell& cell = cellRef( index_x( location.x ), index_y( location.y ) );
@@ -68,7 +68,7 @@ void Grid::updateCell( Grid::Cell & cell)
     while( i!= e ){
 	Cell & mustBelongTo = cellRef( **i );
 	if (mustBelongTo != cell){//this item should belong to a different cell
-	    Located* item = *i;
+	    GridItemPtr item = *i;
 	    cell.items.erase( i++ ); //erase current item and got o the next one
 	    mustBelongTo.add ( item );
 	}else{
@@ -92,22 +92,23 @@ std::string Grid::toStr()const
     os<<"}";
     return os.str();
 }
-Located* Grid::findNearestItem( const vec2& p, ftype maxDist)
+GridItemPtr Grid::findNearestItem( const vec2& p, ftype maxDist)
 {
     Grid::circular_generator gen(*this, p, maxDist);
-    Located* best = 0;
+    GridItemPtr best;
     ftype bestD = maxDist;
-    for ( Located* mob=0; gen( mob ); ){
+    for ( GridItemPtr mob; gen( mob ); ){
 	ftype d = dist( mob->getPos(), p);
 	if (d<= bestD){
 	    bestD = d;
 	    best = mob;
 	}
     }
+    return best;
 }
 
 ///Rectangle generator
-Located* Grid::rectangle_generator::operator()()
+GridItemPtr Grid::rectangle_generator::operator()()
 {
     //Generator preamble
     BEGIN_RESTORE_STATE;
@@ -136,11 +137,11 @@ Located* Grid::rectangle_generator::operator()()
 	}
     }
     END_GENERATOR;
-    return 0; //dummy return, just to exit the generator
+    return GridItemPtr(); //dummy return, just to exit the generator
 }
 
 //Circular generator
-Located* Grid::circular_generator::operator()()
+GridItemPtr Grid::circular_generator::operator()()
 {
     //TODO Possible optimization: instead of skipping the cells that are too far,
     //     enumerate only cells that are near enough. This would require more 
@@ -187,5 +188,5 @@ Located* Grid::circular_generator::operator()()
     }
 	
     END_GENERATOR;
-    return 0;//Dummy
+    return GridItemPtr();//Dummy
 }

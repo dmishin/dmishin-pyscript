@@ -17,8 +17,10 @@
 #include "vec2.h"
 #include "pseudo_generator.h"
 #include "located.h"
+#include <boost/shared_ptr.hpp>
+/**Pointer type for the items in the grid.*/
 
-class ItemAcceptor;
+typedef boost::shared_ptr<Located> GridItemPtr ;
 
 class Grid{
 private:  
@@ -30,13 +32,13 @@ private:
 public:
     class Cell{
     public:
-	typedef std::set< Located * > CellItems;	
+	typedef std::set< GridItemPtr > CellItems;	
 	CellItems items;
 				
-	void add( Located *item){
+	void add( GridItemPtr item){
 	    items.insert( item );
 	}
-	void remove( Located * item){
+	void remove( GridItemPtr item){
 	    if (items.erase( item ) == 0)
 		throw std::logic_error("element not in the cell");//element not found in the set
 	}
@@ -66,16 +68,16 @@ public:
     vec2 center()const{ return size*(ftype)0.5;};
 
 		
-    void putItem( Located * item);
-    void removeItem( Located * item);
-    Located* findNearestItem( const vec2& p, ftype maxDist);
+    void putItem( GridItemPtr item);
+    void removeItem( GridItemPtr item);
+    GridItemPtr findNearestItem( const vec2& p, ftype maxDist);
 
     /**update positions of all Located items in cells*/
     void update();
 
     /**Utility class for enumerating items in a rectangle*/
     /**Pseudo-generator, returning items inside a rectangle*/
-    struct rectangle_generator: public pseudo_generator<Located*>{
+    struct rectangle_generator: public pseudo_generator<GridItemPtr>{
 	//pseudo-generator preamble
 	BEGIN_GENERATOR_STATES 
 	state1
@@ -100,7 +102,7 @@ public:
 	     grid(&g)
 	    {};
 	//generator body
-	Located* operator()();
+	GridItemPtr operator()();
     };
   
     typedef generator_iterator<rectangle_generator> rectangle_iterator;
@@ -112,7 +114,7 @@ public:
 	return rectangle_iterator(*this, x0, x1, y0, y1);
     };
 
-    struct circular_generator: public pseudo_generator<Located*>{
+    struct circular_generator: public pseudo_generator<GridItemPtr>{
 	BEGIN_GENERATOR_STATES
 	state1
 	END_GENERATOR_STATES;
@@ -129,7 +131,7 @@ public:
 	circular_generator( Grid& g, const vec2& _center, ftype radius)
 	    :grid(&g), center(_center), r(radius){};
 
-	Located* operator()();
+	GridItemPtr operator()();
     };
     typedef generator_iterator<circular_generator> circular_iterator;
     circular_iterator genItemsInCircle(const vec2& center, ftype r){

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+#pragma once
 #ifndef _MOBILE_H_
 #define _MOBILE_H_
 #include "grid.h"
@@ -26,13 +26,12 @@
 #include "body.h"
 #include "motor.h"
 #include "sensor.h"
+#include <boost/shared_ptr.hpp>
 
 /**Additionally to the Located, Mobile can move*/
 
 class World;
 class Brain;
-
-
 
 class Mobile: public Oriented, public Body
 {
@@ -98,5 +97,7 @@ private:
     void initMotors();
     void initSensors();
 };
+
+typedef boost::shared_ptr<Mobile> MobilePtr;
 
 #endif // _MOBILE_H_

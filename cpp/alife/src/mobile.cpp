@@ -26,7 +26,7 @@
 #include "brain.h"
 
 Mobile::Mobile( const vec2 & v, ftype angle)
-    :Oriented( v, angle ), speed( 0, 0), rotationSpeed(0)
+ :Oriented( v, angle ), speed( 0, 0), rotationSpeed(0)
 {
     mass = 1;
     inertion = 1;
@@ -79,10 +79,10 @@ void Mobile::simulate( ftype dt )
 void Mobile::tryEatFood()
 {
     //TODO: instead of eating constantly, make some pause? Food searching may be slow.
-    Food* pFood = world->findNearestFood( getPos(), FOOD_EATING_RADIUS );
+    FoodPtr pFood = world->findNearestFood( getPos(), /*FOOD_EATING_RADIUS*/1 );
     if (pFood){//some food found
 	energy = min( ftype(1), energy + pFood->getValue() );
-	world->foodEaten( pFood, this);
+	world->foodEaten( pFood, *this);
     }
 }
 void Mobile::simSensors( ftype dt )

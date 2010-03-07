@@ -30,7 +30,7 @@ ftype calcGridFunction( Grid& grid, const vec2& center, ftype radius, function_c
 {
     Grid::circular_generator g( grid, center, radius);
     ftype s = 0;
-    for(Located *mob = 0; g(mob); ){
+    for(GridItemPtr mob; g(mob); ){
 	s += func( static_cast<argument_type&>(*mob) );
     }
     return s;
@@ -46,15 +46,15 @@ public:
     ftype getViskosity()const{ return viskosity; };
     ftype getEnergyConsumptionRate()const{ return energyConsumptionRate; };
 public:
-    typedef std::vector<Mobile*> Mobiles; 
+    typedef std::vector<MobilePtr> Mobiles; 
 
     World( vec2 size, ftype cellSize );
     const vec2& getSize()const{ return size; };
     vec2 center()const{ return size*ftype(0.5);};
 	
     //Basic operation on world
-    Mobile * findNearestMobile( const vec2& p, ftype maxDist);
-    Food* findNearestFood( const vec2& p, ftype maxDist);
+    MobilePtr findNearestMobile( const vec2& p, ftype maxDist);
+    FoodPtr findNearestFood( const vec2& p, ftype maxDist);
 
     /**Accumulate function value. Fucntion must take const Mobile& */
     template<class function_class>
@@ -68,20 +68,20 @@ public:
     };
 
 /** Get positions of the all bots inside given area*/
-    typedef std::vector<Oriented> MobilesSnapshot;
+    typedef std::vector<MobilePtr> MobilesSnapshot;
     typedef std::vector<Food> FoodSnapshot;
 
     void getMobilesSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight, World::MobilesSnapshot&buffer)const;
     void getFoodSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight, World::FoodSnapshot& buffer)const;
 
     int getNumBots()const{ return mobiles.size();};
-    void addMobile( Mobile* mob );
-    void addFood( Food* f );
+    void addMobile( MobilePtr mob );
+    void addFood( FoodPtr f );
     const World::Mobiles& getMobiles()const{ return mobiles;};
  
 /** Receive messages from bots*/
     void reportDeadBot( Mobile& mob); //called, when mobile is dead
-    void foodEaten( Food* food, Mobile* mob); //called by mobile, when it eats one food item
+    void foodEaten( FoodPtr food, Mobile& mob); //called by mobile, when it eats one food item
 protected:
 
 private:

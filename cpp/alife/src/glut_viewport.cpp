@@ -110,19 +110,19 @@ void GlutGuiViewport:: draw()
     world.getMobilesSnapshot( ptTopLeft, ptBottomRight, displayedMobiles);
 //then draw them
 //Such approach is used to make parallel execution more effective (drawing is ecpected to be much slower than getting snapshot)
-	{
-	    World::MobilesSnapshot::iterator i, e=displayedMobiles.end();
-	    for( i = displayedMobiles.begin(); i!=e; ++i){
-		drawMobile( *i );
-	    }
+    if(true){
+	World::MobilesSnapshot::iterator i, e=displayedMobiles.end();
+	for( i = displayedMobiles.begin(); i!=e; ++i){
+	    drawMobile( **i );
 	}
-	    {
-		world.getFoodSnapshot( ptTopLeft, ptBottomRight, displayedFood);
-		World::FoodSnapshot::iterator i, e = displayedFood.end();
-		for( i = displayedFood.begin(); i!=e; ++i){
-		    drawFood( *i );
-		}
-	    }
+    }
+    if(true){
+	world.getFoodSnapshot( ptTopLeft, ptBottomRight, displayedFood);
+	World::FoodSnapshot::iterator i, e = displayedFood.end();
+	for( i = displayedFood.begin(); i!=e; ++i){
+	    drawFood( *i );
+	}
+    }
 }
 
 /**Called to set this viewport active*/

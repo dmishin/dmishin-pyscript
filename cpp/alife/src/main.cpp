@@ -58,20 +58,17 @@ int main( int argc, char* argv[])
     World w( vec2( 100, 100), 1);
 
     for(int i =0; i<100; ++i){
-//	  Mobile* mob = new Mobile( vec2(frnd()*10, frnd()*10), frnd()*2*3.1415 );
-	Mobile* mob = new Mobile( w.center(), 0 );
+	MobilePtr mob(new Mobile( w.center(), 0 ));
 	//Brain* brn = new RandomBrain();
 	MatrixBrain * brn = new MatrixBrain( mob->getNumSensors(), 5/*satates*/, 10/*intermediate*/, mob->getNumMotors());
 	brn->randomInit();
 	mob->setBrain( *brn );
 	w.addMobile( mob );
-//	  mob->setSpeed( vec2(frnd()*2-1, frnd()*2-1));
-//	  mob->setRotationSpeed( frnd()*2-1 );
     }
     //fill world with food
     for( int i = 0;i<1000; ++i)
     {
-	Food* f = new Food( vec2( frnd(0, 100), frnd(0, 100)) );
+	FoodPtr f(new Food( vec2( frnd(0, 100), frnd(0, 100)) ));
 	w.addFood( f );
     }
     //Simulator for processing the data
