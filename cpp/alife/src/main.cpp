@@ -73,11 +73,12 @@ int main( int argc, char* argv[])
     }
     //Simulator for processing the data
 
-    Simulator simulator;
-    simulator.setWorld( w );
-    simulator.setDt( 0.001 );
+    boost::shared_ptr<Simulator> simulator(new Simulator());
+    simulator->setDt( 0.001 );
 
-    boost::thread simThread = boost::thread( simulator_runner( simulator ));
+    w.setSimulator( simulator );//now simulator is ready to work;
+
+    boost::thread simThread = boost::thread( simulator_runner( *simulator ));
 	
     GlutGuiViewport vp( w, vec2(50,50), 12 );
     vp.setActive();

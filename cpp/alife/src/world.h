@@ -23,6 +23,7 @@
 #include "mobile.h"
 #include "grid.h"
 #include "food.h"
+#include "abstract_simulator.h"
 
 /**Utility helper functions*/
 template<class function_class, class argument_type>
@@ -83,8 +84,8 @@ public:
     void reportDeadBot( Mobile& mob); //called, when mobile is dead
     void foodEaten( FoodPtr food, Mobile& mob); //called by mobile, when it eats one food item
 
-    void setSimulator( boost::shared_ptr<AbstractSimulator> simulatorPtr) {simulator = simulatorPtr};
-    void 
+    void setSimulator( boost::shared_ptr<AbstractSimulator> simulatorPtr);
+    
 protected:
 
 private:

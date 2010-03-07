@@ -139,6 +139,20 @@ public:
     circular_iterator genItemsInCircle(const vec2& center, ftype r){
 	return circular_iterator( *this, center, r);
     }
+
+    /**Generate all items in grid*/
+    struct items_generator: public pseudo_generator<GridItemPtr>{
+	BEGIN_GENERATOR_STATES
+	state1, state2
+	END_GENERATOR_STATES;
+	Grid* grid;
+	int i;
+	Grid::Cell::CellItems::iterator iItem;
+	Grid::Cell * curCell;
+	items_generator(){};
+	items_generator( Grid& g ): grid(&g){};
+	GridItemPtr operator()();
+    };
 private:
     void updateCell( Cell & cell);
 		

@@ -192,3 +192,26 @@ GridItemPtr Grid::circular_generator::operator()()
     END_GENERATOR;
     return GridItemPtr();//Dummy
 }
+
+
+GridItemPtr Grid::items_generator::operator()()
+{
+    BEGIN_RESTORE_STATE;
+    RESTORE_STATE( state1 );
+    RESTORE_STATE( state2 );
+    END_RESTORE_STATE;
+    BEGIN_GENERATOR;
+    for( i=0; i<grid->numRows*grid->numCols; ++i){
+	curCell = &(grid->cells[i]);
+
+	for( iItem = curCell->items.begin(); iItem != curCell->items.end(); ++iItem){
+	    YIELD( *iItem, state1 );
+	}
+    }
+    curCell = &(grid->unallocated);
+    for( iItem = curCell->items.begin(); iItem != curCell->items.end(); ++iItem){
+	YIELD( *iItem, state2 );
+    }
+
+    END_GENERATOR;
+}

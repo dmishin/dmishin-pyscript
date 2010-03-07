@@ -88,3 +88,16 @@ void World::foodEaten( FoodPtr food, Mobile &mob) //called by mobile, when it ea
 {
     gridFood.removeItem( food );
 }
+
+void World::setSimulator( boost::shared_ptr<AbstractSimulator> _simulator)
+{
+    simulator = _simulator;
+    if (simulator){
+	simulator->prepareSimulation( *this );
+	Grid::items_generator gItems( gridMobiles );
+	for( GridItemPtr item; gItems( item );){
+	    MobilePtr pMob = boost::static_pointer_cast<Mobile>( item );
+	    simulator->onNewBot( pMob );
+	}
+    }
+}
