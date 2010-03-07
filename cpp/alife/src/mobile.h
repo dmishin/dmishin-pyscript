@@ -55,7 +55,11 @@ public:
     virtual int getNumSensors()const {return NUM_SENSORS; };
     virtual void setMotor( int idx, ftype value);
     virtual ftype getSensor( int idx)const;
-    
+
+    //getters for the advanced display
+    const Motor& getMotor( int idx )const;
+    const Sensor& getFoodSensor( int idx )const;
+	
 
 protected:
 //Physical state

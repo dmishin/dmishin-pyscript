@@ -54,6 +54,17 @@ void Mobile::initSensors()
     foodSensors[1] = Sensor( vec2(-0.7, 0.7), atan2(-1,2), /*sens*/1, /*r*/3 );
 
 }
+const Motor& Mobile::getMotor( int idx )const
+{
+    assert( idx>=0 && idx < NUM_MOTORS);
+    return motors[idx];
+}
+const Sensor& Mobile::getFoodSensor( int idx )const
+{
+    assert( idx >=0 && idx < NUM_FOOD_SENSORS );
+    return foodSensors[ idx ];
+}
+
 void Mobile::simulate( ftype dt )
 {
     //world perception

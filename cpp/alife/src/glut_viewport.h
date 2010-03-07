@@ -9,6 +9,7 @@
 
 class Located;
 class Oriented;
+class Mobile;
 
 class GlutGuiViewport
 {
@@ -25,7 +26,7 @@ private:
     World::MobilesSnapshot displayedMobiles;
     World::FoodSnapshot displayedFood;
 
-    void drawMobile( Oriented &item);
+    void drawMobile( Mobile &item);
     void drawFood( Located &item);
 
 
@@ -45,7 +46,7 @@ public:
     ~GlutGuiViewport();
 private:
     /**draw one icon, at the center*/
-    void drawIcon();
+    void drawIcon( Mobile& mob);
     void drawFoodIcon();
 
 

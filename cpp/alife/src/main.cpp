@@ -59,9 +59,9 @@ int main( int argc, char* argv[])
 
     for(int i =0; i<100; ++i){
 	MobilePtr mob(new Mobile( w.center(), 0 ));
-	//Brain* brn = new RandomBrain();
-	MatrixBrain * brn = new MatrixBrain( mob->getNumSensors(), 5/*satates*/, 10/*intermediate*/, mob->getNumMotors());
-	brn->randomInit();
+	Brain* brn = new RandomBrain();
+	//MatrixBrain * brn = new MatrixBrain( mob->getNumSensors(), 5/*satates*/, 10/*intermediate*/, mob->getNumMotors());
+	//brn->randomInit();
 	mob->setBrain( *brn );
 	w.addMobile( mob );
     }
@@ -75,11 +75,11 @@ int main( int argc, char* argv[])
 
     Simulator simulator;
     simulator.setWorld( w );
-    simulator.setDt( 0.05 );
+    simulator.setDt( 0.001 );
 
     boost::thread simThread = boost::thread( simulator_runner( simulator ));
 	
-    GlutGuiViewport vp( w, vec2(50,50), 5 );
+    GlutGuiViewport vp( w, vec2(50,50), 12 );
     vp.setActive();
 	
     GlutGuiViewport::init( argc, argv );
