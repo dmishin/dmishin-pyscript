@@ -4,6 +4,7 @@
 
 MatrixBreeder::MatrixBreeder()
 {
+    minimalBots = 10;
 };
 
 void MatrixBreeder::onIdle( World &world)

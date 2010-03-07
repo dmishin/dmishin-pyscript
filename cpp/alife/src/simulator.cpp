@@ -48,13 +48,27 @@ void Simulator::simulate()
 
 void Simulator::simulateStep( ftype dt )
 {
-    World::Mobiles::const_iterator i, e=world->getMobiles().end();
-    for( i = world->getMobiles().begin(); i!=e; ++i){
+    Mobiles::const_iterator i, e=mobiles.end();
+    for( i = mobiles.begin(); i!=e; ++i){
 	(*i)->simulate( dt );
+	if (! (*i)->isAlive() ){
+	    mobiles.erase( *i );
+	}
     }
 }
 
 bool Simulator::isStopRequested()
 {
     return stopRequest;
+}
+    /**abstrac simulator implementation*/
+void Simulator::prepareSimulation( World & w)
+{
+    mobiles.clear();
+    setWorld( w );
+}
+void Simulator::onNewBot( MobilePtr mob )
+{
+    assert( mobiles.find(mob) == mobiles.end() );
+    mobiles.insert( mob );
 }

@@ -21,10 +21,11 @@
 #define _SIMULATOR_H_
 /**Simulator performs simulation of the world*/
 #include "ftype.h"
+#include "abstract_simulator.h"
 
 class World;
 
-class Simulator
+class Simulator: public AbstractSimulator
 {
 public:
     Simulator();
@@ -36,11 +37,19 @@ public:
     //get statistics
     int getSimulatedSteps()const{ return simulatedSteps; };
     double getSimulatedTime()const{ return simulatedTime; };
-    
+
+    /**abstrac simulator implementation*/
+    virtual void prepareSimulation( World & w);
+    virtual void onNewBot( MobilePtr mob );
+    virtual void stopSimulation() { requestStop(); };
+
 protected:
 
 private:
+    typedef std::set< MobilePtr > Mobiles;
+    Mobiles mobiles;
     World * world;
+    
     ftype dt;
     int simulatedSteps;
     double simulatedTime;

@@ -29,6 +29,7 @@ private:
     vec2 size;
     vec2 cellSize;
     vec2 cellScale;
+    int numItems;
 public:
     class Cell{
     public:
@@ -71,6 +72,7 @@ public:
     void putItem( GridItemPtr item);
     void removeItem( GridItemPtr item);
     GridItemPtr findNearestItem( const vec2& p, ftype maxDist);
+    int getNumItems()const{ return numItems; };
 
     /**update positions of all Located items in cells*/
     void update();

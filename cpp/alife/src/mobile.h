@@ -59,7 +59,8 @@ public:
     //getters for the advanced display
     const Motor& getMotor( int idx )const;
     const Sensor& getFoodSensor( int idx )const;
-	
+    ftype getEnergy()const{ return energy; };
+    bool isAlive()const{ return energy>0; };
 
 protected:
 //Physical state

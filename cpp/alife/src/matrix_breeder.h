@@ -6,9 +6,11 @@
 class MatrixBreeder:public Breeder
 {
 public:
+    
     MatrixBreeder();
     virtual void onIdle( World& world);
 private:
+    int minimalBots;
     void makeNewBot( World& w);
 };
 

@@ -74,14 +74,17 @@ public:
     void getMobilesSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight, World::MobilesSnapshot&buffer)const;
     void getFoodSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight, World::FoodSnapshot& buffer)const;
 
-    int getNumBots()const{ return mobiles.size();};
+    int getNumBots()const{ return gridMobiles.getNumItems();};
     void addMobile( MobilePtr mob );
     void addFood( FoodPtr f );
-    const World::Mobiles& getMobiles()const{ return mobiles;};
+//    const World::Mobiles& getMobiles()const{ return mobiles;};
  
 /** Receive messages from bots*/
     void reportDeadBot( Mobile& mob); //called, when mobile is dead
     void foodEaten( FoodPtr food, Mobile& mob); //called by mobile, when it eats one food item
+
+    void setSimulator( boost::shared_ptr<AbstractSimulator> simulatorPtr) {simulator = simulatorPtr};
+    void 
 protected:
 
 private:
@@ -89,8 +92,10 @@ private:
     vec2 size;
     Grid gridMobiles;
     Grid gridFood;
+
+    boost::shared_ptr<AbstractSimulator> simulator;
     //arrays of mobiles
-    Mobiles mobiles;
+//    Mobiles mobiles;
 
 };
 

@@ -12,7 +12,7 @@ Grid::Grid()
   
     numCols = 0;
     numRows = 0;
-
+    numItems = 0;
 }
 Grid::~Grid()
 {
@@ -41,6 +41,7 @@ void Grid::putItem( GridItemPtr item)
     const vec2 & location = item->getPos();
     Cell& cell = cellRef( index_x( location.x ), index_y( location.y ) );
     cell.add( item );
+    numItems += 1;
 }
 
 void Grid::removeItem( GridItemPtr item)
@@ -48,6 +49,7 @@ void Grid::removeItem( GridItemPtr item)
     const vec2 & location = item->getPos();
     Cell& cell = cellRef( index_x( location.x ), index_y( location.y ) );
     cell.remove( item );
+    numItems += 1;
 }
 
 
