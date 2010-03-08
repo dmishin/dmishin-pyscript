@@ -101,6 +101,9 @@ private:
 /**Initialize motor positions and directions*/
     void initMotors();
     void initSensors();
+
+	bool operator<(const Mobile& mob)const{ return false; };
+	bool operator==(const Mobile& mob)const{ return false;};
 };
 
 typedef boost::shared_ptr<Mobile> MobilePtr;

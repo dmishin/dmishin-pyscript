@@ -20,6 +20,7 @@
 #ifndef _SIMULATOR_H_
 #define _SIMULATOR_H_
 /**Simulator performs simulation of the world*/
+#include <list>
 #include "ftype.h"
 #include "abstract_simulator.h"
 
@@ -46,7 +47,8 @@ public:
 protected:
 
 private:
-    typedef std::set< MobilePtr > Mobiles;
+//    typedef std::set< MobilePtr > Mobiles;
+	typedef std::list< MobilePtr > Mobiles;
     Mobiles mobiles;
     World * world;
     

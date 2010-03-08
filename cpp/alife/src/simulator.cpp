@@ -48,11 +48,15 @@ void Simulator::simulate()
 
 void Simulator::simulateStep( ftype dt )
 {
-    Mobiles::const_iterator i, e=mobiles.end();
-    for( i = mobiles.begin(); i!=e; ++i){
+    Mobiles::iterator i=mobiles.begin(), e=mobiles.end();
+    while( i!=e ){
 	(*i)->simulate( dt );
+
 	if (! (*i)->isAlive() ){
-	    mobiles.erase( *i );
+	    mobiles.erase( i++ );//first erase then increase
+	    //++i;
+	}else{
+	    ++i;
 	}
     }
 }
@@ -69,6 +73,9 @@ void Simulator::prepareSimulation( World & w)
 }
 void Simulator::onNewBot( MobilePtr mob )
 {
-    assert( mobiles.find(mob) == mobiles.end() );
-    mobiles.insert( mob );
+    //assert( mobiles.find(mob) == mobiles.end() );
+    //mobiles.insert( mob );
+    mobiles.push_back( mob );
+
+//    mobiles.erase( mobiles.begin() );
 }
