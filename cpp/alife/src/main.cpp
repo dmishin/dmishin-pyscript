@@ -74,7 +74,7 @@ int main( int argc, char* argv[])
     //Simulator for processing the data
 
     boost::shared_ptr<Simulator> simulator(new Simulator());
-    simulator->setDt( 0.001 );
+    simulator->setDt( 0.1 );
 
     w.setSimulator( simulator );//now simulator is ready to work;
 

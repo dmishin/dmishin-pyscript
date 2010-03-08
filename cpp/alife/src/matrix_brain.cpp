@@ -11,12 +11,13 @@ MatrixBrain::MatrixBrain( int nSensors, int nStates, int nIntermediate, int nOut
      Y(nIntermediate),
      Z(nStates+nOutputs),
      A(nIntermediate, nSensors+nStates),
-     B(nStates+nOutputs, nIntermediate),
-     numSensors( nSensors),
-     numStates( nStates ),
-     numIntermediateValues( nIntermediate ),
-     numOutputs( nOutputs )
+     B(nStates+nOutputs, nIntermediate)
 {
+    numSensors = nSensors;
+    numStates= nStates;
+    numIntermediateValues = nIntermediate ;
+    numOutputs = nOutputs;
+    saturationLimit = 10;
 }
 void MatrixBrain::simulate( Body & mob, ftype dt)
 {
@@ -94,7 +95,7 @@ void MatrixBrain::resetState()
 void clearRandomLine( MatrixBrain::Matrix & m)
 {/**fills some random line with zeros*/
     int lineIdx = rand()%m.size1();
-    for( int i =0; i<m.size2(); ++i){
+    for(unsigned int i =0; i<m.size2(); ++i){
 	m(lineIdx, i) = 0;
     };
 }
@@ -208,7 +209,7 @@ void MatrixBrain::assertCompatible( const MatrixBrain &a)
 }
 void mixMatrices( const MatrixBrain::Matrix& a, const MatrixBrain::Matrix &b, MatrixBrain::Matrix &c)
 {
-    for(int i  = 0; i < a.size1(); ++i){
+    for(unsigned int i  = 0; i < a.size1(); ++i){
 	//decidem whether this row is got from the 
 	const MatrixBrain::Matrix &useMatrix = *(rand()%2 ? &a : &b);
 	row(c, i) = row( useMatrix, i);

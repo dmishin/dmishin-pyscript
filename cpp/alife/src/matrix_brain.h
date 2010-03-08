@@ -13,7 +13,7 @@ class MatrixBrain: public Brain
 {
 private:
     static ftype nlf( ftype x );
-    static const ftype saturationLimit = 10;
+    ftype saturationLimit;
 public:
     typedef boost::numeric::ublas::matrix<ftype> Matrix;
     typedef boost::numeric::ublas::vector<ftype> Vector;
