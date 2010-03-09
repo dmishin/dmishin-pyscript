@@ -23,6 +23,7 @@
 #include <list>
 #include "ftype.h"
 #include "abstract_simulator.h"
+#include "ticker.h"
 
 class World;
 
@@ -48,10 +49,12 @@ protected:
 
 private:
 //    typedef std::set< MobilePtr > Mobiles;
+	
 	typedef std::list< MobilePtr > Mobiles;
     Mobiles mobiles;
     World * world;
-    
+    Ticker mobilesGridUpdateTicker;
+
     ftype dt;
     int simulatedSteps;
     double simulatedTime;

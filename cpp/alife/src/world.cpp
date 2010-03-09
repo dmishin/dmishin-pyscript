@@ -101,3 +101,23 @@ void World::setSimulator( boost::shared_ptr<AbstractSimulator> _simulator)
 	}
     }
 }
+
+struct isBotDead{
+    bool operator()( GridItemPtr pBot ){
+    MobilePtr p = boost::static_pointer_cast<Mobile>( pBot );
+    return ! p->isAlive();
+    }
+};
+
+/**Must be called by simulator to signal that grids shoudl be updated*/
+void World::updateGrids(bool updateMobiles, bool updateFood)
+{
+	if(updateMobiles){
+		gridMobiles.update();
+		//filter out dead mobiles
+		isBotDead functor;
+		gridMobiles.remove_if( functor );
+	}
+	if( updateFood )//usually false
+		gridFood.update();
+}

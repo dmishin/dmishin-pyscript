@@ -85,6 +85,8 @@ public:
     void foodEaten( FoodPtr food, Mobile& mob); //called by mobile, when it eats one food item
 
     void setSimulator( boost::shared_ptr<AbstractSimulator> simulatorPtr);
+    //Update positions of the objects in the available grids.
+    void updateGrids(bool updateMobiles=true, bool updateFood = false);
     
 protected:
 

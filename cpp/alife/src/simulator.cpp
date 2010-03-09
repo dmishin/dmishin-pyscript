@@ -23,6 +23,7 @@
 #include "world.h"
 
 Simulator::Simulator()
+:mobilesGridUpdateTicker( 1.0 ) //update mobiles every 1.0 unit of time
 {
     world = NULL;
     dt = (ftype)1e-5;
@@ -58,6 +59,9 @@ void Simulator::simulateStep( ftype dt )
 	}else{
 	    ++i;
 	}
+    }
+    if (mobilesGridUpdateTicker.step( dt )){
+	world->updateGrids();
     }
 }
 

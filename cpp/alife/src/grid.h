@@ -57,7 +57,7 @@ public:
 	};
 
 	template< class predicate_functor>
-	int filter( predicate_functor &func){
+	int remove_if( predicate_functor &func){
 	    int rval = items.size();
 	    std::remove_if(items.begin(), items.end(), func );
 	    return rval - items.size();
@@ -86,12 +86,13 @@ public:
     GridItemPtr findNearestItem( const vec2& p, ftype maxDist);
     int getNumItems()const{ return numItems; };
 
-    //remuve items from grid, using given filtering predicate
+    //remove items from grid, if the predicate return logival true for them
+    //Predicate must take the GridItemPtr value
     template<class predicate_functor>
-    int filter( predicate_functor & func ){
+    int remove_if( predicate_functor & func ){
 	int rval = 0;
 	for( int i = 0; i<numCols*numRows; ++i){
-	    rval += cells[i].filter( func );
+	    rval += cells[i].remove_if( func );
 	}
 	numItems -= rval;
 	return rval;
