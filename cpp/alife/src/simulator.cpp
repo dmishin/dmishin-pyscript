@@ -23,7 +23,7 @@
 #include "world.h"
 
 Simulator::Simulator()
-:mobilesGridUpdateTicker( 1.0 ) //update mobiles every 1.0 unit of time
+:mobilesGridUpdateTicker( 10 ) //update mobiles every 1.0 unit of time
 {
     world = NULL;
     dt = (ftype)1e-5;
@@ -46,7 +46,7 @@ void Simulator::simulate()
 
     stopRequest = false;//stop request fulfilled
 }
-
+#include <iostream>
 void Simulator::simulateStep( ftype dt )
 {
     Mobiles::iterator i=mobiles.begin(), e=mobiles.end();
@@ -55,13 +55,17 @@ void Simulator::simulateStep( ftype dt )
 
 	if (! (*i)->isAlive() ){
 	    mobiles.erase( i++ );//first erase then increase
+	    std::cout<<"Mobile erased\n";
+	    std::cout.flush();
 	    //++i;
 	}else{
 	    ++i;
 	}
     }
     if (mobilesGridUpdateTicker.step( dt )){
-	world->updateGrids();
+	world->updateGrids(true/*mobiles*/, false/*food*/);
+	std::cout<<"Updated\n";
+	std::cout.flush();
     }
 }
 

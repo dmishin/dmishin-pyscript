@@ -20,6 +20,7 @@
 #include "world.h"
 #include <algorithm>
 #include <boost/shared_ptr.hpp>
+#include <boost/thread/locks.hpp>
 
 MobilePtr World::findNearestMobile( const vec2& p, ftype maxDist)
 {
@@ -51,6 +52,7 @@ World::World( vec2 _size, ftype cellSize )
 //get all bots inside rectangle
 void World::getMobilesSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight, World::MobilesSnapshot&buffer)const
 {
+    boost::lock_guard<boost::mutex> guard( mutex );
 //TODO: get read access to the grid
     buffer.resize(0);
     Grid::rectangle_generator gen( const_cast<Grid&>(gridMobiles), ptTopLeft, ptBottomRight);
@@ -60,6 +62,7 @@ void World::getMobilesSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight
 }
 void World::getFoodSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight, World::FoodSnapshot& buffer)const
 {
+    boost::lock_guard<boost::mutex> guard( mutex );
 //TODO: get read access to the grid
     buffer.resize(0);
     Grid::rectangle_generator gen( const_cast<Grid&>(gridFood), ptTopLeft, ptBottomRight);
@@ -104,20 +107,20 @@ void World::setSimulator( boost::shared_ptr<AbstractSimulator> _simulator)
 
 struct isBotDead{
     bool operator()( GridItemPtr pBot ){
-    MobilePtr p = boost::static_pointer_cast<Mobile>( pBot );
-    return ! p->isAlive();
+	MobilePtr p = boost::static_pointer_cast<Mobile>( pBot );
+	return ! p->isAlive();
     }
 };
 
 /**Must be called by simulator to signal that grids shoudl be updated*/
 void World::updateGrids(bool updateMobiles, bool updateFood)
 {
-	if(updateMobiles){
-		gridMobiles.update();
-		//filter out dead mobiles
-		isBotDead functor;
-		gridMobiles.remove_if( functor );
-	}
-	if( updateFood )//usually false
+    boost::lock_guard<boost::mutex> guard( mutex );
+    if(updateMobiles){
+	gridMobiles.update();
+	//filter out dead mobiles
+	gridMobiles.remove_if( isBotDead() );
+    }
+    if( updateFood )//usually false
 		gridFood.update();
 }

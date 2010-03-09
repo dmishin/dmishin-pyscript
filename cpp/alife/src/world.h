@@ -24,6 +24,8 @@
 #include "grid.h"
 #include "food.h"
 #include "abstract_simulator.h"
+#include <boost/thread/locks.hpp>
+#include <boost/thread/mutex.hpp>
 
 /**Utility helper functions*/
 template<class function_class, class argument_type>
@@ -46,6 +48,9 @@ public:
     ftype energyConsumptionRate;
     ftype getViskosity()const{ return viskosity; };
     ftype getEnergyConsumptionRate()const{ return energyConsumptionRate; };
+
+	mutable boost::mutex mutex;
+
 public:
     typedef std::vector<MobilePtr> Mobiles; 
 

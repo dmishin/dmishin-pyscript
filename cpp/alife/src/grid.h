@@ -20,6 +20,8 @@
 #include "pseudo_generator.h"
 #include "located.h"
 #include <boost/shared_ptr.hpp>
+#include <iostream>
+
 /**Pointer type for the items in the grid.*/
 
 typedef boost::shared_ptr<Located> GridItemPtr ;
@@ -45,9 +47,10 @@ public:
 	    CellItems::iterator i = std::find(items.begin(), items.end(), item);
 	    if ( i != items.end()){
 		items.erase(i);
-	    }
+		
+	    }else
 //	    if (items.erase( item ) == 0)
-//		throw std::logic_error("element not in the cell");//element not found in the set
+		throw std::logic_error("element not in the cell");//element not found in the set
 	}
 	bool operator == (const Grid::Cell &c)const{
 	    return this == &c;
@@ -57,7 +60,7 @@ public:
 	};
 
 	template< class predicate_functor>
-	int remove_if( predicate_functor &func){
+	int remove_if( predicate_functor func){
 	    int rval = items.size();
 	    std::remove_if(items.begin(), items.end(), func );
 	    return rval - items.size();
@@ -89,10 +92,15 @@ public:
     //remove items from grid, if the predicate return logival true for them
     //Predicate must take the GridItemPtr value
     template<class predicate_functor>
-    int remove_if( predicate_functor & func ){
+    int remove_if( predicate_functor func ){
 	int rval = 0;
 	for( int i = 0; i<numCols*numRows; ++i){
 	    rval += cells[i].remove_if( func );
+	}
+	rval += unallocated.remove_if( func );
+	if (rval > 0){
+	    std::cout<<"Removed "<<rval<<"items\n";
+	    std::cout.flush();
 	}
 	numItems -= rval;
 	return rval;
