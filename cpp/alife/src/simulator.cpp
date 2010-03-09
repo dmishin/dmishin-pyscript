@@ -23,7 +23,7 @@
 #include "world.h"
 
 Simulator::Simulator()
-:mobilesGridUpdateTicker( 10 ) //update mobiles every 1.0 unit of time
+:mobilesGridUpdateTicker( 0.5 ) //update mobiles every 1.0 unit of time
 {
     world = NULL;
     dt = (ftype)1e-5;

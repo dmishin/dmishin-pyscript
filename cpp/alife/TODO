@@ -13,9 +13,9 @@ Things to implement:
 [ ] Listeners to the world events: !
     implement simulators and breeders as bot event listeners
 [ ] Parallel ized simulation
-[ ]   Synchronized access to the world
-[ ] Update grids, sensors etc time to time
-
+[-+]   Synchronized access to the world
+[+-] Update grids, sensors etc time to time
+[+]    grids
 [ ] Manual control
 [ ] Saving and restoring the state
 [ ] Edit simulation parameters, restart simulation
