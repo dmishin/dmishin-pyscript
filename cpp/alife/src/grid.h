@@ -61,8 +61,10 @@ public:
 
 	template< class predicate_functor>
 	int remove_if( predicate_functor func){
+	    
 	    int rval = items.size();
-	    std::remove_if(items.begin(), items.end(), func );
+	    items.erase( std::remove_if(items.begin(), items.end(), func ),
+			 items.end());
 	    return rval - items.size();
 	};
     };
