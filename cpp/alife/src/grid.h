@@ -11,6 +11,7 @@
 
 #include <vector>
 #include <set>
+#include <list>
 #include <stdexcept>
 #include <string>
 
@@ -33,15 +34,19 @@ private:
 public:
     class Cell{
     public:
-	typedef std::set< GridItemPtr > CellItems;	
+	typedef std::list< GridItemPtr > CellItems;	
 	CellItems items;
 				
 	void add( GridItemPtr item){
-	    items.insert( item );
+	    items.push_back( item );
 	}
 	void remove( GridItemPtr item){
-	    if (items.erase( item ) == 0)
-		throw std::logic_error("element not in the cell");//element not found in the set
+	    CellItems::iterator i = std::find(items.begin(), items.end(), item);
+	    if ( i != items.end()){
+		items.erase(i);
+	    }
+//	    if (items.erase( item ) == 0)
+//		throw std::logic_error("element not in the cell");//element not found in the set
 	}
 	bool operator == (const Grid::Cell &c)const{
 	    return this == &c;

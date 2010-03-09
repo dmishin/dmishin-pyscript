@@ -214,4 +214,5 @@ GridItemPtr Grid::items_generator::operator()()
     }
 
     END_GENERATOR;
+    return GridItemPtr();
 }
