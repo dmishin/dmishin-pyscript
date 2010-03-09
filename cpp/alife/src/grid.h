@@ -14,6 +14,7 @@
 #include <list>
 #include <stdexcept>
 #include <string>
+#include <algorithm>
 
 #include "vec2.h"
 #include "pseudo_generator.h"
@@ -53,9 +54,15 @@ public:
 	}
 	bool operator != (const Grid::Cell &c)const{
 	    return this != &c;
-	}
-    };
+	};
 
+	template< class predicate_functor>
+	int filter( predicate_functor &func){
+	    int rval = items.size();
+	    std::remove_if(items.begin(), items.end(), func );
+	    return rval - items.size();
+	};
+    };
 //Defauult constructor of empty field		
     Grid();
     ~Grid();
@@ -79,6 +86,18 @@ public:
     GridItemPtr findNearestItem( const vec2& p, ftype maxDist);
     int getNumItems()const{ return numItems; };
 
+    //remuve items from grid, using given filtering predicate
+    template<class predicate_functor>
+    int filter( predicate_functor & func ){
+	int rval = 0;
+	for( int i = 0; i<numCols*numRows; ++i){
+	    rval += cells[i].filter( func );
+	}
+	numItems -= rval;
+	return rval;
+    };
+	    
+			
     /**update positions of all Located items in cells*/
     void update();
 
