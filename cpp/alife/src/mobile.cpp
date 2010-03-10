@@ -92,7 +92,7 @@ void Mobile::simulate( ftype dt )
 void Mobile::tryEatFood()
 {
     //TODO: instead of eating constantly, make some pause? Food searching may be slow.
-    FoodPtr pFood = world->findNearestFood( getPos(), /*FOOD_EATING_RADIUS*/1 );
+    FoodPtr pFood = world->findNearestFood( getPos(), /*FOOD_EATING_RADIUS*/0.3 );
     if (pFood){//some food found
 	energy = min( ftype(1), energy + pFood->getValue() );
 	world->foodEaten( pFood, *this);

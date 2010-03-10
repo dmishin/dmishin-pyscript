@@ -10,8 +10,8 @@ void FoodBreeder::onIdle( World& w)
     if (w.getNumFood() < minFoodItems ){
 	int nNewFoodItems = minFoodItems - w.getNumFood();
 	while( nNewFoodItems -- > 0 ){
-	    w.addFood( FoodPtr( new Food( vec2(sqr(frnd())*w.getSize().x,
-					       sqr(frnd())*w.getSize().y) ) ) );
+	    w.addFood( FoodPtr( new Food( vec2((frnd())*w.getSize().x,
+					       (frnd())*w.getSize().y) ) ) );
 	}
     }
 }

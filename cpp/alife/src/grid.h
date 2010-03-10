@@ -20,7 +20,6 @@
 #include "pseudo_generator.h"
 #include "located.h"
 #include <boost/shared_ptr.hpp>
-#include <iostream>
 
 /**Pointer type for the items in the grid.*/
 
@@ -47,9 +46,7 @@ public:
 	    CellItems::iterator i = std::find(items.begin(), items.end(), item);
 	    if ( i != items.end()){
 		items.erase(i);
-		
-	    }else
-//	    if (items.erase( item ) == 0)
+			    }else
 		throw std::logic_error("element not in the cell");//element not found in the set
 	}
 	bool operator == (const Grid::Cell &c)const{
@@ -100,10 +97,6 @@ public:
 	    rval += cells[i].remove_if( func );
 	}
 	rval += unallocated.remove_if( func );
-	if (rval > 0){
-	    std::cout<<"Removed "<<rval<<"items\n";
-	    std::cout.flush();
-	}
 	numItems -= rval;
 	return rval;
     };

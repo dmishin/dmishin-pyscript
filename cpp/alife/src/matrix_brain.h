@@ -2,6 +2,9 @@
 #ifndef __MATRIX_BRAIN_INCLUDED__
 #define __MATRIX_BRAIN_INCLUDED__
 
+//disable some strange checks in the ublas
+#define BOOST_UBLAS_NDEBUG
+
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/vector.hpp>
 

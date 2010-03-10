@@ -46,8 +46,8 @@ World::World( vec2 _size, ftype cellSize )
 
 	//set default world parameters
 	viskosity = 5.0;
-	energyConsumptionRate = 0.004;
-	idleEnergyConsumptionRate = 0.0002;
+	energyConsumptionRate = 0.01;
+	idleEnergyConsumptionRate = 0.002;
 
 	time = 0;
 }

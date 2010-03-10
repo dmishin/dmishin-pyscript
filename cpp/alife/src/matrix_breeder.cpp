@@ -68,7 +68,9 @@ bool MatrixBreeder::createChild(World& w)
 bool MatrixBreeder::createOrphan(World& w)
 {
     //create new mobile at the center
-    MobilePtr mob( new Mobile( vec2( w.center() ), frnd()* 2*3.1415 ));
+    MobilePtr mob( new Mobile( vec2(frnd()*w.getSize().x,
+				    frnd()*w.getSize().y ), 
+			       frnd()* 2*3.1415 ));
 
     MatrixBrain * brn = new MatrixBrain( mob->getNumSensors(), 
 					 numBrainStates/*satates*/, 
