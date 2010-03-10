@@ -49,7 +49,7 @@ void Grid::removeItem( GridItemPtr item)
     const vec2 & location = item->getPos();
     Cell& cell = cellRef( index_x( location.x ), index_y( location.y ) );
     cell.remove( item );
-    numItems += 1;
+    numItems -= 1;
 }
 
 

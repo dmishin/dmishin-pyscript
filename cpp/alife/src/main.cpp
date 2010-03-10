@@ -30,6 +30,7 @@
 #include "random_brain.h"
 #include "matrix_brain.h"
 #include "matrix_breeder.h"
+#include "food_breeder.h"
 
 std::ostream& operator <<( std::ostream & s, const vec2 &v)
 {
@@ -62,23 +63,16 @@ int main( int argc, char* argv[])
     World w( vec2( 100, 100), 1);
 
     MatrixBreeder breeder;
+    FoodBreeder foodBreeder( 1000 );
     w.addBreeder( &breeder );
+    w.addBreeder( &foodBreeder );
 
-    // for(int i =0; i<1000; ++i){
-    // 	MobilePtr mob(new Mobile( w.center(), 0 ));
-    // 	//Brain* brn = new RandomBrain();
-    // 	MatrixBrain * brn = new MatrixBrain( mob->getNumSensors(), 5/*satates*/, 10/*intermediate*/, mob->getNumMotors());
-    // 	brn->randomInit();
-    // 	mob->setBrain( *brn );
-    // 	w.addMobile( mob );
+    // //fill world with food
+    // for( int i = 0;i<1000; ++i)
+    // {
+    // 	FoodPtr f(new Food( vec2( frnd(0, 100), frnd(0, 100)) ));
+    // 	w.addFood( f );
     // }
-
-    //fill world with food
-    for( int i = 0;i<1000; ++i)
-    {
-	FoodPtr f(new Food( vec2( frnd(0, 100), frnd(0, 100)) ));
-	w.addFood( f );
-    }
     //Simulator for processing the data
 
     boost::shared_ptr<Simulator> simulator(new Simulator());
@@ -88,7 +82,7 @@ int main( int argc, char* argv[])
 
     boost::thread simThread = boost::thread( simulator_runner( *simulator ));
 	
-    GlutGuiViewport vp( w, vec2(50,50), 12 );
+    GlutGuiViewport vp( w, vec2(50,50), 5 );
     vp.setActive();
 	
     GlutGuiViewport::init( argc, argv );

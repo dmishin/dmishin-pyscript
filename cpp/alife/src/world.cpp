@@ -44,11 +44,10 @@ World::World( vec2 _size, ftype cellSize )
 	gridMobiles.setGeometry( numCols, numRows, size.x, size.y);
 	gridFood.setGeometry( numCols, numRows, size.x, size.y);
 
-	//TODO
-//set default world parameters
-	viskosity = 10.0;
-	energyConsumptionRate = 0.01;
-	idleEnergyConsumptionRate = 0.005;
+	//set default world parameters
+	viskosity = 5.0;
+	energyConsumptionRate = 0.004;
+	idleEnergyConsumptionRate = 0.0002;
 
 	time = 0;
 }

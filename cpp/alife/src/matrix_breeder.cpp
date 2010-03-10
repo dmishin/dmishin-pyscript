@@ -17,8 +17,6 @@ void MatrixBreeder::onIdle( World &world)
     while (numNewBots-- > 0){
 	//it is time to make a new bot!
 	makeNewBot( world );
-	std::cout<<"New bot added\n";
-	std::cout.flush();
     }
 }
 

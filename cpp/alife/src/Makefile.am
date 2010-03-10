@@ -34,6 +34,8 @@ alife_SOURCES = \
 	random_brain.cpp \
 	simulator.h \
 	brain.cpp \
+	food_breeder.cpp \
+	food_breeder.h \
 	world.cpp \
 	glut_viewport.cpp \
 	mobile.h \

@@ -29,7 +29,7 @@ void MatrixBrain::simulate( Body & mob, ftype dt)
     axpy_prod(A, X, Y, true); //Y = AX
     //nonlinear transofrm of a vector
     for(int i =0; i<numIntermediateValues; ++i){
-	Y[i] = nlf( Y[i] );
+	Y[i] = nlf( Y[i] + 0.1 );//removing symmetry
     }
     //calculate output + state differential vector
     axpy_prod(B, Y, Z);
