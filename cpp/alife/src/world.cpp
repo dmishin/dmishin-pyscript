@@ -25,14 +25,16 @@
 MobilePtr World::findNearestMobile( const vec2& p, ftype maxDist)
 {
 	
-	return boost::static_pointer_cast<Mobile>( gridFood.findNearestItem( p, maxDist ) );
+    return boost::static_pointer_cast<Mobile>( gridFood.findNearestItem( p, maxDist ) );
 }
 FoodPtr World::findNearestFood( const vec2& p, ftype maxDist)
 {
-	return boost::static_pointer_cast<Food>( gridFood.findNearestItem( p, maxDist ) );
+    return boost::static_pointer_cast<Food>( gridFood.findNearestItem( p, maxDist ) );
 }
 
 World::World( vec2 _size, ftype cellSize )
+    :mobilesGridUpdateTicker( 0.5 ) //update mobiles grid periodically
+    ,breedersIdleTicker( 1.0 ) //update breeders
 {
 	size = _size;
 	//init grids
@@ -46,7 +48,9 @@ World::World( vec2 _size, ftype cellSize )
 //set default world parameters
 	viskosity = 10.0;
 	energyConsumptionRate = 0.01;
-	
+	idleEnergyConsumptionRate = 0.005;
+
+	time = 0;
 }
 
 //get all bots inside rectangle
@@ -74,8 +78,14 @@ void World::getFoodSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight, W
 void World::addMobile( MobilePtr mob )
 {
     mob->setWorld( *this );
-//    mobiles.push_back( mob );
-    gridMobiles.putItem( mob );
+    {
+	boost::lock_guard<boost::mutex> guard( mutex );
+	gridMobiles.putItem( mob );
+    }
+	
+    if (simulator){//report the bot to the simulator
+	simulator->onNewBot( mob );
+    }
 }
 void World::addFood( FoodPtr f )
 {
@@ -123,4 +133,34 @@ void World::updateGrids(bool updateMobiles, bool updateFood)
     }
     if( updateFood )//usually false
 		gridFood.update();
+}
+
+/**Simulate global parameters*/
+void World::simulate( ftype dt )
+{
+    time += dt;
+    if (mobilesGridUpdateTicker.step( dt )){
+	updateGrids(true/*mobiles*/, false/*food*/);
+    }
+    if (breedersIdleTicker.step( dt )){
+	for(Breeders::iterator i = breeders.begin(); i!=breeders.end(); ++i){
+	    (*i)->onIdle( *this );
+	}
+    }
+}
+
+void World::addBreeder( Breeder *pb )
+{
+    assert (pb );
+    breeders.push_back( pb );
+}
+bool World::removeBreeder( Breeder * pb )
+{
+    Breeders::iterator i = std::find( breeders.begin(), breeders.end(), pb );
+    if (i != breeders.end()){
+	breeders.erase( i );
+	return true;
+    }else{
+	return false;
+    }
 }

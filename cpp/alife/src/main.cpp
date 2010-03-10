@@ -29,6 +29,7 @@
 #include "simulator.h"
 #include "random_brain.h"
 #include "matrix_brain.h"
+#include "matrix_breeder.h"
 
 std::ostream& operator <<( std::ostream & s, const vec2 &v)
 {
@@ -52,19 +53,26 @@ struct simulator_runner
 };
 
 #include <boost/thread.hpp>
+#include <time.h>
 
 int main( int argc, char* argv[])
 {
+    srand((unsigned)time(NULL));
+
     World w( vec2( 100, 100), 1);
 
-    for(int i =0; i<100; ++i){
-	MobilePtr mob(new Mobile( w.center(), 0 ));
-	//Brain* brn = new RandomBrain();
-	MatrixBrain * brn = new MatrixBrain( mob->getNumSensors(), 5/*satates*/, 10/*intermediate*/, mob->getNumMotors());
-	brn->randomInit();
-	mob->setBrain( *brn );
-	w.addMobile( mob );
-    }
+    MatrixBreeder breeder;
+    w.addBreeder( &breeder );
+
+    // for(int i =0; i<1000; ++i){
+    // 	MobilePtr mob(new Mobile( w.center(), 0 ));
+    // 	//Brain* brn = new RandomBrain();
+    // 	MatrixBrain * brn = new MatrixBrain( mob->getNumSensors(), 5/*satates*/, 10/*intermediate*/, mob->getNumMotors());
+    // 	brn->randomInit();
+    // 	mob->setBrain( *brn );
+    // 	w.addMobile( mob );
+    // }
+
     //fill world with food
     for( int i = 0;i<1000; ++i)
     {

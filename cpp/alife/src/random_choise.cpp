@@ -24,9 +24,9 @@ int RandomChoise::search(double v, int begin, int end)const
 	int center = (begin+end)/2;
 	double vc = choises[center].first;
 	if (vc < v){
-	    return search(v, center+1, end);
+	    return search(v, center, end);
 	}else{
-	    return search(v, begin, center+1);
+	    return search(v, begin, center);
 	}
     }
 }

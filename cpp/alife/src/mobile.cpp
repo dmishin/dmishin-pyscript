@@ -81,7 +81,9 @@ void Mobile::simulate( ftype dt )
     simFriction( dt );
 
 	//food eating behavior
-	tryEatFood();
+    tryEatFood();
+    
+    energy -= world->getIdleEnergyConsumptionRate()*dt;
     if (energy <= 0){//Bot is dead.
 	world->reportDeadBot( *this );
     }

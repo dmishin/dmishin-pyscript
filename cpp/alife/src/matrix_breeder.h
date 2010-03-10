@@ -11,7 +11,12 @@ public:
     virtual void onIdle( World& world);
 private:
     int minimalBots;
+    int numBrainStates;
+    int numBrainIntermediate;
     void makeNewBot( World& w);
+    bool createClone(World& w);
+    bool createChild(World& w);
+    bool createOrphan(World& w);
 };
 
 #endif

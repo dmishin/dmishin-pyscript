@@ -26,6 +26,9 @@
 #include "abstract_simulator.h"
 #include <boost/thread/locks.hpp>
 #include <boost/thread/mutex.hpp>
+#include "ticker.h"
+#include "breeder.h"
+
 
 /**Utility helper functions*/
 template<class function_class, class argument_type>
@@ -46,10 +49,15 @@ public:
     //some global parameters
     ftype viskosity;
     ftype energyConsumptionRate;
+    ftype idleEnergyConsumptionRate;
+    //World simulation time
+    ftype time;
+
     ftype getViskosity()const{ return viskosity; };
     ftype getEnergyConsumptionRate()const{ return energyConsumptionRate; };
+    ftype getIdleEnergyConsumptionRate()const {return idleEnergyConsumptionRate;};
 
-	mutable boost::mutex mutex;
+    mutable boost::mutex mutex;//for synchronous access to the grids
 
 public:
     typedef std::vector<MobilePtr> Mobiles; 
@@ -57,6 +65,8 @@ public:
     World( vec2 size, ftype cellSize );
     const vec2& getSize()const{ return size; };
     vec2 center()const{ return size*ftype(0.5);};
+    ftype getTime() const{ return this->time; };
+    void resetTime(){ this->time = 0;};
 	
     //Basic operation on world
     MobilePtr findNearestMobile( const vec2& p, ftype maxDist);
@@ -81,9 +91,9 @@ public:
     void getFoodSnapshot( const vec2& ptTopLeft, const vec2& ptBottomRight, World::FoodSnapshot& buffer)const;
 
     int getNumBots()const{ return gridMobiles.getNumItems();};
+    int getNumFood()const{ return gridFood.getNumItems();};
     void addMobile( MobilePtr mob );
     void addFood( FoodPtr f );
-//    const World::Mobiles& getMobiles()const{ return mobiles;};
  
 /** Receive messages from bots*/
     void reportDeadBot( Mobile& mob); //called, when mobile is dead
@@ -93,6 +103,13 @@ public:
     //Update positions of the objects in the available grids.
     void updateGrids(bool updateMobiles=true, bool updateFood = false);
     
+
+    //SImulate world-related processes (grid updates, calls to the breeder etc).
+    //Does not simulates bots. (to simplify parallel processing).
+    void simulate( ftype dt );
+
+    void addBreeder( Breeder* pBreeder);
+    bool removeBreeder( Breeder* pBreeder);
 protected:
 
 private:
@@ -101,10 +118,12 @@ private:
     Grid gridMobiles;
     Grid gridFood;
 
-    boost::shared_ptr<AbstractSimulator> simulator;
-    //arrays of mobiles
-//    Mobiles mobiles;
-
+    boost::shared_ptr<AbstractSimulator> simulator; //Simulator is responsible for running the simulation of bots
+    Ticker mobilesGridUpdateTicker;//counter for periodic update of the grids.
+    Ticker breedersIdleTicker;
+    
+    typedef std::list<Breeder* > Breeders;
+    Breeders breeders;
 };
 
 
