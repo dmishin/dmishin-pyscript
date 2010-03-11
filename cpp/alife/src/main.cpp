@@ -67,14 +67,6 @@ int main( int argc, char* argv[])
     w.addBreeder( &breeder );
     w.addBreeder( &foodBreeder );
 
-    // //fill world with food
-    // for( int i = 0;i<1000; ++i)
-    // {
-    // 	FoodPtr f(new Food( vec2( frnd(0, 100), frnd(0, 100)) ));
-    // 	w.addFood( f );
-    // }
-    //Simulator for processing the data
-
     boost::shared_ptr<Simulator> simulator(new Simulator());
     simulator->setDt( 0.1 );
 

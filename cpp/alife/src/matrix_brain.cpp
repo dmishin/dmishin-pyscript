@@ -18,6 +18,14 @@ MatrixBrain::MatrixBrain( int nSensors, int nStates, int nIntermediate, int nOut
     numIntermediateValues = nIntermediate ;
     numOutputs = nOutputs;
     saturationLimit = 10;
+//    reset();
+}
+void MatrixBrain::reset()
+{
+    for( int i=0; i<numStates; ++i){
+	int iX = i+numSensors;
+	X[iX] = 0; //integrator state to zero
+    }
 }
 void MatrixBrain::simulate( Body & mob, ftype dt)
 {

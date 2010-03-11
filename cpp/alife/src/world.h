@@ -58,6 +58,8 @@ public:
     ftype getIdleEnergyConsumptionRate()const {return idleEnergyConsumptionRate;};
 
     mutable boost::mutex mutex;//for synchronous access to the grids
+    typedef boost::lock_guard<boost::mutex> ReadGuard;
+    typedef boost::lock_guard<boost::mutex> WriteGuard;
 
 public:
     typedef std::vector<MobilePtr> Mobiles; 
@@ -82,6 +84,42 @@ public:
     ftype calcFoodFunction(const vec2 & p, ftype r, function_class & func){
 	return calcGridFunction<function_class, Food>(gridFood, p, r, func);
     };
+    //find bots, using given filtering predicate
+private:
+    template<class predicate, class out_iterator, class generator>
+    int findBotByGenerator( predicate pred, out_iterator &iter, generator& gen){
+	ReadGuard guard(mutex);//need read access to the 
+	int counter = 0;
+	for( GridItemPtr i; gen(i);){
+	    MobilePtr mob = boost::static_pointer_cast<Mobile>( i );
+	    if (pred(mob)){
+		*iter++ = mob;//put the mobile to the output
+		counter ++;
+	    }
+	}
+	return counter;
+    }
+public:
+    template<class predicate, class out_iterator>
+    int findBot( predicate pred, out_iterator &iter){
+	Grid::items_generator gen( gridMobiles );
+	return findBotByGenerator( pred, iter, gen);
+    };
+    //find bots in circle, using given predicate
+    template<class predicate, class out_iterator>
+    int findBot( const vec2 &center, ftype radius, predicate pred, out_iterator &iter){
+	Grid::circular_generator gen( gridMobiles, center, radius );
+	return findBotByGenerator( pred, iter, gen);
+    };
+    //find bots in rectangle
+    template<class predicate, class out_iterator>
+    int findBot( const vec2& topLeft, const vec2&bottomRight, predicate pred, out_iterator &iter){
+	Grid::rectangle_generator gen( gridMobiles, topLeft, bottomRight );
+	return findBotByGenerator( pred, iter, gen);
+    };
+    
+    
+    
 
 /** Get positions of the all bots inside given area*/
     typedef std::vector<MobilePtr> MobilesSnapshot;

@@ -46,6 +46,7 @@ public:
     void simulate( ftype dt);//simulate Monbile movement for a given interval of time
     void setWorld( World& w){ world = &w; };
     void setBrain( Brain& b){ brain = &b; };
+	Brain* getBrain() const {return brain;}
     void setSpeed( const vec2& spd){ speed = spd; };
     void setRotationSpeed( ftype b ){ rotationSpeed = b;};
 

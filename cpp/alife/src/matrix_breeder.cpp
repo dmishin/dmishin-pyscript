@@ -3,6 +3,7 @@
 #include "ftype.h"
 #include "random_choise.h"
 #include "matrix_brain.h"
+#include <iterator>
 
 MatrixBreeder::MatrixBreeder()
 {
@@ -32,9 +33,9 @@ void MatrixBreeder::makeNewBot( World &w)
     
     static RandomChoise choise;
     if (choise.empty()){
-	choise.add( 0.1, ADD_ORPHAN );
-	choise.add( 0.1, ADD_CLONE);
-	choise.add( 0.8, ADD_CHILD);
+	choise.add( 1, ADD_ORPHAN );
+	choise.add( 10, ADD_CLONE);
+	//choise.add( 0.0, ADD_CHILD);
     }
     //create a body...
     switch( choise.get() ){
@@ -55,11 +56,44 @@ void MatrixBreeder::makeNewBot( World &w)
     };
 }
 
+struct BotEnergyPred{
+    ftype minEnergy;
+    BotEnergyPred( ftype minE ):minEnergy( minE ){};
+    bool operator()( MobilePtr bot )const{ return bot->getEnergy()>=minEnergy; };
+};
+
 bool MatrixBreeder::createClone(World& w)
 {
     //random clone of the some bot
-    //find at least one bot
-    return false;
+    //find at least one bot, with energy above some maximum.
+    //TODO: get rid of memory allocation for arrays? Is it possible?
+
+    ftype minimalCloneEnergy = ftype(0.7);
+    std::vector<MobilePtr> foundBots;
+    
+    std::back_insert_iterator<std::vector<MobilePtr> > iter(foundBots);//otput iterator
+    w.findBot( BotEnergyPred(minimalCloneEnergy), iter );
+    if (foundBots.size() == 0){
+	return false;//nobody to clone
+    }
+    //get a random one.
+    int idx = rand()%foundBots.size();
+    MobilePtr mob = foundBots[ idx ];
+    
+    //create its clone
+    MobilePtr clone( new Mobile( mob->getPos(), frnd()*2*3.14 ) );
+    MatrixBrain * brn = new MatrixBrain( mob->getNumSensors(), 
+					 numBrainStates/*satates*/, 
+					 numBrainIntermediate/*intermediate*/, 
+					 mob->getNumMotors());
+    //clone brain...
+    brn->copy( static_cast<MatrixBrain&>(* mob->getBrain()) );
+    //mutate
+    brn->mutate();
+    //put it to the world
+    clone->setBrain( *brn );
+    w.addMobile(clone);
+    return true;
 }
 bool MatrixBreeder::createChild(World& w)
 {
