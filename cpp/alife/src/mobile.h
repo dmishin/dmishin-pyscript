@@ -63,6 +63,9 @@ public:
     ftype getEnergy()const{ return energy; };
     bool isAlive()const{ return energy>0; };
 
+    //statistics getters
+    int getFoodEaten()const{ return foodEaten; };
+    ftype getAge()const;
 protected:
 //Physical state
     vec2 speed;

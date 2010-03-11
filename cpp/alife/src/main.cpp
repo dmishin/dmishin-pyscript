@@ -63,7 +63,7 @@ int main( int argc, char* argv[])
     World w( vec2( 100, 100), 1);
 
     MatrixBreeder breeder;
-    FoodBreeder foodBreeder( 1000 );
+    FoodBreeder foodBreeder( 300 );
     w.addBreeder( &breeder );
     w.addBreeder( &foodBreeder );
 

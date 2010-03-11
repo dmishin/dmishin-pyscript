@@ -172,6 +172,10 @@ void Mobile::applyLimits()
 	speed.y = -speed.y;
     }
 }
+ftype Mobile::getAge()const
+{ 
+    return world->getTime()-birthday;
+};
 void Mobile::setWorld( World & w)
 { 
     world = &w; 

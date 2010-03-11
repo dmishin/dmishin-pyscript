@@ -33,7 +33,7 @@ void MatrixBreeder::makeNewBot( World &w)
     
     static RandomChoise choise;
     if (choise.empty()){
-	choise.add( 1, ADD_ORPHAN );
+//	choise.add( 1, ADD_ORPHAN );
 	choise.add( 10, ADD_CLONE);
 	//choise.add( 0.0, ADD_CHILD);
     }
@@ -59,7 +59,7 @@ void MatrixBreeder::makeNewBot( World &w)
 struct BotEnergyPred{
     ftype minEnergy;
     BotEnergyPred( ftype minE ):minEnergy( minE ){};
-    bool operator()( MobilePtr bot )const{ return bot->getEnergy()>=minEnergy; };
+    bool operator()( MobilePtr bot )const{ return bot->getEnergy()>=minEnergy && bot->getFoodEaten()>2; };
 };
 
 bool MatrixBreeder::createClone(World& w)

@@ -59,7 +59,7 @@ ftype MatrixBrain::nlf( ftype x)
     if (x>0){
 	return 1-(1/(1-x));
     }else{
-	return -nlf(-x);
+	return -1+(1/(1+x));
     }
 }
 
