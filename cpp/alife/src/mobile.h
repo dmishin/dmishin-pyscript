@@ -44,9 +44,9 @@ public:
     Mobile( const vec2 & v, ftype angle=0);
 
     void simulate( ftype dt);//simulate Monbile movement for a given interval of time
-    void setWorld( World& w){ world = &w; };
+    void setWorld( World& w);
     void setBrain( Brain& b){ brain = &b; };
-	Brain* getBrain() const {return brain;}
+    Brain* getBrain() const {return brain;}
     void setSpeed( const vec2& spd){ speed = spd; };
     void setRotationSpeed( ftype b ){ rotationSpeed = b;};
 
@@ -74,6 +74,9 @@ protected:
     ftype rotationFriction;
     ftype movementFriction;
     ftype energy;
+/*statistics info*/
+	ftype birthday;
+	int foodEaten;
 
 
     World* world;
