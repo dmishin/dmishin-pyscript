@@ -14,7 +14,7 @@ private:
     int numBrainStates;
     int numBrainIntermediate;
     void makeNewBot( World& w);
-    bool createClone(World& w);
+    bool createClone(World& w, bool mutate=true);
     bool createChild(World& w);
     bool createOrphan(World& w);
 };
