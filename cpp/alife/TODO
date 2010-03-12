@@ -9,7 +9,11 @@ Things to implement:
 [+] Reference brains
 [+]  Random brain
 [+]  Matrix monlinear brain
-[ ] Breeding process
+[+] Breeding process
+[ ]   clone
+[ ]   orphan
+[ ]   mutate
+
 [ ] Listeners to the world events: !
     implement simulators and breeders as bot event listeners
 [ ] Parallel ized simulation

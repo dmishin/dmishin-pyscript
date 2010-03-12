@@ -37,6 +37,12 @@ public:
     void makeChild(const MatrixBrain &a, const MatrixBrain &b);
     /**Set integrator state to zero*/
     void resetState();
+    /**Create copy */
+    void copy( const MatrixBrain &b ){ *this = b; reset(); };
+
+    
+    /**rreset internal state*/
+    void reset();
 private:
     void assertCompatible( const MatrixBrain &a);
     void mixParents( const MatrixBrain &a, const MatrixBrain &b);

@@ -38,6 +38,8 @@ Mobile::Mobile( const vec2 & v, ftype angle)
 	
     world = NULL;
     brain = NULL;
+	foodEaten = 0;
+	birthday = -1;
 }
 void Mobile::initMotors()
 {
@@ -96,6 +98,7 @@ void Mobile::tryEatFood()
     if (pFood){//some food found
 	energy = min( ftype(1), energy + pFood->getValue() );
 	world->foodEaten( pFood, *this);
+	foodEaten ++;
     }
 }
 void Mobile::simSensors( ftype dt )
@@ -169,7 +172,15 @@ void Mobile::applyLimits()
 	speed.y = -speed.y;
     }
 }
-
+ftype Mobile::getAge()const
+{ 
+    return world->getTime()-birthday;
+};
+void Mobile::setWorld( World & w)
+{ 
+    world = &w; 
+    birthday = w.getTime();
+}
 void Mobile::setMotor( int idx, ftype value)
 {
     assert( idx >= 0 && idx < NUM_MOTORS );
