@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <stdexcept>
 #include "world.h"
+#include <boost/thread.hpp>
 
 Simulator::Simulator()
 
@@ -30,6 +31,7 @@ Simulator::Simulator()
     simulatedSteps = 0;
     simulatedTime = 0;
     stopRequest = false;
+    simulationDelay = 0;
 }
 
 void Simulator::simulate()
@@ -42,6 +44,8 @@ void Simulator::simulate()
 	simulateStep( dt );
 	simulatedSteps ++;
 	simulatedTime += dt;
+	if (simulationDelay)
+	    boost::this_thread::sleep(boost::posix_time::milliseconds( simulationDelay )); 
     }
 
     stopRequest = false;//stop request fulfilled
@@ -78,6 +82,10 @@ void Simulator::onNewBot( MobilePtr mob )
     //assert( mobiles.find(mob) == mobiles.end() );
     //mobiles.insert( mob );
     mobiles.push_back( mob );
-
+    
 //    mobiles.erase( mobiles.begin() );
+}
+void  Simulator::setDelay( int timeMs )
+{
+	simulationDelay = timeMs;
 }

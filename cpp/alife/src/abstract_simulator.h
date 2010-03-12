@@ -12,6 +12,8 @@ public:
     virtual void onNewBot( MobilePtr mob )=0;
     /**Called to request simulation stop*/
     virtual void stopSimulation()=0;
+    /**Set the real-time simulation parameters*/
+    virtual void setDelay( int timeMs )=0;
 };
 
 

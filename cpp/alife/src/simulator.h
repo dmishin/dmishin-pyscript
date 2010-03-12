@@ -43,13 +43,13 @@ public:
     virtual void prepareSimulation( World & w);
     virtual void onNewBot( MobilePtr mob );
     virtual void stopSimulation() { requestStop(); };
-
+    virtual void setDelay( int timeMs );
 protected:
 
 private:
 //    typedef std::set< MobilePtr > Mobiles;
 	
-	typedef std::list< MobilePtr > Mobiles;
+    typedef std::list< MobilePtr > Mobiles;
     Mobiles mobiles;
     World * world;
 
@@ -57,7 +57,8 @@ private:
     ftype dt;
     int simulatedSteps;
     double simulatedTime;
-    
+    int simulationDelay;
+
     volatile bool stopRequest;
 private:
     void simulateStep( ftype dt );

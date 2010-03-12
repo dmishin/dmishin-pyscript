@@ -1,44 +1,46 @@
 bin_PROGRAMS = alife
 alife_SOURCES = \
-	world.h \
-	main.cpp \
-	motor.cpp \
-	grid.h \
-	random_choise.cpp \
-	vec2.h \
-	glut_viewport.h \
-	ftype.h \
-	sensor.cpp \
-	random_brain.h \
-	breeder.h \
-	oriented.h \
-	rotation.h \
-	sensor.h \
 	matrix_breeder.cpp \
-	simulator.cpp \
+	random_brain.cpp \
+	abstract_simulator.h \
+	sensor.cpp \
+	glut_viewport.h \
+	food.h \
+	grid.h \
+	simulator.h \
+	sensor.h \
 	random_choise.h \
-	matrix_breeder.h \
-	located.h \
+	brain.cpp \
+	world.cpp \
+	ticker.h \
+	random_choise.cpp \
+	glut_controller.h \
+	world.h \
 	mobile.cpp \
 	matrix_brain.cpp \
+	located.h \
+	glut_viewport.cpp \
+	matrix_brain.h \
+	rotation.h \
+	ftype.cpp \
+	motor.cpp \
+	food_breeder.cpp \
+	mobile.h \
+	random_brain.h \
+	glut_controller.cpp \
+	oriented.h \
+	ftype.h \
 	grid.cpp \
+	motor.h \
+	alife_glut.h \
+	vec2.h \
+	food_breeder.h \
 	pseudo_generator.h \
 	body.h \
-	ftype.cpp \
-	motor.h \
-	abstract_simulator.h \
-	food.h \
-	alife_glut.h \
+	breeder.h \
 	alife_glut.cpp \
-	matrix_brain.h \
-	random_brain.cpp \
-	simulator.h \
-	brain.cpp \
-	food_breeder.cpp \
-	food_breeder.h \
-	world.cpp \
-	glut_viewport.cpp \
-	mobile.h \
-	brain.h \
-	ticker.h 
+	main.cpp \
+	simulator.cpp \
+	matrix_breeder.h \
+	brain.h 
 alife_LDFLAGS = -lglut -lboost_thread-mt

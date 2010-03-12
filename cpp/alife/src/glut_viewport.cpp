@@ -13,6 +13,7 @@ GlutGuiViewport * GlutGuiViewport::spActiveViewport = NULL;
 //callbacks
 void GLUT_reshape( int w ,int h);
 void GLUT_display();
+void GLUT_keyboard(unsigned char key, int x, int y);
 
 void GlutGuiViewport::reshape( int w, int h)
 {
@@ -179,7 +180,7 @@ void GlutGuiViewport::init( int argc, char* argv[])
     glutDisplayFunc(GLUT_display);
     // here is the setting of the idle function
     glutIdleFunc(GLUT_display);
-	
+
     glutReshapeFunc(GLUT_reshape);
 }
 
@@ -212,3 +213,4 @@ void GLUT_display()
 //    glFlush();  /* Single buffered, so needs a flush. */
     glutSwapBuffers();/*in double-buffered mode, swapping*/
 }
+
