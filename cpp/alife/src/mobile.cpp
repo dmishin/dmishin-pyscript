@@ -29,9 +29,9 @@ Mobile::Mobile( const vec2 & v, ftype angle)
  :Oriented( v, angle ), speed( 0, 0), rotationSpeed(0)
 {
     mass = 1;
-    inertion = 1;
+    inertion = 1000;
     movementFriction = 0.1;
-    rotationFriction = 0.1;
+    rotationFriction = 0.9;
     energy = 1;
 
     initMotors();
