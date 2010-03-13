@@ -27,6 +27,7 @@
 #include "motor.h"
 #include "sensor.h"
 #include "shared_pointers.h"
+#include "ticker.h"
 
 /**Additionally to the Located, Mobile can move*/
 
@@ -89,6 +90,8 @@ protected:
 
     BrainPtr brain;
 
+    Ticker foodEatingTicker;
+
     void addForce();
 
     //Apply force at specified location.
@@ -109,8 +112,8 @@ private:
     void initMotors();
     void initSensors();
 
-	bool operator<(const Mobile& mob)const{ return false; };
-	bool operator==(const Mobile& mob)const{ return false;};
+    bool operator<(const Mobile& mob)const{ return false; };
+    bool operator==(const Mobile& mob)const{ return false;};
 };
 
 #endif // _MOBILE_H_

@@ -118,7 +118,7 @@ void GlutGuiViewport::drawIcon(Mobile& mob)
     for( int i = 0; i < Mobile::NUM_MOTORS; ++i){
 	const Motor& m = mob.getMotor( i );
 	const vec2& pos = m.getPos();
-	vec2 posEnd = pos-m.getForce();
+	vec2 posEnd = pos + m.getForce();
 	glColor3f( 1, 1, 1);
 	glVertex2f( pos.x, pos.y);
 	glColor3f( 0, 1, 0);

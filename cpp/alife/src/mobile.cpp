@@ -26,10 +26,10 @@
 #include "brain.h"
 
 Mobile::Mobile( const vec2 & v, ftype angle)
- :Oriented( v, angle ), speed( 0, 0), rotationSpeed(0)
+    :Oriented( v, angle ), speed( 0, 0), rotationSpeed(0), foodEatingTicker( 0.2 )
 {
     mass = 1;
-    inertion = 1000;
+    inertion = 10;
     movementFriction = 0.1;
     rotationFriction = 0.9;
     energy = 1;
@@ -37,8 +37,8 @@ Mobile::Mobile( const vec2 & v, ftype angle)
     initMotors();
 	
     world = NULL;
-	foodEaten = 0;
-	birthday = -1;
+    foodEaten = 0;
+    birthday = -1;
 }
 void Mobile::initMotors()
 {
@@ -82,7 +82,8 @@ void Mobile::simulate( ftype dt )
     simFriction( dt );
 
 	//food eating behavior
-    tryEatFood();
+    if (foodEatingTicker.step( dt ))
+	tryEatFood();
     
     energy -= world->getIdleEnergyConsumptionRate()*dt;
     if (energy <= 0){//Bot is dead.
@@ -93,7 +94,7 @@ void Mobile::simulate( ftype dt )
 void Mobile::tryEatFood()
 {
     //TODO: instead of eating constantly, make some pause? Food searching may be slow.
-    FoodPtr pFood = world->findNearestFood( getPos(), /*FOOD_EATING_RADIUS*/0.3 );
+    FoodPtr pFood = world->findNearestFood( getPos(), /*FOOD_EATING_RADIUS*/1 );
     if (pFood){//some food found
 	energy = min( ftype(1), energy + pFood->getValue() );
 	world->foodEaten( pFood, *this);
