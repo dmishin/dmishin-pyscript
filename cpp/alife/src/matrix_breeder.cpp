@@ -4,15 +4,22 @@
 #include "random_choise.h"
 #include "matrix_brain.h"
 #include "shared_pointers.h"
+#include "parameters.h"
 #include <iterator>
 
 MatrixBreeder::MatrixBreeder()
 {
-    minimalBots = 100;
-    numBrainStates = 10;
-    numBrainIntermediate = 15;
+    minimalBots = NUM_BOTS;
+    numBrainStates = NUM_BRAIN_STATES;
+    numBrainIntermediate = NUM_BRAIN_INTERMEDIATE;
 };
-#include <iostream>
+MatrixBreeder::MatrixBreeder( int minBots )
+{
+    minimalBots = minBots;
+    numBrainStates = NUM_BRAIN_STATES;
+    numBrainIntermediate = NUM_BRAIN_INTERMEDIATE;
+}
+
 void MatrixBreeder::onIdle( World &world)
 {
     int numNewBots = minimalBots - world.getNumBots();
@@ -65,7 +72,9 @@ void MatrixBreeder::makeNewBot( World &w)
 struct BotEnergyPred{
     ftype minEnergy;
     BotEnergyPred( ftype minE ):minEnergy( minE ){};
-    bool operator()( MobilePtr bot )const{ return bot->getEnergy()>=minEnergy && bot->getFoodEaten()>2; };
+    bool operator()( MobilePtr bot )const{ 
+	return bot->getEnergy()>=minEnergy && bot->getFoodEaten()>2; 
+    };
 };
 
 bool MatrixBreeder::createClone(World& w, bool mutate)
@@ -74,7 +83,7 @@ bool MatrixBreeder::createClone(World& w, bool mutate)
     //find at least one bot, with energy above some maximum.
     //TODO: get rid of memory allocation for arrays? Is it possible?
 
-    ftype minimalCloneEnergy = ftype(0.7);
+    ftype minimalCloneEnergy = MINIMAL_CLONE_ENERGY;
     std::vector<MobilePtr> foundBots;
     
     std::back_insert_iterator<std::vector<MobilePtr> > iter(foundBots);//otput iterator

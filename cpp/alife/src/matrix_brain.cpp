@@ -49,10 +49,17 @@ void MatrixBrain::simulate( Body & mob, ftype dt)
     }
     //write output values to the motors
     for( int i =0; i<numOutputs; ++i){
-	mob.setMotor( i, Z[i]>0? 1 : 0 );//binary motor control
+	mob.setMotor( i, outputFunction(Z[i]) );//binary motor control
     }
 }
 
+ftype MatrixBrain::outputFunction( ftype v )
+{
+    if (v > 0 && v<5 )
+	return 1;
+    else
+	return 0;
+}
 /**Non-linear fucntion for neuron computations*/
 ftype MatrixBrain::nlf( ftype x)
 {
@@ -63,19 +70,23 @@ ftype MatrixBrain::nlf( ftype x)
     }
 }
 
-void makeRandomMatrix( ftype firstRowIntensity, ftype intensityDecrease, MatrixBrain::Matrix& m)
+void makeRandomMatrix( ftype firstRowIntensity, ftype intensityDecrease, MatrixBrain::Matrix& m, bool isByRow=true)
 {
     ftype k = firstRowIntensity;
-    int cols = m.size2();
-    int rows = m.size1();
+    int cols = isByRow? m.size2() : m.size1();
+    int rows = isByRow? m.size1() : m.size2();
+
     for( int line = 0; line<rows; ++line){//iterate over all matrix lines
 	for( int col = 0; col<cols; ++ col){
 	    ftype range = k/cols;
-
-	    m(line, col) = frnd( -range, range);
+	    if (isByRow)
+		m(line, col) = frnd( -range, range);
+	    else
+		m(col, line) = frnd( -range, range);
 	}
 	k = k*intensityDecrease;//next line would be 10% less intensive
     }
+
 }
 
 /**Completely random initialization*/
@@ -85,10 +96,10 @@ void MatrixBrain::randomInit()
       output would be around 10 for top values and would
       decrease by 10% for each next line
     */
-    makeRandomMatrix( 10, 0.9, A);
+    makeRandomMatrix( 1, 0.9, A, false);
     /*Initialize B matrix by the same rules as A
      */
-    makeRandomMatrix( 10, 0.9, B);
+    makeRandomMatrix( 1, 0.9, B, true);
     /*Set initial values for integrator*/
     resetState();
 }

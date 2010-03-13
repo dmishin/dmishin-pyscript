@@ -8,6 +8,7 @@ class MatrixBreeder:public Breeder
 public:
     
     MatrixBreeder();
+    MatrixBreeder( int minBots );
     virtual void onIdle( World& world);
 private:
     int minimalBots;

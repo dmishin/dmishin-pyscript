@@ -32,6 +32,7 @@
 #include "matrix_breeder.h"
 #include "food_breeder.h"
 #include "glut_controller.h"
+#include "parameters.h"
 
 std::ostream& operator <<( std::ostream & s, const vec2 &v)
 {
@@ -63,13 +64,13 @@ int main( int argc, char* argv[])
 
     World w( vec2( 100, 100), 1);
 
-    MatrixBreeder breeder;
-    FoodBreeder foodBreeder( 300 );
+    MatrixBreeder breeder(NUM_BOTS);
+    FoodBreeder foodBreeder( NUM_FOOD_ITEMS );
     w.addBreeder( &breeder );
     w.addBreeder( &foodBreeder );
 
     boost::shared_ptr<Simulator> simulator(new Simulator());
-    simulator->setDt( 0.1 );
+    simulator->setDt( SIMULATION_STEP );
 
     w.setSimulator( simulator );//now simulator is ready to work;
 

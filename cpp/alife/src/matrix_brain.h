@@ -16,6 +16,7 @@ class MatrixBrain: public Brain
 {
 private:
     static ftype nlf( ftype x );
+    static ftype outputFunction( ftype x );
     ftype saturationLimit;
 public:
     typedef boost::numeric::ublas::matrix<ftype> Matrix;

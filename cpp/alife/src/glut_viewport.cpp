@@ -65,7 +65,7 @@ void GlutGuiViewport::drawMobile( Mobile& item)
     glPushMatrix();
 	
     glTranslatef(pos.x, pos.y, 0);
-    glRotatef(item.getAngle()*(180/M_PI), 0,0,1);
+    glRotatef( item.getAngle()*(180/M_PI), 0,0,1);
     drawIcon( item );
 	
     glPopMatrix();

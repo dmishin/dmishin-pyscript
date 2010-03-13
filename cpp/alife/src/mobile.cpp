@@ -24,14 +24,16 @@
 #include "world.h"
 #include "motor.h"
 #include "brain.h"
+#include "parameters.h"
+
 
 Mobile::Mobile( const vec2 & v, ftype angle)
     :Oriented( v, angle ), speed( 0, 0), rotationSpeed(0), foodEatingTicker( 0.2 )
 {
-    mass = 1;
-    inertion = 10;
-    movementFriction = 0.1;
-    rotationFriction = 0.9;
+    mass = BOT_MASS;
+    inertion = BOT_INERTION;
+    movementFriction = MOVEMENT_FRICTION;
+    rotationFriction = ROTATION_FRICTION;
     energy = 1;
 
     initMotors();
@@ -43,16 +45,16 @@ Mobile::Mobile( const vec2 & v, ftype angle)
 void Mobile::initMotors()
 {
     /*Two motors at the top, <> and tvo at the bottom*/
-    motors[0] = Motor( vec2(1, -1), vec2(0, -1));
-    motors[1] = Motor( vec2(-1, -1), vec2(0, -1));
+    motors[0] = Motor( vec2(1, -1), vec2(0, 1));
+    motors[1] = Motor( vec2(-1, -1), vec2(0, 1));
     motors[2] = Motor( vec2( 0, 1), vec2(1, 0));
     motors[3] = Motor( vec2( 0, 1), vec2(-1, 0));
 }
 void Mobile::initSensors()
 {
     /*Two food sensors, left and right*/
-    foodSensors[0] = Sensor( vec2(0.7,0.7), atan2(1,2), /*sens*/1, /*r*/4 );
-    foodSensors[1] = Sensor( vec2(-0.7, 0.7), atan2(-1,2), /*sens*/1, /*r*/4 );
+    foodSensors[0] = Sensor( vec2(0.7,0.7), atan2(1,2), /*sens*/1, /*r*/FOOD_SENSOR_RADIUS );
+    foodSensors[1] = Sensor( vec2(-0.7, 0.7), atan2(-1,2), /*sens*/1, /*r*/FOOD_SENSOR_RADIUS );
 
 }
 const Motor& Mobile::getMotor( int idx )const
@@ -140,17 +142,16 @@ void Mobile::applyForceA( ftype dt, const vec2& force, const vec2& applyAt)
     vec2 l = applyAt - pos;
     speed += force* (1/mass) * dt;
 
-    ftype rotationForce = psprod( l, force );
+    ftype rotationForce = -psprod( l, force );
     rotationSpeed += rotationForce/inertion * dt;
 }
 
 /**Apply force at relative coords*/
 void Mobile::applyForceR( ftype dt, const vec2& force, const vec2& applyAt)
 {
-    vec2 l = rot.apply(applyAt);
     speed += rot.apply(force)* (1/mass) * dt;
 
-    ftype rotationForce = psprod( applyAt, force );
+    ftype rotationForce = -psprod( applyAt, force );
     rotationSpeed += rotationForce/inertion * dt;
 
 }
