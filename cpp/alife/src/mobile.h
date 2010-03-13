@@ -26,7 +26,7 @@
 #include "body.h"
 #include "motor.h"
 #include "sensor.h"
-#include <boost/shared_ptr.hpp>
+#include "shared_pointers.h"
 
 /**Additionally to the Located, Mobile can move*/
 
@@ -45,8 +45,8 @@ public:
 
     void simulate( ftype dt);//simulate Monbile movement for a given interval of time
     void setWorld( World& w);
-    void setBrain( Brain& b){ brain = &b; };
-    Brain* getBrain() const {return brain;}
+    void setBrain( BrainPtr b){ brain = b; };
+    BrainPtr getBrain() {return brain;}
     void setSpeed( const vec2& spd){ speed = spd; };
     void setRotationSpeed( ftype b ){ rotationSpeed = b;};
 
@@ -78,16 +78,16 @@ protected:
     ftype movementFriction;
     ftype energy;
 /*statistics info*/
-	ftype birthday;
-	int foodEaten;
+    ftype birthday;
+    int foodEaten;
 
 
     World* world;
 
     Motor motors[NUM_MOTORS];
-	Sensor foodSensors[ NUM_FOOD_SENSORS ];
+    Sensor foodSensors[ NUM_FOOD_SENSORS ];
 
-    Brain* brain;
+    BrainPtr brain;
 
     void addForce();
 
@@ -112,7 +112,5 @@ private:
 	bool operator<(const Mobile& mob)const{ return false; };
 	bool operator==(const Mobile& mob)const{ return false;};
 };
-
-typedef boost::shared_ptr<Mobile> MobilePtr;
 
 #endif // _MOBILE_H_

@@ -3,6 +3,7 @@
 #include "ftype.h"
 #include "random_choise.h"
 #include "matrix_brain.h"
+#include "shared_pointers.h"
 #include <iterator>
 
 MatrixBreeder::MatrixBreeder()
@@ -97,7 +98,7 @@ bool MatrixBreeder::createClone(World& w, bool mutate)
     if (mutate)
 	brn->mutate();
     //put it to the world
-    clone->setBrain( *brn );
+    clone->setBrain( BrainPtr( brn ) );
     w.addMobile(clone);
     return true;
 }
@@ -131,7 +132,7 @@ bool MatrixBreeder::createChild(World& w)
     brn->makeChild( static_cast<MatrixBrain&>(* mob1->getBrain()),
 		     static_cast<MatrixBrain&>(* mob2->getBrain()));
     //put it to the world
-    child->setBrain( *brn );
+    child->setBrain( BrainPtr(brn) );
     w.addMobile(child);
     return true;
 }
@@ -147,7 +148,7 @@ bool MatrixBreeder::createOrphan(World& w)
 					 numBrainIntermediate/*intermediate*/, 
 					 mob->getNumMotors());
     brn->randomInit();
-    mob->setBrain( *brn );
+    mob->setBrain( BrainPtr(brn) );
     w.addMobile( mob );
     return true;//always true;
 }

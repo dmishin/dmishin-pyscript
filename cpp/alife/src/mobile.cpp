@@ -37,7 +37,6 @@ Mobile::Mobile( const vec2 & v, ftype angle)
     initMotors();
 	
     world = NULL;
-    brain = NULL;
 	foodEaten = 0;
 	birthday = -1;
 }
