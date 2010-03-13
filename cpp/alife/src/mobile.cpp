@@ -52,8 +52,8 @@ void Mobile::initMotors()
 void Mobile::initSensors()
 {
     /*Two food sensors, left and right*/
-    foodSensors[0] = Sensor( vec2(0.7,0.7), atan2(1,2), /*sens*/1, /*r*/3 );
-    foodSensors[1] = Sensor( vec2(-0.7, 0.7), atan2(-1,2), /*sens*/1, /*r*/3 );
+    foodSensors[0] = Sensor( vec2(0.7,0.7), atan2(1,2), /*sens*/1, /*r*/4 );
+    foodSensors[1] = Sensor( vec2(-0.7, 0.7), atan2(-1,2), /*sens*/1, /*r*/4 );
 
 }
 const Motor& Mobile::getMotor( int idx )const

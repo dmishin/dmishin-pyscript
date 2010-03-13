@@ -31,6 +31,7 @@
 #include "matrix_brain.h"
 #include "matrix_breeder.h"
 #include "food_breeder.h"
+#include "glut_controller.h"
 
 std::ostream& operator <<( std::ostream & s, const vec2 &v)
 {
@@ -73,11 +74,17 @@ int main( int argc, char* argv[])
     w.setSimulator( simulator );//now simulator is ready to work;
 
     boost::thread simThread = boost::thread( simulator_runner( *simulator ));
-	
+
+	GLUTController controller;
     GlutGuiViewport vp( w, vec2(50,50), 5 );
     vp.setActive();
 	
+	controller.setWorld( w, *simulator );
+
+	
     GlutGuiViewport::init( argc, argv );
+
+	controller.setActive();
     GlutGuiViewport::startLoop();
 		
     std::cout<<"Finished execution."<<std::endl;
