@@ -23,8 +23,7 @@ class GAction:
             self.handler( *params )
 
 class MainFrm():
-    def __init__(self):
-        gladefile = "MnemosineGtk.glade"
+    def __init__(self, gladefile):
         title = "wnd_main"
         self.wTree=gtk.glade.XML (gladefile, title)
         self.acExit=GAction( self.fileExit )
@@ -34,13 +33,13 @@ class MainFrm():
         self.editItemsAction = GAction( self.editItems )
         handlers = {
             "on_quit": self.acExit,
-            "on_file_new": self.FileNew,
+            "on_file_new": self.fileNew,
             "on_file_open": self.fileOpen,
             "on_file_saveas": self.fileSaveAs,
             "on_help_about": self.helpAbout,
             "on_file_import": self.Import,
             "on_file_export": self. export,
-            "answer_clicked": self.on_answer,
+#            "answer_clicked": self.on_answer,
             "on_wnd_main_destroy" : (gtk.mainquit),
 
             "on_mnu_edit_current_activate": self.editCurrentItemAction,

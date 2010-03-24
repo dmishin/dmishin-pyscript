@@ -21,7 +21,7 @@ from main_frm import *
 # from tip_dlg import *
 # from about_dlg import *
 # from sound import *
-# from card_prop import *
+from card_prop import *
 from message_boxes import *
 from mnemosyne.core import *
 
@@ -81,8 +81,8 @@ class MainDlg(MainFrm):
     ##########################################################################
     
     def __init__(self, filename):
-        
-        MainFrm.__init__(self)
+        glade_file = r"/home/dim/Prog/my-git/apps/mnemosyne-refactor/mnemosyne-1.2.1/../Gui-glade/MnemosineGtk.glade" #TODO: insert real path
+        MainFrm.__init__(self, glade_file)
 
         self.state = "EMPTY"
         self.item = None
@@ -90,6 +90,8 @@ class MainDlg(MainFrm):
         self.q_sound_played = False
         self.a_sound_played = False
         
+        def widget(name):
+            return self.wTree.get_widget( name )
         self.sched  = widget( "status_label_1")
         self.notmem = widget( "status_label_2")
         self.all    = widget( "status_label_3")
@@ -642,13 +644,13 @@ class MainDlg(MainFrm):
         self.editItemsAction.setEnabled(number_of_items() > 0)
 
         # Update toolbar.
-        
-        if get_config("hide_toolbar") == True:
-            self.toolbar.hide()
-            self.showToolbarAction.setOn(0)
-        else:
-            self.toolbar.show()
-            self.showToolbarAction.setOn(1)
+#TODO        
+        # if get_config("hide_toolbar") == True:
+        #     self.toolbar.hide()
+        #     self.showToolbarAction.setOn(0)
+        # else:
+        #     self.toolbar.show()
+        #     self.showToolbarAction.setOn(1)
 
         # Update question and answer font.
  
