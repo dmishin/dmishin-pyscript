@@ -1,0 +1,25 @@
+This directory contains some example plugins with the main purpose of 
+illustrating to plugin writers on how to achieve certain functionality.
+
+ * activate_all_categories.py: running custom code after the database is 
+   loaded.
+
+ * last_grade.py: running custom code to preprocess question and answer text
+   before it is displayed.
+
+ * add_menu_item.py: adding a menu item to the GUI.
+
+ * import_csv.py: adding a new file format for importing.
+
+ * custom_tag.py: intercepting a custom tag of the form <tag_name src="..">
+   and run its contents in an external program.
+
+ * always_shuffle_queue.py: always shuffle the queue, overriding the
+   prioritising of the scheduled cards.
+
+One might wonder what the purpose is of the Plugin class, as opposed to
+running 'register_function_hook' directly. However, a later Mnemosyne version
+will allow you to activate and deactivate plugins from the GUI.
+
+Note that if you write plugins which require extra modules, the Windows user
+should add those to library.zip.

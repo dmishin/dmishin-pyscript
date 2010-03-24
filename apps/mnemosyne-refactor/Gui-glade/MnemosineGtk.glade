@@ -111,6 +111,7 @@
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Edit current card</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_mnu_edit_current_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -118,6 +119,7 @@
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Delete current card</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_mnu_delete_current_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -130,6 +132,7 @@
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Edit deck</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_mnu_edit_deck_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -403,6 +406,19 @@
                         <property name="position">5</property>
                       </packing>
                     </child>
+                    <child>
+                      <widget class="GtkButton" id="btn_answer_5">
+                        <property name="label" translatable="yes">_5</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="focus_on_click">False</property>
+                      </widget>
+                      <packing>
+                        <property name="position">6</property>
+                      </packing>
+                    </child>
                   </widget>
                 </child>
               </widget>
@@ -424,9 +440,44 @@
           </packing>
         </child>
         <child>
-          <widget class="GtkStatusbar" id="statusbar1">
+          <widget class="GtkHBox" id="hbox1">
             <property name="visible">True</property>
-            <property name="spacing">2</property>
+            <child>
+              <widget class="GtkLabel" id="status_label_1">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">label</property>
+              </widget>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkLabel" id="status_label_2">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">label</property>
+              </widget>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkLabel" id="status_label_3">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">label</property>
+              </widget>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkStatusbar" id="statusbar1">
+                <property name="visible">True</property>
+                <property name="spacing">2</property>
+              </widget>
+              <packing>
+                <property name="position">3</property>
+              </packing>
+            </child>
           </widget>
           <packing>
             <property name="expand">False</property>
