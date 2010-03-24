@@ -22,4 +22,6 @@ class MnemosyneApp:
         
     def trUtf8(self, text ):
         return text
-    def setMainWidget(self, wgt)
+
+    def setMainWidget(self, wgt):
+        self.main_widget = wgt

@@ -12,10 +12,10 @@ from gtk_import import *
 
 from mnemosyne.core import basedir, get_config, set_config, \
                            initialise, finalise
-from mnemosyne.pygtk_ui.main_dlg import MainDlg, install_tooltip_strings, prefix
-from mnemosyne.pygtk_ui.message_boxes import messagebox_errors
-from mnemosyne.pygtk_ui.plugin import * # To be picked up by py2exe.
-from mnemosyne.pygtk_ui.mnemosyne_app import *
+from mnemosyne.pygtk_gui.main_dlg import MainDlg, install_tooltip_strings, prefix
+from mnemosyne.pygtk_gui.message_boxes import messagebox_errors
+from mnemosyne.pygtk_gui.plugin import * # To be picked up by py2exe.
+from mnemosyne.pygtk_gui.mnemosyne_app import *
 from mnemosyne.core.exceptions import *
 from optparse import OptionParser
 from gtk_msg_box import ShowMsgBox

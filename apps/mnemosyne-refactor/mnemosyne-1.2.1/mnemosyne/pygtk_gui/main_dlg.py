@@ -80,7 +80,7 @@ class MainDlg(MainFrm):
     #
     ##########################################################################
     
-    def __init__(self):
+    def __init__(self, filename):
         
         MainFrm.__init__(self)
 
@@ -179,7 +179,7 @@ class MainDlg(MainFrm):
 
         resp = chooser.run()
         if resp == gtk.RESPONSE_OK:
-            return = chooser.get_filename()
+            return chooser.get_filename()
         else:
             return ""
 
@@ -591,6 +591,7 @@ class MainDlg(MainFrm):
         self.updateDialog()
 
         if get_config("show_intervals") == "statusbar":
+            pass
             #TODO
 #            self.statusBar().message(self.trUtf8("Returns in ").append(\
 #                str(interval)).append(self.trUtf8(" day(s).")))

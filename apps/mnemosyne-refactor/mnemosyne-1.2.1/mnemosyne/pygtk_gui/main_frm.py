@@ -34,12 +34,12 @@ class MainFrm():
         self.editItemsAction = GAction( self.editItems )
         handlers = {
             "on_quit": self.acExit,
-            "on_file_new", self.FileNew,
-            "on_file_open", self.fileOpen,
-            "on_file_saveas", self.fileSaveAs,
-            "on_help_about", self.helpAbout,
-            "on_file_import", self.Import,
-            "on_file_export", self. export,
+            "on_file_new": self.FileNew,
+            "on_file_open": self.fileOpen,
+            "on_file_saveas": self.fileSaveAs,
+            "on_help_about": self.helpAbout,
+            "on_file_import": self.Import,
+            "on_file_export": self. export,
             "answer_clicked": self.on_answer,
             "on_wnd_main_destroy" : (gtk.mainquit),
 
