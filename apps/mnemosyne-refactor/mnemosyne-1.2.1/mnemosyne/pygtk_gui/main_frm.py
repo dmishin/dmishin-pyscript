@@ -57,7 +57,12 @@ class MainFrm():
         self.answer = widget( "txt_answer" )
         self.answer_label = widget( "lbl_answer" )
         self.grade_4_button = widget( "btn_answer_4" )
-
+        self.show_button = widget( "btn_show" )
+        self.grades = widget("frm_answer_buttons")
+        self.grades_label = widget( "lbl_grades" )
+        self.top_window = widget( "wnd_main" )
+    def show(self):
+        return self.top_window.show()
 
     def setCaption( self, text ):
         self.wTree.get_widget("wnd_main").set_title( text )

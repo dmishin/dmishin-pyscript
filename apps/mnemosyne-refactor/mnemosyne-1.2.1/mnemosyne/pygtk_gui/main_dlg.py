@@ -44,10 +44,10 @@ def install_tooltip_strings(self):
     tooltip[0][0] = \
         self.trUtf8("You don't remember this card yet.")
     tooltip[0][1] = \
-        self.trUtf8("Like '0', but it's getting more familiar.").append(\
+        self.trUtf8("Like '0', but it's getting more familiar.") + (\
         self.trUtf8(" Show it less often."))
     tooltip[0][2] = tooltip[0][3] = tooltip[0][4] = tooltip[0][5] = \
-        self.trUtf8("You've memorised this card now,").append(\
+        self.trUtf8("You've memorised this card now,") + (\
         self.trUtf8(" and will probably remember it for a few days."))
 
     tooltip[1][0] = tooltip[1][1] = \
@@ -55,13 +55,13 @@ def install_tooltip_strings(self):
     tooltip[1][2] = \
         self.trUtf8("Barely correct answer. The interval was way too long.")
     tooltip[1][3] = \
-        self.trUtf8("Correct answer, but with much effort.").append(\
+        self.trUtf8("Correct answer, but with much effort.") + (\
         self.trUtf8(" The interval was probably too long."))
     tooltip[1][4] = \
-        self.trUtf8("Correct answer, with some effort.").append(\
+        self.trUtf8("Correct answer, with some effort.") + (\
         self.trUtf8(" The interval was probably just right."))
     tooltip[1][5] = \
-        self.trUtf8("Correct answer, but without any").append(\
+        self.trUtf8("Correct answer, but without any") + (\
         self.trUtf8(" difficulties. The interval was probably too short."))
 
 
@@ -81,7 +81,7 @@ class MainDlg(MainFrm):
     ##########################################################################
     
     def __init__(self, filename):
-        glade_file = r"/home/dim/Prog/my-git/apps/mnemosyne-refactor/mnemosyne-1.2.1/../Gui-glade/MnemosineGtk.glade" #TODO: insert real path
+        glade_file = r"../Gui-glade/MnemosineGtk.glade" #TODO: insert real path
         MainFrm.__init__(self, glade_file)
 
         self.state = "EMPTY"
@@ -508,7 +508,7 @@ class MainDlg(MainFrm):
     ##########################################################################
     
     def productTour( self, widget ):
-        
+        return #TODO: skip product tour
         pause_thinking()
         dlg = ProductTourDlg(self)
         dlg.exec_loop()
@@ -655,29 +655,30 @@ class MainDlg(MainFrm):
         # Update question and answer font.
  
 #TODO       
-#        if get_config("QA_font") != None:
-#            font = QFont()
+        if get_config("QA_font") != None:
+            font = pango.FontDescription( get_config("QA_font") )
 #            font.fromString(get_config("QA_font"))
-#        else:
-#            font = self.show_button.font()
+        else:
+            font = None
 
-#        self.question.setFont(font)
-#        self.answer.setFont(font)
+        self.question.modify_font(font)
+        self.answer.modify_font(font)
 
         # Size for non-latin characters.
 
-        increase_non_latin = get_config("non_latin_font_size_increase")
-        non_latin_size = font.pointSize() + increase_non_latin
+#        increase_non_latin = get_config("non_latin_font_size_increase")
+#        non_latin_size = font.pointSize() + increase_non_latin
         
         # Update question and answer alignment.
         
-        if get_config("left_align") == True:
-            alignment = Qt.AlignAuto    | Qt.AlignVCenter | Qt.WordBreak
-        else:
-            alignment = Qt.AlignHCenter | Qt.AlignVCenter | Qt.WordBreak
 
-        self.question.setAlignment(alignment)
-        self.answer.setAlignment(alignment)
+        if get_config("left_align") == True:
+            alignment = 0.0 #Qt.AlignAuto    | Qt.AlignVCenter | Qt.WordBreak
+        else:
+            alignment = 0.5 #Qt.AlignHCenter | Qt.AlignVCenter | Qt.WordBreak
+
+#        self.question.get_buffer().set_alignment(alignment)
+#        self.answer.set_alignment(alignment) #TODO
 
         # Hide/show the question and answer boxes
         
@@ -704,12 +705,12 @@ class MainDlg(MainFrm):
         question_label_text = self.trUtf8("Question:")
         if self.item!=None and self.item.cat.name!=self.trUtf8("<default>"):
             question_label_text += " " + self.item.cat.name
-        self.question_label.setText(question_label_text)
+        self.question_label.set_text(question_label_text)
 
         # Update question content.
         
         if self.item == None:
-            self.question.setText("")
+            self.question.get_buffer().set_text("")
         else:
             text = self.item.filtered_q()
 
@@ -720,12 +721,12 @@ class MainDlg(MainFrm):
             if increase_non_latin:
                 text = set_non_latin_font_size(text, non_latin_size)
 
-            self.question.setText(text)
+            self.question.set_text(text)
 
         # Update answer content.
         
         if self.item == None or self.state == "SELECT SHOW":
-            self.answer.setText("")
+            self.answer.get_buffer().set_text("")
         else:
             text = self.item.filtered_a()
 
@@ -735,7 +736,7 @@ class MainDlg(MainFrm):
                 
             if increase_non_latin:
                 text = set_non_latin_font_size(text, non_latin_size)
-            self.answer.setText(text)
+            self.answer.set_text(text)
 
         # Update 'show answer' button.
         
@@ -753,9 +754,9 @@ class MainDlg(MainFrm):
                                      self.trUtf8("Learn ahead of schedule")
             grades_enabled = 0
 
-        self.show_button.setText(text)
-        self.show_button.setDefault(default)
-        self.show_button.setEnabled(show_enabled)
+        self.show_button.set_label(text)
+        if default: self.show_button.grab_default()
+        self.show_button.set_sensitive(show_enabled)
 
         # Update grade buttons.
 
@@ -764,8 +765,9 @@ class MainDlg(MainFrm):
         else:
             i = 1 # Retention phase.     
             
-        self.grade_4_button.setDefault(grades_enabled)
-        self.grades.setEnabled(grades_enabled)
+        if grades_enabled:
+            self.grade_4_button.grab_default()
+        self.grades.set_sensitive(grades_enabled)
         
 #        QToolTip.setWakeUpDelay(0)
 
@@ -773,42 +775,39 @@ class MainDlg(MainFrm):
 
             # Tooltip.
             
-            QToolTip.remove(self.grade_buttons[grade])
+            #QToolTip.remove(self.grade_buttons[grade]) #TODO
             
-            if self.state == "SELECT GRADE" and \
-               get_config("show_intervals") == "tooltips":
-                QToolTip.add(self.grade_buttons[grade],
-                      tooltip[i][grade].
-                      append(self.next_rep_string(process_answer(self.item,
-                                                  grade, dry_run=True))))
-            else:
-                QToolTip.add(self.grade_buttons[grade], tooltip[i][grade])
+            # if self.state == "SELECT GRADE" and \
+            #    get_config("show_intervals") == "tooltips":
+            #     QToolTip.add(self.grade_buttons[grade],
+            #           tooltip[i][grade].
+            #           append(self.next_rep_string(process_answer(self.item,
+            #                                       grade, dry_run=True))))
+            # else:
+            #     QToolTip.add(self.grade_buttons[grade], tooltip[i][grade])
 
             # Button text.
                     
             if self.state == "SELECT GRADE" and \
                get_config("show_intervals") == "buttons":
-                self.grade_buttons[grade].setText(\
+                self.grade_buttons[grade].set_text(\
                         str(process_answer(self.item, grade, dry_run=True)))
                 self.grades.setTitle(\
                     self.trUtf8("Pick days until next repetition:"))
             else:
-                self.grade_buttons[grade].setText(str(grade))
-                self.grades.setTitle(self.trUtf8("Grade your answer:"))
+                self.grade_buttons[grade].set_label(str(grade))
+                self.grades_label.set_label(self.trUtf8("Grade your answer:"))
 
-            self.grade_buttons[grade].setAccel(QKeySequence(str(grade)))
+            #self.grade_buttons[grade].setAccel(QKeySequence(str(grade))) #TODO
 
         # Update status bar.
         
-        self.sched .setText(self.trUtf8("Scheduled: ").append(QString(\
-                            str(scheduled_items()))))
-        self.notmem.setText(self.trUtf8("Not memorised: ").append(QString(\
-                            str(non_memorised_items()))))
-        self.all   .setText(self.trUtf8("All: ").append(QString(\
-                            str(active_items()))))
+        self.sched .set_text(self.trUtf8("Scheduled: ") + str(scheduled_items()))
+        self.notmem.set_text(self.trUtf8("Not memorised: ") + str(non_memorised_items()))
+        self.all   .set_text(self.trUtf8("All: ") +  str(active_items()))
 
-        if self.shrink == True:
-            self.adjustSize()
+#        if self.shrink == True:
+#            self.adjustSize()
 
     ##########################################################################
     #

@@ -285,7 +285,7 @@
               </widget>
             </child>
             <child>
-              <widget class="GtkLabel" id="label2">
+              <widget class="GtkLabel" id="lbl_answer">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Answer</property>
                 <property name="use_markup">True</property>
@@ -424,7 +424,7 @@
               </widget>
             </child>
             <child>
-              <widget class="GtkLabel" id="label3">
+              <widget class="GtkLabel" id="lbl_grades">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Rate your answer</property>
                 <property name="use_markup">True</property>
