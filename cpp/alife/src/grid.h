@@ -11,14 +11,19 @@
 
 #include <vector>
 #include <set>
+#include <list>
 #include <stdexcept>
 #include <string>
+#include <algorithm>
 
 #include "vec2.h"
 #include "pseudo_generator.h"
 #include "located.h"
+#include <boost/shared_ptr.hpp>
 
-class ItemAcceptor;
+/**Pointer type for the items in the grid.*/
+
+typedef boost::shared_ptr<Located> GridItemPtr ;
 
 class Grid{
 private:  
@@ -27,17 +32,21 @@ private:
     vec2 size;
     vec2 cellSize;
     vec2 cellScale;
+    int numItems;
 public:
     class Cell{
     public:
-	typedef std::set< Located * > CellItems;	
+	typedef std::list< GridItemPtr > CellItems;	
 	CellItems items;
 				
-	void add( Located *item){
-	    items.insert( item );
+	void add( GridItemPtr item){
+	    items.push_back( item );
 	}
-	void remove( Located * item){
-	    if (items.erase( item ) == 0)
+	void remove( GridItemPtr item){
+	    CellItems::iterator i = std::find(items.begin(), items.end(), item);
+	    if ( i != items.end()){
+		items.erase(i);
+			    }else
 		throw std::logic_error("element not in the cell");//element not found in the set
 	}
 	bool operator == (const Grid::Cell &c)const{
@@ -45,9 +54,17 @@ public:
 	}
 	bool operator != (const Grid::Cell &c)const{
 	    return this != &c;
-	}
-    };
+	};
 
+	template< class predicate_functor>
+	int remove_if( predicate_functor func){
+	    
+	    int rval = items.size();
+	    items.erase( std::remove_if(items.begin(), items.end(), func ),
+			 items.end());
+	    return rval - items.size();
+	};
+    };
 //Defauult constructor of empty field		
     Grid();
     ~Grid();
@@ -66,15 +83,31 @@ public:
     vec2 center()const{ return size*(ftype)0.5;};
 
 		
-    void putItem( Located * item);
-    void removeItem( Located * item);
+    void putItem( GridItemPtr item);
+    void removeItem( GridItemPtr item);
+    GridItemPtr findNearestItem( const vec2& p, ftype maxDist);
+    int getNumItems()const{ return numItems; };
 
+    //remove items from grid, if the predicate return logival true for them
+    //Predicate must take the GridItemPtr value
+    template<class predicate_functor>
+    int remove_if( predicate_functor func ){
+	int rval = 0;
+	for( int i = 0; i<numCols*numRows; ++i){
+	    rval += cells[i].remove_if( func );
+	}
+	rval += unallocated.remove_if( func );
+	numItems -= rval;
+	return rval;
+    };
+	    
+			
     /**update positions of all Located items in cells*/
     void update();
 
     /**Utility class for enumerating items in a rectangle*/
     /**Pseudo-generator, returning items inside a rectangle*/
-    struct rectangle_generator: public pseudo_generator<Located*>{
+    struct rectangle_generator: public pseudo_generator<GridItemPtr>{
 	//pseudo-generator preamble
 	BEGIN_GENERATOR_STATES 
 	state1
@@ -99,7 +132,7 @@ public:
 	     grid(&g)
 	    {};
 	//generator body
-	Located* operator()();
+	GridItemPtr operator()();
     };
   
     typedef generator_iterator<rectangle_generator> rectangle_iterator;
@@ -111,7 +144,7 @@ public:
 	return rectangle_iterator(*this, x0, x1, y0, y1);
     };
 
-    struct circular_generator: public pseudo_generator<Located*>{
+    struct circular_generator: public pseudo_generator<GridItemPtr>{
 	BEGIN_GENERATOR_STATES
 	state1
 	END_GENERATOR_STATES;
@@ -128,12 +161,26 @@ public:
 	circular_generator( Grid& g, const vec2& _center, ftype radius)
 	    :grid(&g), center(_center), r(radius){};
 
-	Located* operator()();
+	GridItemPtr operator()();
     };
     typedef generator_iterator<circular_generator> circular_iterator;
     circular_iterator genItemsInCircle(const vec2& center, ftype r){
 	return circular_iterator( *this, center, r);
     }
+
+    /**Generate all items in grid*/
+    struct items_generator: public pseudo_generator<GridItemPtr>{
+	BEGIN_GENERATOR_STATES
+	state1, state2
+	END_GENERATOR_STATES;
+	Grid* grid;
+	int i;
+	Grid::Cell::CellItems::iterator iItem;
+	Grid::Cell * curCell;
+	items_generator(){};
+	items_generator( Grid& g ): grid(&g){};
+	GridItemPtr operator()();
+    };
 private:
     void updateCell( Cell & cell);
 		

@@ -28,57 +28,66 @@
 #include "glut_viewport.h"
 #include "simulator.h"
 #include "random_brain.h"
+#include "matrix_brain.h"
+#include "matrix_breeder.h"
+#include "food_breeder.h"
+#include "glut_controller.h"
+#include "parameters.h"
 
 std::ostream& operator <<( std::ostream & s, const vec2 &v)
 {
-	s<<"{"<<v.x<<";"<<v.y<<"}";
-	return s;
+    s<<"{"<<v.x<<";"<<v.y<<"}";
+    return s;
 }
 
 
 //Callable for running the simulator
 struct simulator_runner
 {
-  Simulator* sim;
-  simulator_runner( Simulator& s): sim(&s){};
-  void operator()(){ 
-    std::cout<<"Started simulation\n";
-    std::cout.flush();
-    sim->simulate();
-    std::cout<<"Finished simulation\n";
-    std::cout.flush();
-  };
+    Simulator* sim;
+    simulator_runner( Simulator& s): sim(&s){};
+    void operator()(){ 
+	std::cout<<"Started simulation\n";
+	std::cout.flush();
+	sim->simulate();
+	std::cout<<"Finished simulation\n";
+	std::cout.flush();
+    };
 };
 
 #include <boost/thread.hpp>
+#include <time.h>
 
 int main( int argc, char* argv[])
 {
-	World w( vec2( 10, 10), 1);
+    srand((unsigned)time(NULL));
 
-	for(int i =0; i<100; ++i){
-//	  Mobile* mob = new Mobile( vec2(frnd()*10, frnd()*10), frnd()*2*3.1415 );
-		Mobile* mob = new Mobile( vec2(5,5), 0 );
-	  Brain* brn = new RandomBrain();
-	  mob->setBrain( *brn );
-	  w.addMobile( mob );
-//	  mob->setSpeed( vec2(frnd()*2-1, frnd()*2-1));
-//	  mob->setRotationSpeed( frnd()*2-1 );
-	}
-	//Simulator for processing the data
+    World w( vec2( 100, 100), 1);
 
-	Simulator simulator;
-	simulator.setWorld( w );
-	simulator.setDt( 0.001 );
+    MatrixBreeder breeder(NUM_BOTS);
+    FoodBreeder foodBreeder( NUM_FOOD_ITEMS );
+    w.addBreeder( &breeder );
+    w.addBreeder( &foodBreeder );
 
-	boost::thread simThread = boost::thread( simulator_runner( simulator ));
+    boost::shared_ptr<Simulator> simulator(new Simulator());
+    simulator->setDt( SIMULATION_STEP );
+
+    w.setSimulator( simulator );//now simulator is ready to work;
+
+    boost::thread simThread = boost::thread( simulator_runner( *simulator ));
+
+	GLUTController controller;
+    GlutGuiViewport vp( w, vec2(50,50), 5 );
+    vp.setActive();
 	
-	GlutGuiViewport vp( w, vec2(5,5), 30 );
-	vp.setActive();
+	controller.setWorld( w, *simulator );
+
 	
-	GlutGuiViewport::init( argc, argv );
-	GlutGuiViewport::startLoop();
+    GlutGuiViewport::init( argc, argv );
+
+	controller.setActive();
+    GlutGuiViewport::startLoop();
 		
-	std::cout<<"Finished execution."<<std::endl;
-	return 0;
+    std::cout<<"Finished execution."<<std::endl;
+    return 0;
 }

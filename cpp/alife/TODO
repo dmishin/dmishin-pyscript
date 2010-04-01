@@ -1,15 +1,25 @@
 Things to implement:
 
 [ ] Food:
-[ ]   Show food sprites
-[ ]   Implement food eating
-[ ] Sensors
-[ ]   Food sensor
-[ ] Reference brains
-[ ]  Matrix monlinear brain
-[ ] Breeding process
-[ ] Listeners to the world events:
+[+]   Show food sprites
+[+]   Implement food eating
+[-] Sensors
+[+]   Food sensor
+[+]   Energy sensor
+[+] Reference brains
+[+]  Random brain
+[+]  Matrix monlinear brain
+[+] Breeding process
+[ ]   clone
+[ ]   orphan
+[ ]   mutate
 
+[ ] Listeners to the world events: !
+    implement simulators and breeders as bot event listeners
+[ ] Parallel ized simulation
+[-+]   Synchronized access to the world
+[+-] Update grids, sensors etc time to time
+[+]    grids
 [ ] Manual control
 [ ] Saving and restoring the state
 [ ] Edit simulation parameters, restart simulation

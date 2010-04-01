@@ -1,0 +1,19 @@
+#ifndef _PARAMETERS_H_
+#define _PARAMETERS_H_
+
+#define BOT_MASS (1.0)
+#define BOT_INERTION (10.0)
+#define MOVEMENT_FRICTION (1.0)
+#define ROTATION_FRICTION (10.0)
+
+#define FOOD_SENSOR_RADIUS (3.0)
+#define NUM_FOOD_ITEMS (200)
+#define SIMULATION_STEP (0.1)
+#define NUM_BOTS (100)
+
+#define NUM_BRAIN_INTERMEDIATE 5
+#define NUM_BRAIN_STATES 4
+#define MINIMAL_CLONE_ENERGY (0.7)
+
+
+#endif /* _PARAMETERS_H_ */

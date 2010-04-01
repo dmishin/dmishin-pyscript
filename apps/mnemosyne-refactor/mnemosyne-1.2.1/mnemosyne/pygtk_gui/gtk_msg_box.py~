@@ -1,0 +1,15 @@
+from gtk_import import *
+
+
+def ShowMsgBox( title, message, choices, msg_box_type):
+    
+    dia = gtk.Dialog(title,
+                  owner,
+                  gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,  #binary flags or'ed together
+                  (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+    dia.vbox.pack_start(gtk.Label( message ))
+    dia.show_all()
+    result = dia.run()
+    dia.destroy()
+    return result
+

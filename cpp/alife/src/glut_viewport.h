@@ -9,6 +9,7 @@
 
 class Located;
 class Oriented;
+class Mobile;
 
 class GlutGuiViewport
 {
@@ -23,8 +24,11 @@ private:
 
 //buffer, used for getting information about observed mobiles
     World::MobilesSnapshot displayedMobiles;
+    World::FoodSnapshot displayedFood;
 
-    void drawMobile( Oriented& item);
+    void drawMobile( Mobile &item);
+    void drawFood( Located &item);
+
 
 public:
 
@@ -42,7 +46,9 @@ public:
     ~GlutGuiViewport();
 private:
     /**draw one icon, at the center*/
-    void drawIcon();
+    void drawIcon( Mobile& mob);
+    void drawFoodIcon();
+
 
     /**called, when viewport become unactive*/
     void deactivate();

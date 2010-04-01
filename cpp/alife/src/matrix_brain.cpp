@@ -2,6 +2,7 @@
 #include "body.h"
 #include <boost/numeric/ublas/operation.hpp>
 #include <algorithm>
+#include "random_choise.h"
 using namespace boost::numeric::ublas;
 
 
@@ -10,12 +11,21 @@ MatrixBrain::MatrixBrain( int nSensors, int nStates, int nIntermediate, int nOut
      Y(nIntermediate),
      Z(nStates+nOutputs),
      A(nIntermediate, nSensors+nStates),
-     B(nStates+nOutputs, nIntermediate),
-     numSensors( nSensors),
-     numStates( nStates ),
-     numIntermediateValues( nIntermediate ),
-     numOutputs( nOutputs )
+     B(nStates+nOutputs, nIntermediate)
 {
+    numSensors = nSensors;
+    numStates= nStates;
+    numIntermediateValues = nIntermediate ;
+    numOutputs = nOutputs;
+    saturationLimit = 10;
+//    reset();
+}
+void MatrixBrain::reset()
+{
+    for( int i=0; i<numStates; ++i){
+	int iX = i+numSensors;
+	X[iX] = 0; //integrator state to zero
+    }
 }
 void MatrixBrain::simulate( Body & mob, ftype dt)
 {
@@ -27,7 +37,7 @@ void MatrixBrain::simulate( Body & mob, ftype dt)
     axpy_prod(A, X, Y, true); //Y = AX
     //nonlinear transofrm of a vector
     for(int i =0; i<numIntermediateValues; ++i){
-	Y[i] = nlf( Y[i] );
+	Y[i] = nlf( Y[i] + 0.1 );//removing symmetry
     }
     //calculate output + state differential vector
     axpy_prod(B, Y, Z);
@@ -39,33 +49,44 @@ void MatrixBrain::simulate( Body & mob, ftype dt)
     }
     //write output values to the motors
     for( int i =0; i<numOutputs; ++i){
-	mob.setMotor( i, Z[i]>0? 1 : 0 );//binary motor control
+	mob.setMotor( i, outputFunction(Z[i]) );//binary motor control
     }
 }
 
+ftype MatrixBrain::outputFunction( ftype v )
+{
+    if (v > 0 && v<5 )
+	return 1;
+    else
+	return 0;
+}
 /**Non-linear fucntion for neuron computations*/
 ftype MatrixBrain::nlf( ftype x)
 {
     if (x>0){
 	return 1-(1/(1-x));
     }else{
-	return -nlf(-x);
+	return -1+(1/(1+x));
     }
 }
 
-void makeRandomMatrix( ftype firstRowIntensity, ftype intensityDecrease, MatrixBrain::Matrix& m)
+void makeRandomMatrix( ftype firstRowIntensity, ftype intensityDecrease, MatrixBrain::Matrix& m, bool isByRow=true)
 {
     ftype k = firstRowIntensity;
-    int cols = m.size2();
-    int rows = m.size1();
+    int cols = isByRow? m.size2() : m.size1();
+    int rows = isByRow? m.size1() : m.size2();
+
     for( int line = 0; line<rows; ++line){//iterate over all matrix lines
 	for( int col = 0; col<cols; ++ col){
 	    ftype range = k/cols;
-
-	    m(line, col) = frnd( -range, range);
+	    if (isByRow)
+		m(line, col) = frnd( -range, range);
+	    else
+		m(col, line) = frnd( -range, range);
 	}
 	k = k*intensityDecrease;//next line would be 10% less intensive
     }
+
 }
 
 /**Completely random initialization*/
@@ -75,10 +96,10 @@ void MatrixBrain::randomInit()
       output would be around 10 for top values and would
       decrease by 10% for each next line
     */
-    makeRandomMatrix( 10, 0.9, A);
+    makeRandomMatrix( 1, 0.9, A, false);
     /*Initialize B matrix by the same rules as A
      */
-    makeRandomMatrix( 10, 0.9, B);
+    makeRandomMatrix( 1, 0.9, B, true);
     /*Set initial values for integrator*/
     resetState();
 }
@@ -93,7 +114,7 @@ void MatrixBrain::resetState()
 void clearRandomLine( MatrixBrain::Matrix & m)
 {/**fills some random line with zeros*/
     int lineIdx = rand()%m.size1();
-    for( int i =0; i<m.size2(); ++i){
+    for(unsigned int i =0; i<m.size2(); ++i){
 	m(lineIdx, i) = 0;
     };
 }
@@ -101,7 +122,7 @@ void clearRandomLine( MatrixBrain::Matrix & m)
 void addRelativeNoise( MatrixBrain::Matrix & m, ftype amount)
 {/**add relative noise to the matrix*/
     //TODO: ineffective code...
-    MatrixBrain::Matrix::iterator i,e = m.end1();
+    MatrixBrain::Matrix::iterator1 i,e = m.end1();
     for( i = m.begin1(); i!=e; ++i ){
 	(*i) = (*i)*(1+frnd(-amount, amount));
     };
@@ -110,12 +131,12 @@ void addRelativeNoise( MatrixBrain::Matrix & m, ftype amount)
 void addConstantNoise( MatrixBrain::Matrix & m, ftype amount)
 {
    //TODO: ineffective code...
-    MatrixBrain::Matrix::iterator i,e = m.end1();
+    MatrixBrain::Matrix::iterator1 i,e = m.end1();
     for( i = m.begin1(); i!=e; ++i ){
 	(*i) = (*i) + frnd(-amount, amount);
     };
 }
-void addPinNoise( MatrixBrain::MatrixBrain &m, ftype amount, int count = 1)
+void addPinNoise( MatrixBrain::Matrix &m, ftype amount, int count = 1)
 {
     assert( count >=0);
     int i,j;
@@ -173,16 +194,16 @@ void MatrixBrain::makeChild(const MatrixBrain &a, const MatrixBrain &b)
     };
     if (childChoise.empty()){
 	childChoise.add( 0.5, CHILD_BLEND);
-	child_blend.add( 0.5, CHILD_MIX);
+	childChoise.add( 0.5, CHILD_MIX);
     };
     switch( childChoise.get() ){
 	case CHILD_MIX:
 	    //Merge matrices with random koefficient
-	    mixParenst( a, b);
+	    mixParents( a, b);
 	    break;
 	case CHILD_BLEND:
 	    //take some lines from one matrix and other lines from anouther.
-	    blendParents( a, b, frand(0, 1) );
+	    blendParents( a, b, frnd(0, 1) );
 	    break;
 	default: assert( false );
     };
@@ -195,7 +216,7 @@ void MatrixBrain::blendParents( const MatrixBrain &a, const MatrixBrain &b, ftyp
     A += a.A*(k);
     A += b.A*(1-k);
     B += a.B*(k);
-    B += b/B*(1-k);
+    B += b.B*(1-k);
 }
 
 void MatrixBrain::assertCompatible( const MatrixBrain &a)
@@ -207,10 +228,10 @@ void MatrixBrain::assertCompatible( const MatrixBrain &a)
 }
 void mixMatrices( const MatrixBrain::Matrix& a, const MatrixBrain::Matrix &b, MatrixBrain::Matrix &c)
 {
-    for(int i  = 0; i < a.size1(); ++i){
+    for(unsigned int i  = 0; i < a.size1(); ++i){
 	//decidem whether this row is got from the 
 	const MatrixBrain::Matrix &useMatrix = *(rand()%2 ? &a : &b);
-	row(a, i) = row( useMatrix, i);
+	row(c, i) = row( useMatrix, i);
     }
 }
 void MatrixBrain::mixParents( const MatrixBrain &a, const MatrixBrain &b)

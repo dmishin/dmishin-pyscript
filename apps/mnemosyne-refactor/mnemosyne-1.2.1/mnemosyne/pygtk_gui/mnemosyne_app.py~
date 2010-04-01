@@ -1,0 +1,15 @@
+
+
+class MnemosyneApp():
+    """
+    """
+    def installTranslator(self, translator):
+        print "Installed translator:", translator
+        self.translator = translator
+        
+    def __init__(self, ):
+        """
+        """
+        self.translator = None
+        
+        

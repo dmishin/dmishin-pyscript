@@ -21,14 +21,17 @@
 #include <stdlib.h>
 #include <stdexcept>
 #include "world.h"
+#include <boost/thread.hpp>
 
 Simulator::Simulator()
+
 {
     world = NULL;
     dt = (ftype)1e-5;
     simulatedSteps = 0;
     simulatedTime = 0;
     stopRequest = false;
+    simulationDelay = 0;
 }
 
 void Simulator::simulate()
@@ -41,6 +44,8 @@ void Simulator::simulate()
 	simulateStep( dt );
 	simulatedSteps ++;
 	simulatedTime += dt;
+	if (simulationDelay)
+	    boost::this_thread::sleep(boost::posix_time::milliseconds( simulationDelay )); 
     }
 
     stopRequest = false;//stop request fulfilled
@@ -48,13 +53,39 @@ void Simulator::simulate()
 
 void Simulator::simulateStep( ftype dt )
 {
-    World::Mobiles::const_iterator i, e=world->getMobiles().end();
-    for( i = world->getMobiles().begin(); i!=e; ++i){
+    Mobiles::iterator i=mobiles.begin(), e=mobiles.end();
+    while( i!=e ){
 	(*i)->simulate( dt );
+
+	if (! (*i)->isAlive() ){
+	    mobiles.erase( i++ );//first erase then increase
+	    //++i;
+	}else{
+	    ++i;
+	}
     }
+    world->simulate( dt );
 }
 
 bool Simulator::isStopRequested()
 {
     return stopRequest;
+}
+    /**abstrac simulator implementation*/
+void Simulator::prepareSimulation( World & w)
+{
+    mobiles.clear();
+    setWorld( w );
+}
+void Simulator::onNewBot( MobilePtr mob )
+{
+    //assert( mobiles.find(mob) == mobiles.end() );
+    //mobiles.insert( mob );
+    mobiles.push_back( mob );
+    
+//    mobiles.erase( mobiles.begin() );
+}
+void  Simulator::setDelay( int timeMs )
+{
+	simulationDelay = timeMs;
 }
