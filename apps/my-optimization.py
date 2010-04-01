@@ -126,7 +126,7 @@ def rvec2():
 
 point_set = [[rvec2() for j in xrange(3)] for  i in xrange(n_sets)]
     
-tester = test_suite( point_set, rozen, 1e-12, numpy.array([1,1]))
+tester = test_suite( point_set, lambda v:(v[0]-1)**2+(v[1]-1)**2, 1e-12, numpy.array([1,1]))
 
 def ofun( k_esgs):
     ke, ks, kgs = k_esgs
@@ -135,6 +135,11 @@ def ofun( k_esgs):
 
 #trying to find optimal parameters for ofun
 
+#Found solution:
+#1000 random points in +-5 range average steps count: 280
+# func: rozen
+#[[array([ 1.82030691,  0.47676445,  0.29707136]), 280.33199999999999], [array([ 1.82030704,  0.47676428,  0.29707133]), 280.334], [array([ 1.8203071 ,  0.47676463,  0.29707172]), 280.38799999999998], [array([ 1.82030656,  0.47676472,  0.29707128]), 280.40600000000001]]
+
 print "Optimizing parameters"
 
 steps, slots = contracting_simplex(
@@ -142,7 +147,8 @@ steps, slots = contracting_simplex(
         [ [2,0.5,0.5], [2.1, 0.5, 0.6], [2.2, 0.3,0.5], [1.9, 0.5, 0.4] ] ),
     ofun,
     eps=0.5,
-    max_calculations = 300
+    max_calculations = 300,
+    ke = 1.82, ks=0.47, kgs = 0.297
     )
 
 print steps, slots
