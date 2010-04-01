@@ -15,6 +15,18 @@ class JM:
         if db:
             self.connect( db )
 
+    def read_media(self):
+        self.cursor.execute("select id, default_mount_point, mount_point, is_removable, name from media")
+        for row in self.cursor:
+            print row
+            
+
+    def add_media(self, name, mount_point, is_removable=True):
+        self.cursor.execute("insert into media(name, default_mount_point, mount_point, is_removable) values (?,?,?,?)",
+                            (name, mount_point, mount_point, is_removable ))
+        media_id = self.cursor.lastrowid
+        return media_id
+
     def connect(self, database):
         "Conenct to the database"
         self.connection = sql.connect( database )
@@ -58,3 +70,6 @@ jm = JM( database )
 print "Getting tag test twice"
 print jm.get_tag("test", True)
 print jm.get_tag("test")
+
+jm.add_media( "root media", "/", False )
+jm.read_media()
