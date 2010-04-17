@@ -172,6 +172,7 @@ def contracting_simplex2( initial_points, func, params=[1.0, 2.0, 0.5, 0.5], max
         xl,fl= slots[0] #best
         xg,fg = slots[-2] #next to the worst
         xh, fh = slots[-1]#forst 
+        show( "Slots:", slots)
         #calculate center
         xc = sum( [slot[0] for slot in slots[:-1]] )/N
         show( "Center:", xc)
@@ -223,7 +224,21 @@ def contracting_simplex2( initial_points, func, params=[1.0, 2.0, 0.5, 0.5], max
             break
 
     return calculations[0], slots
-                
+              
+
+def fun2( v ):
+    x,y=v
+    return ((x-1)**2+y**2)*((x+1)**2+y**2)
+verbose = True
+print contracting_simplex2( 
+    map(numpy.array, [
+            [0, 1],
+            [0, -1],
+            [0.1, 0.3]]),
+    fun2,
+    params=[1.05, 2.2, 0.3, 0.6],
+    eps = 1e-4)
+raise ValueError, "stop"
         
 
 def rozen(v):
