@@ -1,6 +1,7 @@
 import javax.swing._
 import java.awt._
 import java.awt.event._
+import java.lang.System
 
 class Point( x: Int, y: Int ){
   var xx = x*x
@@ -43,25 +44,21 @@ class Matrix(h:Int, w:Int){
 }
 
 object Timer{
-  def run( runnable: ()=>Unit ){
-    val timeBegin = System.getCurrentTimeMs
+  def run( runnable: ()=>Unit ) = {
+    val timeBegin = System.currentTimeMillis
     runnable()
-    val timeEnd = System.getCurrentTimeMs
-    return timeEnd-timeBegin
+    System.currentTimeMillis - timeBegin
   }
-  def runUntil( runnable: ()=>Unit, minTimeMs: Int ){
-    var elapsed = 0
+  def runUntil( runnable: ()=>Unit, minTimeMs: Long ) = {
+    var elapsed:Long = 0
     var iters = 0
     while( elapsed < minTimeMs ){
       elapsed += run( runnable )
       iters += 1
     }
-    return (elapsed, iters)
+    (elapsed, iters)
   }
 }
-
-
-
 
 
 
@@ -76,6 +73,14 @@ object MainClass{
     var m = new Matrix( 4,4 )
     println( m )
 
+
+    //measuringTime
+    println( Timer.runUntil( ()=> {
+      var m = new Matrix( 10,10)
+      m.setMul( m, m)
+    }, 10000 ))
+
+
     val frm = new JFrame( "test frame" )
     frm.setSize( new Dimension( 256, 256 ) )
     frm.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE )
@@ -85,7 +90,8 @@ object MainClass{
 	println("WindowClosing event")
       }
     })
-    
+
+   
 
     val comp = new MyPaintBox( _.drawLine( 0,0, 10, 10) )
 
