@@ -44,12 +44,12 @@ class Matrix(h:Int, w:Int){
 
 object Timer{
   def run( runnable: ()=>Unit ){
-    val timeBegin = System.getCurrentTime
+    val timeBegin = System.getCurrentTimeMs
     runnable()
-    val timeEnd = System.getCurrentTime
+    val timeEnd = System.getCurrentTimeMs
     return timeEnd-timeBegin
   }
-  def runMany( runnable: ()=>Unit, minTimeMs: Int ){
+  def runUntil( runnable: ()=>Unit, minTimeMs: Int ){
     var elapsed = 0
     var iters = 0
     while( elapsed < minTimeMs ){
