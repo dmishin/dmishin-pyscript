@@ -92,3 +92,16 @@ GridCell & Grid::findCell( const vec2 & vec )
 	return getLastCell();
     }
 }
+
+
+/////////////////////////////////
+/// Grid Cell
+/////////////////////////////////
+
+bool GridCell::contains( const vec2 &v )const
+{
+    vec2 p0 = getTopLeft();
+    vec2 p1 = getBottomRight();
+    return (p0.x < v.x && p0.y < v.y && p1.x >= v.x && p1.y >= v.y);
+}
+
