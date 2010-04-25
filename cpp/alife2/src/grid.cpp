@@ -1,13 +1,32 @@
 #include <assert.h>
 #include <algorithm>
+#include <sstream>
 
 #include "grid.hpp"
 #include "util.hpp"
 
 using namespace alife2;
 
+Grid::Grid()
+{
+    population = 0;
+    width = 0;
+    height = 0;
+    numCols = 0;
+    numRows = 0;
+    
+}
+Grid::Grid( float w, float h, float cellSize)
+{
+    population = 0;
+    initGrid( w, h, cellSize );
+}
+
+
 void Grid::initGrid( float width_, float height_, float cellSize)
 {
+    population = 0;
+
     width = width_;
     height = height_;
 
@@ -36,6 +55,7 @@ void Grid::initGrid( float width_, float height_, float cellSize)
 	    cell.init( col, row, this );
 	}
     }
+    getLastCell().initOutside( this ); //last cell is an outside cell.
 }
 
 GridCell & Grid::getCell( int col, int row )
@@ -93,15 +113,118 @@ GridCell & Grid::findCell( const vec2 & vec )
     }
 }
 
-
-/////////////////////////////////
-/// Grid Cell
-/////////////////////////////////
-
-bool GridCell::contains( const vec2 &v )const
+/**Updating items in cells: 
+ *for each item in each cell, 
+ * check, whether it belongs to the gight cell, 
+ * and if needed - put it to the right one*/
+void Grid::update()
 {
-    vec2 p0 = getTopLeft();
-    vec2 p1 = getBottomRight();
-    return (p0.x < v.x && p0.y < v.y && p1.x >= v.x && p1.y >= v.y);
+    typedef std::vector< GridItem* >  ItemVector; //TODO: isn't it performance loss?
+    ItemVector repositionedItems;
+
+    Cells::iterator i;
+    for( i = cells.begin(); i != cells.end(); ++i ){
+	GridCell & cell = *i;
+	//iterate items inside cell
+	//TODO: Grab cell monitor?
+	GridCell::Items::iterator iItem = cell.items.begin();
+	while ( iItem != cell.items.end() ){
+	    GridItem * item = *iItem;
+	    if ( cell.contains( item->getLocation() ) ){
+		++iItem;
+		continue; //OK, item is inside the cell;
+	    }else{
+		//Item is outside the cell and must be updated
+		cell.items.erase( iItem++ );
+		repositionedItems.push_back( item );
+	    }
+	}
+    }
+    //Now put the repositioned items back to the grid
+    
+    for ( ItemVector::iterator i = repositionedItems.begin(); i != repositionedItems.end(); ++i ){
+	population --;
+	putItem( *i );
+    }	
 }
 
+void Grid::putItem( GridItem * item )
+{
+    assert( item );
+    //first get the cell reference for this item
+    GridCell & cell = findCell( item->getLocation() );
+    cell.addItem( item );
+    population ++;
+}
+
+void Grid::removeItem( GridItem * item )
+{
+    assert( item ); //item is real 
+    assert( item->getOwnerCell() );//and owner cell is right
+    assert( item->getOwnerCell()->getGrid() == this );//and item belongs to this grid
+
+    item->getOwnerCell()->removeItem( item );
+    item->setOwnerCell( NULL );//item does not belongs to anything anymore.
+    population --;
+}
+
+int Grid::enumerateInRectangle( const rectangle & r, ItemEnumerator & enumerator )
+{
+    //determine cell bounds
+    int leftBound = max(0,  int(floor(r.left() / cellWidth)) );
+    int rightBound = min( numCols-1, int(ceil( r.right() / cellWidth ) ) );
+    int topBound = min( 0, int( floor( r.top() / cellHeight ) ) );
+    int bottomBound = max( numRows-1, int(ceil( r.bottom() / cellHeight ) ) );
+
+    for( int x = leftBound; x <= rightBound; ++x ){
+	for( int y = topBound; y <= bottomBound; ++y ){
+	    GridCell & cell = getCell( x, y );
+	    for( GridCell::Items::iterator i = cell.items.begin(); i != cell.items.end(); ++i){
+		assert( *i );//Item must be non-null
+		if ( r.contains( (*i)->getLocation() ) ){
+		    enumerator.enumerate( **i );
+		}
+	    }
+	}
+    }
+    
+}
+
+int Grid::enumerateInCircle( const circle & c, ItemEnumerator & enumerator )
+{
+    //determine cell bounds
+    int leftBound = max(0,  int(floor( (c.center.x - c.radius) / cellWidth)) );
+    int rightBound = min( numCols-1, int(ceil( (c.center.x+c.radius) / cellWidth ) ) );
+    int topBound = min( 0, int( floor( (c.center.y + c.radius) / cellHeight ) ) );
+    int bottomBound = max( numRows-1, int(ceil( (c.center.y + c.radius) / cellHeight ) ) );
+
+    for( int x = leftBound; x <= rightBound; ++x ){
+	for( int y = topBound; y <= bottomBound; ++y ){
+	    GridCell & cell = getCell( x, y );
+	    for( GridCell::Items::iterator i = cell.items.begin(); i != cell.items.end(); ++i){
+		assert( *i );//Item must be non-null
+		if ( c.contains( (*i)->getLocation() ) ){
+		    enumerator.enumerate( **i );
+		}
+	    }
+	}
+    }
+    
+}
+
+
+
+/**Utility functions*/
+std::string Grid::toString()const
+{
+    std::ostringstream ostream;
+    FOR_RANGE(y, 0, numRows){
+	ostream<<"[";
+	FOR_RANGE(x, 0, numCols){
+	    ostream<<"["<<getCell( x, y ).getPopulation()<<"]";
+	}
+	ostream<<"]\n";
+    }
+    ostream<<"Outside cells population:"<<getLastCell().getPopulation();
+    return ostream.str();
+}
