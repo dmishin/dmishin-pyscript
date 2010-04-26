@@ -1,4 +1,6 @@
 #include "mobile.hpp"
+#include "world.hpp"
+#include <assert.h>
 
 using namespace alife2;
 Mobile::Mobile()
