@@ -27,7 +27,11 @@ void Mobile::simulate()
     angle += rotation( angleSpeed * dt );//TODO: use fast rotation?
     
     //simulate friction
+    float mvFrictionForce = speed.len2() * world->getFriction();
+    speed -= speed/speed.len() * mvFrictionForce() * dt / mass;
     
+    float rotFrictionForce = sqr(angleSpeed) * world->getRotFriction();
+    angleSpeed = 
 }
 
 void Mobile::setWorld( World * w )

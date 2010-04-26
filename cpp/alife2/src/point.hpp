@@ -39,6 +39,9 @@ namespace alife2{
 	    x *= k; y *= k;
 	    return *this;
 	};
+	vec2& operator /= (float k){
+	    return (*this) *= (1/k);
+	};
 
 	float len2()const{  return sqr(x) + sqr(y); };
 	float len() const{  return sqrtf( len2() ); }; 
@@ -68,6 +71,10 @@ namespace alife2{
     vec2 operator * (float k, const vec2& v){
 	return vec2(v.x*k,v.y*k);
     };
+    inline
+    vec2 operator / (const vec2 &v, float k){
+	return vec2*(1/k);
+    }
 
     /**Scalar product*/
     inline float sprod( const vec2& v1, const vec2 &v2){
