@@ -9,36 +9,39 @@
 namespace alife2{
     class World;
     class Mobile: public GridItem, public Simulated{
+    private:
+	/*Common initialization of miscelanneous parameters*/
+	void initParameters();
     public:
 	//inherits:
 	//position - from Located
-	vec2 speed;
-	rotation angle;
-	float angleSpeed;
-	float mass;
+	vec2 speed;       //movement speed
+	rotation angle;   //rotation angle
+	float angleSpeed; //rotation speed
 
+	//Physical parameters
+	float mass;
+	float inertionMoment;
+
+	//Back reference to thw World instance, the mobile belongs to.
 	World * world;
 
+	//COnstructing...
 	Mobile();
 	Mobile( const vec2 &pos, float angle );
 	virtual ~Mobile();
-
-	void setWorld( World* w);
-
 	/**Implementation of the SImulated*/
 	virtual void simulate();
 	
+	//Mobile parameters access
+	void setWorld( World* w);
+
 	const vec2& getSpeed() const { return speed; };
 	void setSpeed( const vec2& s ) { speed = s; };
 	const rotation& getAngle() const { return angle; };
 	void setAngle( float angle_ ) { angle = rotation( angle_ ) ; };
 	float getAngleSpeed() const { return angleSpeed; };
 	void setAngleSpeed( float aSpeed) { angleSpeed = aSpeed; };
-	
-	
-
-    private:
-	
     };
 };
 

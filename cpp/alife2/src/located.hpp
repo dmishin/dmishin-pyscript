@@ -6,9 +6,15 @@
 namespace alife2{
     /**Abstract interface to be implemented by the located items*/
     class Located{
+    protected:
+	vec2 position;
     public:
-	virtual vec2 getLocation()const = 0;
-	virtual void setLocation( const vec2& v ) = 0;
+	Located(): position( 0, 0 ) {};
+	Located( const vec2& p ): position( p ) {};
+	
+	const vec2 & getLocation()const {return position; };
+	void setLocation( const vec2& v ) { position = v; };
+	
     };
 	
 };

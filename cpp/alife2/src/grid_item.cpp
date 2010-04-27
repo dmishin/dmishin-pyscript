@@ -3,8 +3,8 @@
 
 using namespace alife2;
 GridItem::GridItem( const vec2& pos )
- :Located( pos ),
-  pOwnerCell( NULL )
+    :Located( pos ),
+     pOwnerCell( NULL )
 {
 };
 

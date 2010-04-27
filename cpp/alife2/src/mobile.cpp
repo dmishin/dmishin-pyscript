@@ -1,6 +1,7 @@
 #include "mobile.hpp"
 #include "world.hpp"
 #include <assert.h>
+#include <math.h>
 
 using namespace alife2;
 Mobile::Mobile()
@@ -9,6 +10,7 @@ Mobile::Mobile()
      speed( 0, 0),
      angleSpeed( 0 )
 {
+    initParameters();
 }
 Mobile::Mobile( const vec2 &pos, float angle_ )
     :GridItem( pos ),
@@ -16,6 +18,13 @@ Mobile::Mobile( const vec2 &pos, float angle_ )
      angleSpeed( 0 ),
      speed( 0, 0 )
 {
+    initParameters();
+}
+void Mobile::initParameters()
+{
+    //Initialize various mobile parameters
+    mass = 1.0f;
+    inertionMoment = 1.0f;
 }
 /**Implementation of the SImulated*/
 void Mobile::simulate()
@@ -27,11 +36,12 @@ void Mobile::simulate()
     angle += rotation( angleSpeed * dt );//TODO: use fast rotation?
     
     //simulate friction
-    float mvFrictionForce = speed.len2() * world->getFriction();
-    speed -= speed/speed.len() * mvFrictionForce() * dt / mass;
-    
+    //1) Movement liquid friction
+    float mvFrictionForce = speed.len2() * world->getFriction(); //TODO: not very optimal calculation
+    speed -= speed/speed.len() * mvFrictionForce * dt / mass;
+    //2) Rotation liquid friction
     float rotFrictionForce = sqr(angleSpeed) * world->getRotFriction();
-    angleSpeed = 
+    angleSpeed -= signum( angleSpeed ) * rotFrictionForce * dt / inertionMoment;
 }
 
 void Mobile::setWorld( World * w )

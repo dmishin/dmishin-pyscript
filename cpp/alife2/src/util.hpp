@@ -41,6 +41,17 @@ namespace alife2{
 	else
 	    return b;
     }
+
+    //TODO: make it of type T? Will it speed up simulation anyhow?
+    template< typename T >
+    int signum( T x ){
+	if ( x > 0 )
+	    return 1;
+	else if (x < 0 )
+	    return -1;
+	else
+	    return 0;
+    };
     
     /**Random floats*/
     float randf();

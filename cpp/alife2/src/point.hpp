@@ -71,9 +71,11 @@ namespace alife2{
     vec2 operator * (float k, const vec2& v){
 	return vec2(v.x*k,v.y*k);
     };
+
+    /**division by constant*/
     inline
     vec2 operator / (const vec2 &v, float k){
-	return vec2*(1/k);
+	return v*(1/k);
     }
 
     /**Scalar product*/

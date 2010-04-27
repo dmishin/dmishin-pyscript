@@ -8,8 +8,10 @@ namespace alife2{
     class Grid;
     class GridCell;
 
-    /**Objects, that are located inthe grid, should be children of this class*/
-    class GridItem: public Located{
+    /**Objects, that are located inthe grid, should be children of this class
+     * Additionally to its position, grid item knows the cell it belongs to.
+     */
+    class GridItem: public Located{ //inherits protected poistion
       protected:
 	GridCell *pOwnerCell;
       public:
@@ -17,8 +19,8 @@ namespace alife2{
 	GridItem( const vec2& pos );
 	
 	virtual ~GridItem(){};
-	virtual GridCell* getOwnerCell();
-	virtual void setOwnerCell( GridCell* pCell );
+	GridCell* getOwnerCell();
+	void setOwnerCell( GridCell* pCell );
     };
 };
 
