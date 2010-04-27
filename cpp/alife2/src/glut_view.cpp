@@ -42,6 +42,22 @@ void GlutView::deactivate()
     }
     assert( false );//not active
 }
-	
+void GlutView::setViewPoint( const vec2& p )
+{
+    viewPoint = p;
+}
 
-	void setViewPoint( const vec2& p );
+void GlutView::setZoom( float z )
+{
+    zoom = z;
+}
+
+bool GlutView::isActive()const
+{
+    return (static_ActiveView == this );
+}
+
+void GlutView::runLoop()
+{
+    //TODO
+}
