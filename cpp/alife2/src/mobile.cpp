@@ -31,6 +31,10 @@ void Mobile::simulate()
 {
     assert( world );
     float dt = world->getSimulationStep();//TODO: get the time step from the world
+
+    simulateMotors();
+    simulateBrain();
+
     //SImulate movement
     position += speed * dt;
     angle += rotation( angleSpeed * dt );//TODO: use fast rotation?
@@ -42,8 +46,22 @@ void Mobile::simulate()
     //2) Rotation liquid friction
     float rotFrictionForce = sqr(angleSpeed) * world->getRotFriction();
     angleSpeed -= signum( angleSpeed ) * rotFrictionForce * dt / inertionMoment;
+
+    //Apply limitations, the World has on bot position
+    world->applyBounds( *this );
+
 }
 
+void Mobile::simulateMotors()
+{
+    //TODO
+}
+
+void Mobile::simulateBrain()
+{
+    //TODO
+}
+   
 void Mobile::setWorld( World * w )
 {
     world = w;
@@ -51,4 +69,6 @@ void Mobile::setWorld( World * w )
 
 Mobile::~Mobile()
 {
+    assert( ! getOwnerCell() );//prevenmt attempt of deleting used bot.
+    assert( ! world );//check that the bot is removed from the world.
 }

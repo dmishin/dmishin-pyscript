@@ -37,6 +37,9 @@ namespace alife2{
 
 	//Implementation of the Simulated
 	virtual void simulate();
+
+	//Apply world geometry to the mobile: force it to stay inside the world bounds
+	void applyBounds( Mobile & mob );
     };
 };
 

@@ -39,3 +39,37 @@ void World::add( Food* food )
     gridFood.putItem( food );
 }
 */
+ //Apply world geometry to the mobile: force it to stay inside the world bounds
+void World::applyBounds( Mobile & mob )
+{
+    //For now, only force mobile to stay within the rectangular area of the World.
+    //In future, add some obstacles?
+    const vec2 & pos = mob.getLocation();
+    if ( bounds.contains( pos ) ){
+	//Bot is within the world rectangle
+	return;
+    }else{
+	//Bot is outside the world rectangle
+	//force it back
+	vec2 pos1 = pos;
+	vec2 speed1 = mob.getSpeed();
+
+	if ( pos.x < bounds.left() ){
+	    pos1.x  = bounds.left();
+	    speed1.x = 0;
+	}else if ( pos.x > bounds.right() ) {
+	    pos1.x = bounds.right();
+	    speed1.x = 0;
+	}
+	if ( pos.y < bounds.top() ){
+	    pos1.y  = bounds.top();
+	    speed1.y = 0;
+	}else if ( pos.y > bounds.bottom() ) {
+	    pos1.y = bounds.bottom();
+	    speed1.y = 0;
+	}
+	//update the speed and position
+	mob.setLocation( pos1 );
+	mob.setSpeed( speed1 );
+    }
+}

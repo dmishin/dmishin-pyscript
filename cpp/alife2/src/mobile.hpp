@@ -12,6 +12,10 @@ namespace alife2{
     private:
 	/*Common initialization of miscelanneous parameters*/
 	void initParameters();
+	/**Simulation of the separate parts ob the mobile*/
+	void simulateMotors();
+	void simulateBrain();
+	   
     public:
 	//inherits:
 	//position - from Located
