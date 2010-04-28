@@ -39,6 +39,7 @@ int main(int argc, char *argv[])
 
     GlutView view;
     view.setWorld( &world );
+    view.activate();
     view.runLoop();
     return 0;
 }

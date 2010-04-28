@@ -5,6 +5,7 @@
 #include "world.hpp"
 #include "mobile.hpp"
 #include <math.h>
+#include <iostream>
 
 using namespace alife2;
 
@@ -13,7 +14,7 @@ alife2::GlutView * alife2::GlutView::static_ActiveView = NULL;
 GlutView::GlutView()
 {
     world = NULL;
-    zoom = 1;
+    zoom = 10;
     viewPoint = vec2( 0, 0);
     width = 0;
     height = 0;
@@ -74,10 +75,10 @@ void GlutView::runLoop()
     int argc = 0;
     glutInit( &argc, argv );
     glutInitDisplayMode( GLUT_DOUBLE );
-    glutCreateWindow("UI with glut");
+    glutCreateWindow( "UI with glut" );
     glutDisplayFunc( glut_display );
     // here is the setting of the idle function
-    glutIdleFunc( glut_display );
+    //glutIdleFunc( glut_display );
     glutReshapeFunc( glut_resize );
 
     glutMainLoop();
@@ -86,6 +87,9 @@ void GlutView::runLoop()
 //interaction with GLUT
 void GlutView::resize( int w, int h )
 {
+    std::cout<<"resize:"<<w<<h<<std::endl;
+    std::cout.flush();
+
     width = w;
     height = h;
 
@@ -115,6 +119,8 @@ void GlutView::display()
     ItemCollector::Items mobiles;
     ItemCollector collector( mobiles );
     world->gridMobiles.enumerateInRectangle( viewRect, collector );
+    std::cout<<"Draw "<<mobiles.size()<<" mobiles"<<std::endl;
+    std::cout.flush();
     for (ItemCollector::Items::iterator i = mobiles.begin(); i != mobiles.end(); ++i){
 	drawMobile( * static_cast<Mobile *>(*i) );
     }
@@ -127,7 +133,7 @@ void GlutView::drawMobile( Mobile& item)
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glTranslatef(pos.x, pos.y, 0);
-    glRotatef( item.getAngle().angle()*(180/M_PI), 0, 0, 1 );
+    glRotatef( item.getAngle().angle()*(180/M_PI), 0, 0, 1 );//TODO: not really effective
     drawMobileIcon( item );
     glPopMatrix();
 }
@@ -190,6 +196,8 @@ vec2 GlutView::world2view( const vec2& p )
 //GLUT callback functions
 void GlutView::glut_resize( int w, int h)
 {
+//    std::cout<<"g-resize\n";
+//    std::cout.flush();
     if ( static_ActiveView ){
 	static_ActiveView->resize( w, h );
     };
