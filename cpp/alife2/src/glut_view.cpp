@@ -14,7 +14,7 @@ alife2::GlutView * alife2::GlutView::static_ActiveView = NULL;
 GlutView::GlutView()
 {
     world = NULL;
-    zoom = 10;
+    zoom = 8;
     viewPoint = vec2( 0, 0);
     width = 0;
     height = 0;
@@ -30,6 +30,8 @@ GlutView:: ~GlutView()
 void GlutView::setWorld( World * pWorld )
 {
     world = pWorld;
+    if ( world )
+	setViewPoint( world->getCenter() );
 }
 //Set this view as active or not. Only one GLUT view can be active at time
 void  GlutView::activate()
@@ -95,7 +97,7 @@ void GlutView::resize( int w, int h )
 
     //calculate viewed area size
     vec2 ptTopLeft = view2world( vec2(0,0) );
-    vec2 ptBottomRight = world2view( vec2( width, height ) );
+    vec2 ptBottomRight = view2world( vec2( width, height ) );
 
     //set up viewport
     glViewport(0, 0, w, h);       /* Establish viewing area to cover entire window. */
@@ -118,9 +120,11 @@ void GlutView::display()
     //TODO: avoid creation of the buffers
     ItemCollector::Items mobiles;
     ItemCollector collector( mobiles );
+
     world->gridMobiles.enumerateInRectangle( viewRect, collector );
     std::cout<<"Draw "<<mobiles.size()<<" mobiles"<<std::endl;
     std::cout.flush();
+
     for (ItemCollector::Items::iterator i = mobiles.begin(); i != mobiles.end(); ++i){
 	drawMobile( * static_cast<Mobile *>(*i) );
     }
@@ -180,14 +184,16 @@ void GlutView::drawMobileIcon( Mobile &mob )
 void GlutView::keyPressed( unsigned char key, int x, int y )
 {
 }
+
+
 /////////////////// coord transforms ////////////////
 vec2 GlutView::view2world( const vec2& p )
 {
-    return ( p - vec2( width, height )/2 ) / zoom + viewPoint;
+    return ( p - vec2( width/2, height/2 ) ) / zoom + viewPoint;
 }
 vec2 GlutView::world2view( const vec2& p )
 {
-    return ( p - viewPoint ) * zoom + vec2( width, height )/2;
+    return ( p - viewPoint ) * zoom + vec2( width/2, height/2 );
 }
 
 

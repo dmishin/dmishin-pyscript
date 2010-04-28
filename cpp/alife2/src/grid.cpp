@@ -167,15 +167,22 @@ void Grid::removeItem( GridItem * item )
     item->setOwnerCell( NULL );//item does not belongs to anything anymore.
     population --;
 }
-
+#include <iostream>
 int Grid::enumerateInRectangle( const rectangle & r, ItemEnumerator & enumerator )
 {
     //determine cell bounds
     int count = 0;
-    int leftBound = max(0,  int(floor(r.left() / cellWidth)) );
-    int rightBound = min( numCols-1, int(ceil( r.right() / cellWidth ) ) );
-    int topBound = min( 0, int( floor( r.top() / cellHeight ) ) );
-    int bottomBound = max( numRows-1, int(ceil( r.bottom() / cellHeight ) ) );
+    std::pair<int,int> hBound = hrzCellIndexRange( r.left(), r.right() );
+    std::pair<int,int> vBound = vrtCellIndexRange( r.top(), r.bottom() );
+    
+    int leftBound = hBound.first;
+    int rightBound = hBound.second;
+    int topBound    = vBound.first;
+    int bottomBound = vBound.second;
+
+    std::cout<<r.left()<<":"<<r.right()<<"|"<<r.top()<<":"<<r.bottom()<<std::endl;
+    std::cout<<"bounds:"<<leftBound<<":"<<rightBound<<"|"<<topBound<<":"<<bottomBound<<std::endl;
+    std::cout.flush();
 
     for( int x = leftBound; x <= rightBound; ++x ){
 	for( int y = topBound; y <= bottomBound; ++y ){
@@ -194,14 +201,28 @@ int Grid::enumerateInRectangle( const rectangle & r, ItemEnumerator & enumerator
     
 }
 
+std::pair<int, int> Grid::hrzCellIndexRange( float x0, float x1 )
+{
+    return std::make_pair( limit( int(floor( x0 / cellWidth)), 0, numCols-1 ),
+			   limit( int(ceil( x1 / cellWidth )), 0, numCols-1 ) );
+}
+std::pair<int, int> Grid::vrtCellIndexRange( float y0, float y1 )
+{
+    return std::make_pair( limit( int(floor( y0 / cellWidth)), 0, numRows-1 ),
+			   limit( int(ceil( y1 / cellWidth )), 0, numRows-1 ) );
+}
+
 int Grid::enumerateInCircle( const circle & c, ItemEnumerator & enumerator )
 {
     //determine cell bounds
     int count = 0;
-    int leftBound = max(0,  int(floor( (c.center.x - c.radius) / cellWidth)) );
-    int rightBound = min( numCols-1, int(ceil( (c.center.x+c.radius) / cellWidth ) ) );
-    int topBound = min( 0, int( floor( (c.center.y + c.radius) / cellHeight ) ) );
-    int bottomBound = max( numRows-1, int(ceil( (c.center.y + c.radius) / cellHeight ) ) );
+    std::pair<int,int> hBound = hrzCellIndexRange( c.center.x - c.radius, c.center.x + c.radius );
+    std::pair<int,int> vBound = vrtCellIndexRange( c.center.y - c.radius, c.center.y + c.radius );
+    
+    int leftBound = hBound.first;
+    int rightBound = hBound.second;
+    int topBound    = vBound.first;
+    int bottomBound = vBound.second;
 
     for( int x = leftBound; x <= rightBound; ++x ){
 	for( int y = topBound; y <= bottomBound; ++y ){

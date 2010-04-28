@@ -11,11 +11,11 @@ void World::initParameters()
     rotationFriction = 0.1f;
 }
 
-World::World()
+World::World( float width, float height, float cellSize)
 {
     initParameters();
     //initialize grids
-    initGrids( 100, 100, 1 );
+    initGrids( width, height, cellSize );
 }
 
 void World::initGrids( float width, float height, float cellSize )

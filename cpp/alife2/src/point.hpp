@@ -54,17 +54,17 @@ namespace alife2{
 
     inline
     vec2 operator + (const vec2& a, const vec2& b){
-	return vec2( a.x+b.x, a.y+b.y);
+	return vec2( a.x + b.x, a.y + b.y);
     };
 
     inline
     vec2 operator - (const vec2& a, const vec2& b){
-	return vec2( a.x+b.x, a.y+b.y);
+	return vec2( a.x - b.x, a.y - b.y);
     };
     
     inline
     vec2 operator * (const vec2& v, float k){
-	return vec2(v.x*k,v.y*k);
+	return vec2(v.x * k, v.y * k);
     };
     
     inline
@@ -100,6 +100,8 @@ namespace alife2{
 	float top()const { return top_left.y; };
 	float bottom()const { return bottom_right.y; };
 
+	vec2 center()const { return (top_left+bottom_right)*0.5f; };
+
 	bool contains( const vec2& v )const { 
 	    return v.x >= top_left.x && v.y >= top_left.y &&
 		v.x < bottom_right.x && v.y < bottom_right.y;
@@ -110,6 +112,9 @@ namespace alife2{
 	    bottom_right += offset;
 	    return *this;
 	}
+	rectangle extend( float d )const{ return extend( d, d); };
+	rectangle extend( float dx, float dy )const{ return rectangle( left()-dx, top()-dy, right()+dx, bottom()+dy ); };
+	
     };
 
 
@@ -123,8 +128,15 @@ namespace alife2{
 	circle( float x, float y, float r): center( x, y), radius( r ){};
 	
 	bool contains( const vec2 & v )const{ return center.dist2( v ) <= sqr( radius ); };
+	//Offsets
 	circle operator + (const vec2 & v)const{ return circle( center + v, radius ); };
-	circle & operator += (const vec2 & v) { center += v; return *this; }	    
+	circle & operator += (const vec2 & v) { center += v; return *this; };	    
+	circle operator - (const vec2 & v)const{ return circle( center - v, radius ); };
+	circle & operator -= (const vec2 & v) { center -= v; return *this; };
+
+	//scale
+	circle operator * (float k) const { return circle( center*k, radius*k ); };
+	
     };
 		
 };

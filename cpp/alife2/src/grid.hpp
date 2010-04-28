@@ -38,6 +38,9 @@ namespace alife2{
 	
 	/**Find the cell by the object coordinates*/
 	GridCell & findCell( const vec2 & vec );
+	std::pair<int, int> hrzCellIndexRange( float x0, float x1 );
+	std::pair<int, int> vrtCellIndexRange( float y0, float y1 );
+
     public:
 	Grid();
 	Grid( float w, float h, float cellSize);

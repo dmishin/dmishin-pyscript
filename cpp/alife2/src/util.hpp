@@ -29,18 +29,26 @@ namespace alife2{
 
     template<typename T>
     T max( T a, T b){
-	if (a>b) return a;
+	if (a > b) 
+	    return a;
 	else
 	    return b;
     };
 
     template< typename T>
     T min( T a, T b ){
-	if (a< b)
+	if (a < b)
 	    return a;
 	else
 	    return b;
     }
+    
+    /**Limit x with high and low limits*/
+    template< typename T >
+    T limit( T x, T low_limit, T high_limit ){
+	return min( max( x, low_limit ), high_limit );
+    }
+	
 
     //TODO: make it of type T? Will it speed up simulation anyhow?
     template< typename T >

@@ -26,14 +26,16 @@ int main(int argc, char *argv[])
     
     cout << "== Testing grid ==\n";
     
-    World world;
+    World world( 100, 100, 4 );
 
     FOR_RANGE( i, 0, 100 ){
 	Mobile * item = new Mobile();
-	item->setLocation( vec2(randf(0,10), randf(0,10) ) );
+	item->setLocation( vec2(randf(0,100), randf(0,100) ) );
+	item->setAngle( randf( 0, 2*M_PI ) );
 	world.add( item );
     }
 
+    cout<<world.gridMobiles.toString();
     cout<<"========================\n";
 
 

@@ -25,7 +25,7 @@ namespace alife2{
 	Grid gridFood;
 
 
-	World();
+	World( float width, float height, float cellSize);
 	//Get the walue of the simulation time step
 	float getSimulationStep()const { return timeStep; };
 	float getFriction()const {return friction; };
@@ -35,6 +35,7 @@ namespace alife2{
 
 	//world geometry
 	const rectangle& getBounds()const {return bounds; };
+	vec2 getCenter()const { return bounds.center(); };
 
 	void add( Mobile * mobile );
 	void add( Food* food );
