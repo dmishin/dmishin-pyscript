@@ -171,6 +171,7 @@ void Grid::removeItem( GridItem * item )
 int Grid::enumerateInRectangle( const rectangle & r, ItemEnumerator & enumerator )
 {
     //determine cell bounds
+    int count = 0;
     int leftBound = max(0,  int(floor(r.left() / cellWidth)) );
     int rightBound = min( numCols-1, int(ceil( r.right() / cellWidth ) ) );
     int topBound = min( 0, int( floor( r.top() / cellHeight ) ) );
@@ -182,7 +183,10 @@ int Grid::enumerateInRectangle( const rectangle & r, ItemEnumerator & enumerator
 	    for( GridCell::Items::iterator i = cell.items.begin(); i != cell.items.end(); ++i){
 		assert( *i );//Item must be non-null
 		if ( r.contains( (*i)->getLocation() ) ){
-		    enumerator.enumerate( **i );
+		    if (! enumerator.enumerate( **i ) )
+			return count;
+		    else
+			count++;
 		}
 	    }
 	}
@@ -193,6 +197,7 @@ int Grid::enumerateInRectangle( const rectangle & r, ItemEnumerator & enumerator
 int Grid::enumerateInCircle( const circle & c, ItemEnumerator & enumerator )
 {
     //determine cell bounds
+    int count = 0;
     int leftBound = max(0,  int(floor( (c.center.x - c.radius) / cellWidth)) );
     int rightBound = min( numCols-1, int(ceil( (c.center.x+c.radius) / cellWidth ) ) );
     int topBound = min( 0, int( floor( (c.center.y + c.radius) / cellHeight ) ) );
@@ -204,7 +209,10 @@ int Grid::enumerateInCircle( const circle & c, ItemEnumerator & enumerator )
 	    for( GridCell::Items::iterator i = cell.items.begin(); i != cell.items.end(); ++i){
 		assert( *i );//Item must be non-null
 		if ( c.contains( (*i)->getLocation() ) ){
-		    enumerator.enumerate( **i );
+		    if (! enumerator.enumerate( **i ) )
+			return count;
+		    else
+			count++;
 		}
 	    }
 	}

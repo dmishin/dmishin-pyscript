@@ -5,6 +5,8 @@
 #include "grid.hpp"
 #include "grid_item.hpp"
 #include "mobile.hpp"
+#include "glut_view.hpp"
+#include "world.hpp"
 
 std::ostream & operator << (std::ostream &os, const alife2::vec2 &v)
 {
@@ -24,22 +26,19 @@ int main(int argc, char *argv[])
     
     cout << "== Testing grid ==\n";
     
-    Grid grd;
-    grd.initGrid( 10, 10, 2 );
-    cout<< "Created grid with "<<grd.getNumCols()<<" columns and"<<grd.getNumRows()<<"rows\n";
-    cout<<"Grid size:"<<grd.getSize()<<endl;
-    cout<<"Putting items to grid\n";
-    
+    World world;
+
     FOR_RANGE( i, 0, 100 ){
-	GridItem * item = new Mobile();
+	Mobile * item = new Mobile();
 	item->setLocation( vec2(randf(0,10), randf(0,10) ) );
-	grd.putItem( item );
+	world.add( item );
     }
-    grd.update();
 
     cout<<"========================\n";
-    cout<< grd.toString() <<endl;
-    cout<<"========================\n";
 
+
+    GlutView view;
+    view.setWorld( &world );
+    view.runLoop();
     return 0;
 }

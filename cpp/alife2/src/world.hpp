@@ -10,8 +10,6 @@ namespace alife2{
     class Food;
 
     class World: public Simulated{
-	Grid gridMobiles;
-	Grid gridFood;
 	float timeStep; //simulation step
 	float friction; //movement friction
 	float rotationFriction; //friciton koefficient for rotation
@@ -23,11 +21,17 @@ namespace alife2{
 	void initParameters();
 
     public:
+	Grid gridMobiles;
+	Grid gridFood;
+
+
 	World();
 	//Get the walue of the simulation time step
 	float getSimulationStep()const { return timeStep; };
 	float getFriction()const {return friction; };
 	float getRotFriction() const { return rotationFriction; };
+
+	
 
 	//world geometry
 	const rectangle& getBounds()const {return bounds; };
