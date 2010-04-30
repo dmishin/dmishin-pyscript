@@ -30,6 +30,7 @@ void Mobile::initParameters()
 void Mobile::simulate()
 {
     assert( world );
+
     float dt = world->getSimulationStep();//TODO: get the time step from the world
 
     simulateMotors();
@@ -38,17 +39,18 @@ void Mobile::simulate()
     //SImulate movement
     position += speed * dt;
     angle += rotation( angleSpeed * dt );//TODO: use fast rotation?
-    
+    //Apply limitations, the World has on bot position
+    world->applyBounds( *this );
+
     //simulate friction
     //1) Movement liquid friction
-    float mvFrictionForce = speed.len2() * world->getFriction(); //TODO: not very optimal calculation
-    speed -= speed/speed.len() * mvFrictionForce * dt / mass;
+
+    speed *= max( float(0), (1 - speed.len() * world->getFriction() * dt / mass) ); //do not allow friction to reverse the speed
+
     //2) Rotation liquid friction
     float rotFrictionForce = sqr(angleSpeed) * world->getRotFriction();
     angleSpeed -= signum( angleSpeed ) * rotFrictionForce * dt / inertionMoment;
 
-    //Apply limitations, the World has on bot position
-    world->applyBounds( *this );
 
 }
 

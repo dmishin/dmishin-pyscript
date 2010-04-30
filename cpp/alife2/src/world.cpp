@@ -6,7 +6,7 @@ using namespace alife2;
 void World::initParameters()
 {
     //initialize world parameters
-    timeStep = 0.1f;
+    timeStep = 0.001f;
     friction = 0.1f;
     rotationFriction = 0.1f;
 }
@@ -32,6 +32,7 @@ void World::simulate()
 void World::add( Mobile * mobile )
 {
     gridMobiles.putItem( mobile );
+    mobile->setWorld( this );
 }
 /*
 void World::add( Food* food )

@@ -80,7 +80,7 @@ void GlutView::runLoop()
     glutCreateWindow( "UI with glut" );
     glutDisplayFunc( glut_display );
     // here is the setting of the idle function
-    //glutIdleFunc( glut_display );
+    glutIdleFunc( glut_display );
     glutReshapeFunc( glut_resize );
 
     glutMainLoop();
@@ -119,8 +119,8 @@ void GlutView::display()
     ItemCollector collector( mobiles );
 
     world->gridMobiles.enumerateInRectangle( viewRect, collector );
-    std::cout<<"Draw "<<mobiles.size()<<" mobiles"<<std::endl;
-    std::cout.flush();
+//    std::cout<<"Draw "<<mobiles.size()<<" mobiles"<<std::endl;
+//    std::cout.flush();
 
     for (ItemCollector::Items::iterator i = mobiles.begin(); i != mobiles.end(); ++i){
 	drawMobile( * static_cast<Mobile *>(*i) );
@@ -199,8 +199,6 @@ vec2 GlutView::world2view( const vec2& p )
 //GLUT callback functions
 void GlutView::glut_resize( int w, int h)
 {
-//    std::cout<<"g-resize\n";
-//    std::cout.flush();
     if ( static_ActiveView ){
 	static_ActiveView->resize( w, h );
     };
