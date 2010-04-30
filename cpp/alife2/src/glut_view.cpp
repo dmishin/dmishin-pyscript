@@ -89,9 +89,6 @@ void GlutView::runLoop()
 //interaction with GLUT
 void GlutView::resize( int w, int h )
 {
-    std::cout<<"resize:"<<w<<h<<std::endl;
-    std::cout.flush();
-
     width = w;
     height = h;
 

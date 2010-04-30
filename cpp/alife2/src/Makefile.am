@@ -9,4 +9,5 @@ alife2_SOURCES = main.cpp point.hpp rotation.hpp rotation.cpp util.hpp \
 	mobile.hpp mobile.cpp \
 	simulated.hpp \
 	world.cpp world.hpp \
-	glut_view.hpp glut_view.cpp
+	glut_view.hpp glut_view.cpp \
+	simulator.hpp simulator.cpp

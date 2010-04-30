@@ -1,11 +1,13 @@
 #include <assert.h>
 #include <algorithm>
 #include <sstream>
+#include <boost/tuple/tuple.hpp>
 
 #include "grid.hpp"
 #include "util.hpp"
 
 using namespace alife2;
+using namespace boost;
 
 Grid::Grid()
 {
@@ -71,33 +73,6 @@ GridCell & Grid::getLastCell()
 }
 
 
-/**Binary search in the array
-   for te array {a0, a1, a2, ..., an} 
-   and value v
-   returns pointer for the element *ai, such that ai>v and a{i-1}<=v
-   if not found, returns pointer to the nearest elemnet and flag false
-*/
-
-/*   //not really needed - I am too stupid..
-template <typename iterator, typename value_type >
-std::pair<iterator, bool> find_bound( iterator begin, iterator end, value_type val )
-{
-    int num_items = end - begin;
-    if ( num_items == 0){
-	return std::make_pair( begin, false ); //not found
-    }
-    if ( num_items == 1){
-	return std::make_pair( begin, *begin < val );
-    }
-  
-    //else - use dichotomy
-    iterator center = begin + (num_items/2);
-    if ( *center < val )
-	return find_bound( begin, center, val );
-    else
-	return find_bound( center, end, val );
-}
-*/
 
 /**Find the cell by the object coordinates*/
 GridCell & Grid::findCell( const vec2 & vec )
@@ -172,17 +147,14 @@ int Grid::enumerateInRectangle( const rectangle & r, ItemEnumerator & enumerator
 {
     //determine cell bounds
     int count = 0;
-    std::pair<int,int> hBound = hrzCellIndexRange( r.left(), r.right() );
-    std::pair<int,int> vBound = vrtCellIndexRange( r.top(), r.bottom() );
-    
-    int leftBound = hBound.first;
-    int rightBound = hBound.second;
-    int topBound    = vBound.first;
-    int bottomBound = vBound.second;
+    int leftBound, rightBound; 
+    tie( leftBound, rightBound ) = hrzCellIndexRange( r.left(), r.right() );
+    int topBound, bottomBound;
+    tie( topBound, bottomBound ) = vrtCellIndexRange( r.top(), r.bottom() );
 
-    std::cout<<r.left()<<":"<<r.right()<<"|"<<r.top()<<":"<<r.bottom()<<std::endl;
-    std::cout<<"bounds:"<<leftBound<<":"<<rightBound<<"|"<<topBound<<":"<<bottomBound<<std::endl;
-    std::cout.flush();
+//    std::cout<<r.left()<<":"<<r.right()<<"|"<<r.top()<<":"<<r.bottom()<<std::endl;
+//    std::cout<<"bounds:"<<leftBound<<":"<<rightBound<<"|"<<topBound<<":"<<bottomBound<<std::endl;
+//    std::cout.flush();
 
     for( int x = leftBound; x <= rightBound; ++x ){
 	for( int y = topBound; y <= bottomBound; ++y ){
@@ -216,13 +188,10 @@ int Grid::enumerateInCircle( const circle & c, ItemEnumerator & enumerator )
 {
     //determine cell bounds
     int count = 0;
-    std::pair<int,int> hBound = hrzCellIndexRange( c.center.x - c.radius, c.center.x + c.radius );
-    std::pair<int,int> vBound = vrtCellIndexRange( c.center.y - c.radius, c.center.y + c.radius );
-    
-    int leftBound = hBound.first;
-    int rightBound = hBound.second;
-    int topBound    = vBound.first;
-    int bottomBound = vBound.second;
+    int leftBound, rightBound;
+    tie (leftBound, rightBound ) = hrzCellIndexRange( c.center.x - c.radius, c.center.x + c.radius );
+    int topBound, bottomBound;
+    tie ( topBound, bottomBound ) = vrtCellIndexRange( c.center.y - c.radius, c.center.y + c.radius );
 
     for( int x = leftBound; x <= rightBound; ++x ){
 	for( int y = topBound; y <= bottomBound; ++y ){
