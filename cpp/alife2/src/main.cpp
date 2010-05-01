@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
     cout << "== Testing grid ==\n";
     
     World world( 100, 100, 4 );
+    world.setSimulationStep( 0.05f );
     Simulator sim( 1, 1000 );//simulator with 4 threads; 1-not used
     sim.add( &world );//world is a simulated item, add it to the simultaro
 

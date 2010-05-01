@@ -34,6 +34,8 @@ namespace alife2{
 	World( float width, float height, float cellSize);
 	//Get the walue of the simulation time step
 	float getSimulationStep()const { return timeStep; };
+	float setSimulationStep( float step ){ timeStep = step; };
+
 	float getFriction()const {return friction; };
 	float getRotFriction() const { return rotationFriction; };
 

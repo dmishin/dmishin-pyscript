@@ -6,7 +6,7 @@ using namespace alife2;
 void World::initParameters()
 {
     //initialize world parameters
-    timeStep = 0.001f;
+    timeStep = 0.05f;
     friction = 0.1f;
     rotationFriction = 0.1f;
     gridMobilesTicker.set_period( 0.5 );
