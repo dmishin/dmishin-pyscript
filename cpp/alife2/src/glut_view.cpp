@@ -6,11 +6,14 @@
 #include "mobile.hpp"
 #include <math.h>
 #include <iostream>
+#include "geometry_io.hpp"
+
 
 using namespace alife2;
 
 alife2::GlutView * alife2::GlutView::static_ActiveView = NULL;
 
+//Constructor
 GlutView::GlutView()
 {
     world = NULL;
@@ -18,7 +21,9 @@ GlutView::GlutView()
     viewPoint = vec2( 0, 0);
     width = 0;
     height = 0;
+    selectedMob = NULL;
 }
+
 GlutView:: ~GlutView()
 {
     if ( isActive() ){
@@ -59,7 +64,10 @@ void GlutView::setViewPoint( const vec2& p )
 {
     viewPoint = p;
 }
-
+void GlutView::setSelectedMobile( Mobile * mob )
+{
+    selectedMob = mob;
+}
 void GlutView::setZoom( float z )
 {
     zoom = z;
@@ -79,6 +87,7 @@ void GlutView::runLoop()
     glutInitDisplayMode( GLUT_DOUBLE );
     glutCreateWindow( "UI with glut" );
     glutDisplayFunc( glut_display );
+    glutMouseFunc( glut_mouse );
     // here is the setting of the idle function
     glutIdleFunc( glut_display );
     glutReshapeFunc( glut_resize );
@@ -102,7 +111,7 @@ void GlutView::resize( int w, int h )
     glMatrixMode(GL_PROJECTION);  /* Start modifying the projection matrix. */
     glLoadIdentity();             /* Reset project matrix. */
 
-    glOrtho(ptTopLeft.x, ptBottomRight.x, ptTopLeft.y, ptBottomRight.y, -1, 1);   /* Map abstract grid coords to window coords. */
+    glOrtho(ptTopLeft.x, ptBottomRight.x, ptBottomRight.y, ptTopLeft.y, -1, 1);   /* Map abstract grid coords to window coords. */
 
 }
 void GlutView::display()
@@ -136,6 +145,9 @@ void GlutView::drawMobile( Mobile& item)
     glTranslatef(pos.x, pos.y, 0);
     glRotatef( item.getAngle().angle()*(180/M_PI), 0, 0, 1 );//TODO: not really effective
     drawMobileIcon( item );
+    if ( &item == selectedMob ){
+	drawSelectionIcon();
+    }
     glPopMatrix();
 }
 void GlutView::drawMobileIcon( Mobile &mob )
@@ -178,8 +190,38 @@ void GlutView::drawMobileIcon( Mobile &mob )
     glEnd();
     */
 }
+void GlutView::drawSelectionIcon()
+{
+    glBegin( GL_LINE_LOOP );
+    glColor3f( 0, 1, 0);
+    float radius = 2;
+    FOR_RANGE( i, 1, 20 ){
+	double alpha = i/20.0 * M_PI *2;
+	glVertex2f( float( cos( alpha ) * radius ),
+		    float( sin( alpha ) * radius ) );
+	
+    }
+
+    glEnd();
+}
+
 void GlutView::keyPressed( unsigned char key, int x, int y )
 {
+}
+
+void GlutView::mousePressed( int button, int state, int x, int y )
+{
+    vec2 worldPoint = view2world( vec2( x, y ) );
+    //get the bot under the view
+    if ( world ){
+	std::cout<<"World point:"<<worldPoint;
+	FirstItemGetter first;
+	world->gridMobiles.enumerateInCircle( circle( worldPoint, 1 ), first );
+
+	setSelectedMobile( static_cast<Mobile*>( first.getItem() ) );
+	std::cout<<" Selected: "<<long( first.getItem() ) <<std::endl;
+	std::cout.flush();
+    }
 }
 
 
@@ -216,4 +258,10 @@ void GlutView::glut_keyboard(unsigned char key, int x, int y)
     if ( static_ActiveView ){
 	static_ActiveView->keyPressed( key, x, y );
     };
+}
+void GlutView::glut_mouse( int button, int state, int x, int y )
+{
+    if( static_ActiveView ){
+	static_ActiveView->mousePressed( button, state, x, y );
+    }
 }

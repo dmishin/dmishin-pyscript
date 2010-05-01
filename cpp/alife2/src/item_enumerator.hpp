@@ -24,6 +24,7 @@ namespace alife2{
 	FirstItemGetter(): item( NULL ){};
 	virtual bool enumerate( GridItem &item_ );
 	bool hasItem()const { return bool(item); };
+	GridItem * getItem(){ return item; };
     };
 }
 

@@ -19,10 +19,10 @@ namespace alife2{
 	vec2():x(0), y(0){};
 	///////// geometry operations //////////
 	float dist2( const vec2& v)const{
-	    return ((*this)-v).len2();
+	    return ( (*this) - v ).len2();
 	};
 	float dist( const vec2& v)const{
-	    return ((*this) - v ).len();
+	    return ( (*this) - v ).len();
 	};
 
 	vec2& operator += (const vec2& v){

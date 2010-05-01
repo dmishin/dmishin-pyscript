@@ -18,10 +18,12 @@ namespace alife2{
 	float zoom;
 	int width, height; //windoww width and height
 
+	Mobile * selectedMob;
+
 	void resize( int w, int h );
 	void display();
 	void keyPressed( unsigned char key, int x, int y );
-
+	void mousePressed( int button, int state, int x, int y );
 	vec2 view2world( const vec2& p );
 	vec2 world2view( const vec2& p );
     public:
@@ -43,16 +45,22 @@ namespace alife2{
 	float getZoom() const { return zoom; };
 
 	void runLoop();
+
+
+	//controlling
+	void setSelectedMobile( Mobile * mob );
 	
     private:
 	//GLUT callback functions
 	static void glut_resize( int w, int h);
 	static void glut_display();
 	static void glut_keyboard(unsigned char key, int x, int y);
-	
+	static void glut_mouse( int button, int state, int x, int y );
+
 	//Display single mobile
 	void drawMobile( Mobile &mob );
 	void drawMobileIcon( Mobile &mob );
+	void drawSelectionIcon();
     private:
 	static GlutView * static_ActiveView;
 	

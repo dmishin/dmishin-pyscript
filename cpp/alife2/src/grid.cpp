@@ -180,8 +180,8 @@ std::pair<int, int> Grid::hrzCellIndexRange( float x0, float x1 )
 }
 std::pair<int, int> Grid::vrtCellIndexRange( float y0, float y1 )
 {
-    return std::make_pair( limit( int(floor( y0 / cellWidth)), 0, numRows-1 ),
-			   limit( int(ceil( y1 / cellWidth )), 0, numRows-1 ) );
+    return std::make_pair( limit( int(floor( y0 / cellHeight)), 0, numRows-1 ),
+			   limit( int(ceil( y1 / cellHeight )), 0, numRows-1 ) );
 }
 
 int Grid::enumerateInCircle( const circle & c, ItemEnumerator & enumerator )
@@ -192,6 +192,8 @@ int Grid::enumerateInCircle( const circle & c, ItemEnumerator & enumerator )
     tie (leftBound, rightBound ) = hrzCellIndexRange( c.center.x - c.radius, c.center.x + c.radius );
     int topBound, bottomBound;
     tie ( topBound, bottomBound ) = vrtCellIndexRange( c.center.y - c.radius, c.center.y + c.radius );
+
+//    std::cout<<"enum:"<<leftBound<<":"<<rightBound<<"|"<<topBound<<":"<<bottomBound<<std::endl;
 
     for( int x = leftBound; x <= rightBound; ++x ){
 	for( int y = topBound; y <= bottomBound; ++y ){
