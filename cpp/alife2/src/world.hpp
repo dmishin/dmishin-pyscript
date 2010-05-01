@@ -1,9 +1,12 @@
 #pragma once
 #ifndef _WORLD_H_
 #define _WORLD_H_
-#include "grid.hpp"
+//#include "grid.hpp"
+#include "grid_mt.hpp"
 #include "simulated.hpp"
 #include "point.hpp"
+#include "ticker.hpp"
+
 
 namespace alife2{
     class Mobile;
@@ -16,15 +19,18 @@ namespace alife2{
 
 	rectangle bounds;
 
+
+	ticker gridMobilesTicker;
+	ticker gridFoodTicker;
+
 	//Grid initialization code
 	void initGrids( float width, float height, float cellSize );
 	void initParameters();
 
     public:
-	Grid gridMobiles;
-	Grid gridFood;
-
-
+	GridMt gridMobiles;
+	GridMt gridFood;
+	
 	World( float width, float height, float cellSize);
 	//Get the walue of the simulation time step
 	float getSimulationStep()const { return timeStep; };
