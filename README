@@ -1,0 +1,39 @@
+##### Algorithms for the effective parallel simulator ####
+
+Queue  object- contains list of the Chunks
+
+Each chunk ocntains fixed number of tasks.
+
+
+Workers:
+ - For each processor, there is one worker Thread.
+
+ALgorithm of the worker:
+ - Get the chonk from the Queue
+   *Synchronization: requires short-term access to the queue in order to claim one of the chunks.
+   *Remember original number of the free slots
+
+ - Execute tasks from the chunk (does not requires any synchronization, tasks are indepedent)
+ - Some tasks may finish. Remove finished tasks from the chunk and possibly compactify it.
+ - Returning chunk to the queue.
+    - gain queue qccess
+    -  If the chunk is not fulll, put the not yet distributed items from the additional queue.
+       * This is relatively rare
+    -  If chunk is empty (i.e. it became ampty, and no free tasks were found ),
+       ? delete it?
+       ? Put it to the list of the empty chunks?
+    -  If not empty, return it to the queue. Update the numper of the free chunk slots in the queue (use the remembered original value)
+
+
+Initially queue has no chunks, number of the free chunk slots is 0.
+
+ - adding items to the queue: (requires exclusive access to the queue).
+ - if there is enough free space in the chunks, put item in the awaiting queue.
+   if not, create new chunk. 
+
+
+### classes ###
+Chunk
+Queue
+Worker
+
