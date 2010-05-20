@@ -3,18 +3,9 @@
 #define _SEQUENTIAL_SIMULATOR_H_
 #include "simulated.hpp"
 #include <boost/thread.hpp>
-
+#include <boost/intrusive_ptr.hpp>
 namespace alife2{
     class TaskChunk;
-};
-
-namespace boost{
-    inline intrusive_ptr_add_ref( TaskChunk * ptr ){
-	ptr->addRef();
-    };
-    inline intrusive_ptr_release_ref( TaskChunk * ptr ){
-	ptr->releaseRef();
-    };    
 };
 
 
@@ -75,10 +66,6 @@ namespace alife2{
 	    void run();
 	};
 
-	//Task queue operations;
-	struct Chunk{
-	    int begin, int end;
-	};
 	TaskChunkPtr getNextChunk(); //returns next chunk of the work;
 
 	typedef std::vector< Worker* > Workers;
@@ -93,6 +80,16 @@ namespace alife2{
 	void requestStop();//set the stop request flag;
     };
 };
+/**Implementation of the reference counting mechanism for boost smart pointers*/
+namespace boost{
+    inline void intrusive_ptr_add_ref( alife2::TaskChunk * ptr ){
+	ptr->addRef();
+    };
+    inline void intrusive_ptr_release_ref( alife2::TaskChunk * ptr ){
+	ptr->releaseRef();
+    };    
+};
+
 
 
 #endif /* _SEQUENTIAL_SIMULATOR_H_ */

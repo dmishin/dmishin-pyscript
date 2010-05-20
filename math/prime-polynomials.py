@@ -35,3 +35,14 @@ def make_map( A,B):
         for b in xrange(B):
             V[a,b] = test(a,b)
     return V
+
+from PIL import Image
+
+def cap(v):
+    return numpy.vectorize(lambda x: max(min(x,v),0))
+
+def save_array(float_array, fname):
+    data = numpy.array( cap(255)(float_array), dtype = numpy.int8)
+    img = PIL.Image.fromarray( data, mode="L")
+    img.save(fname)
+

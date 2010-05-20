@@ -1,4 +1,5 @@
 #include "sequential_simulator.hpp"
+#include "util.hpp"
 
 using namespace alife2;
 
@@ -100,18 +101,10 @@ void TaskChunk::remove( Simulated* task)
 //////////////////////////// simulator /////////////////////
 
 
-SequentialSimulator::Chunk SequentialSimulator::getNextChunk() //returns next chunk of the work;
+SequentialSimulator::TaskChunkPtr SequentialSimulator::getNextChunk() //returns next chunk of the work;
 {
     queue_lock lock( queueMutex );
-    int max_items_left = queue.size() - nextTaskIndex;
-    int items_in_chunk = min( max_items_left, chunkSize );
-    Chunk rval( 
-    nextTaskIndex += items_in_chunk;
-    if (nextTaskIndex >= queue.size()){
-	nextTaskIndex = 0;
-	iterations += 1;
-    }
-    return 
+    //TODO
 }
 
 
@@ -137,7 +130,8 @@ SequentialSimulator::~SequentialSimulator()
 void SequentialSimulator::add( Simulated * item )
 {
     queue_lock lock( mutex );
-    queue.push_back( item );
+    //queue.push_back( item );
+    //TODO
 }
 
 void SequentialSimulator::simulate( int numIters )
