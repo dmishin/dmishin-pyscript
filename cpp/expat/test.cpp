@@ -44,155 +44,55 @@ end(void *data, const char *el) {
     Depth--;
 }  /* End of end handler */
 
-
-/* Returns: 
- >= 0 - successfull, 0 means conversion doesn't use multibyte sequences 
-   -1 - error during iconv_open call 
-   -2 - error during iconv_close call 
-   ---------------------------------- 
-   This function expects that multibyte encoding in 'charset' wouldn't have 
-   characters with more than 3 bytes. It is not intended to convert UTF-8 because 
-   we'll never receive UTF-8 in our handler (it is handled by Exat itself). 
-*/ 
-int fill_encoding_info (const char *charset, XML_Encoding * info) 
-{ 
-  iconv_t cd = (iconv_t)(-1); 
-  int flag; 
-  printf ("Using encpoding %s \n", charset );
-
-#if G_BYTE_ORDER == G_LITTLE_ENDIAN 
-  cd = iconv_open ("UCS-2LE", charset); 
-#else 
-  cd = iconv_open ("UCS-2BE", charset); 
-#endif 
- 
-  if (cd == (iconv_t) (-1)){ 
-      printf("Failed to open iconv\n");
-      return -1; 
-  } 
- 
-  { 
-    unsigned short out; 
-    unsigned char buf[4]; 
-    unsigned int i0, i1, i2; 
-    int result; 
-    flag = 0; 
-    for (i0 = 0; i0 < 256; i0++) 
-    { 
-        buf[0] = i0; 
-        info->map[i0] = 0; 
-        //result = try (cd, buf, 1, &out); 
-        if (result < 0) 
-	{ 
-	} 
-        else if (result > 0) 
-	{ 
-	    printf(" #### map[%d]=%d\n", i0, out );
-            info->map[i0] = out; 
-	} 
-        else 
-	{ 
-            for (i1 = 0; i1 < 0x100; i1++) 
-	    { 
-                buf[1] = i1; 
-                ///result = try (cd, buf, 2, &out); 
-                if (result < 0) { 
-		} 
-                else if (result > 0) { 
-                    flag++; 
-                    info->map[i0] = -2; 
-		} 
-                else { 
-                    for (i2 = 0; i2 < 0x100; i2++) 
-		    { 
-                        buf[2] = i2; 
-                        ////result = try (cd, buf, 3, &out); 
-                        if (result < 0) 
-			{ 
-                          } 
-                        else if (result > 0) 
-                          { 
-			      flag++; 
-			      info->map[i0] = -3; 
-                          } 
-                      } 
-		} 
-	    } 
-          } 
-    } 
-  } 
- 
-  if (iconv_close (cd) < 0) 
-  { 
-      printf("Failed to close iconv\n");
-      return -2; 
-  } 
-  return flag; 
-} 
-
-static int 
-iconv_convertor (void *data, const char *s) 
-{ 
-    XML_Encoding *info = (XML_Encoding*) data; 
-    int res; 
-
-  if (s == NULL) 
-    return -1; 
-  return -1; 
-} 
-
-static void 
-my_release (void *data) 
-{ 
-  iconv_t cd = (iconv_t) data; 
-  if (iconv_close (cd) != 0) 
-    { 
-/// TODO: uh no.      exit (1); 
-    } 
-} 
-
 int 
 handle_unknown_xml_encoding (void *encodingHandleData, 
 			     const XML_Char * name, 
 			     XML_Encoding * info) 
 { 
-  int result; 
-  result = fill_encoding_info (name, info); 
-  if (result >= 0) 
-  { 
-      /*  
-	  Special case: client asked for reverse conversion, we'll provide him with 
-	  iconv descriptor which handles it. Client should release it by himself. 
-      */ 
-      if(encodingHandleData != NULL) 
-	  *((iconv_t *)encodingHandleData) = iconv_open(name, "UTF-8"); 
-      /*  
-	  Optimization: we do not need conversion function if encoding is one-to-one,  
-	  info->map table will be enough  
-      */ 
-      if (result == 0) 
-      { 
-          info->data = NULL; 
-          info->convert = NULL; 
-          info->release = NULL; 
-	  printf("Using empty converter\n");
-          return 1; 
-      } 
-      /*  
-	  We do need conversion function because this encoding uses multibyte sequences 
-      */ 
-      info->data = (void *) iconv_open ("UTF-8", name); 
-      if ((int)info->data == -1) 
-	  return -1; 
-      info->convert = iconv_convertor; 
-      info->release = my_release; 
-      printf("Using multibyte converter\n");
-      return 1; 
-  } 
-  if(encodingHandleData != NULL)  
-      *(iconv_t *)encodingHandleData = NULL; 
-  printf("Failed to find a converter\n");
-  return 0; 
+    const size_t BUFFER_SUZE = 8;
+
+    char out_buffer[ BUFFER_SUZE ];
+    iconv_t coder = iconv_open ("UCS-2LE", name); 
+
+    //Building the encoding table
+    for ( unsigned int c=0; c<256; c++){
+	//C is the character index
+	//Convert this character, using the iconv conversion library
+	char in_buffer = static_cast<char>(c);
+	char * p_in_buffer = &in_buffer;
+	size_t in_buffer_avail = 1;//1 byte available
+	char * p_out_buffer = out_buffer;
+	size_t out_buffer_avail =  BUFFER_SUZE;//8 bytes are freee
+	int result = iconv( coder,
+			    &p_in_buffer, &in_buffer_avail, 
+			    &p_out_buffer, &out_buffer_avail );
+	if (result < 0){
+	    //some error occured
+	    //either the encoding is non 1-byte,
+	    //or coding is impossible.
+	    info->map[ c ] = 0xFFFD; //unicode replacement character
+	}else{
+	    //determine output length
+	    //output is little-endian.
+	    int unicode_index = 0;
+	    int shift = 0;
+	    for( char * p_out = out_buffer; p_out != p_out_buffer; ++p_out ){
+		unicode_index += static_cast<int>( static_cast<unsigned char>(*p_out) ) << shift; //read current 8 bits
+		shift += 8;
+	    }
+	    //put the unicode codepoint to the encoding map
+	    info->map[ c ] = unicode_index;
+	}
+    }
+    if (iconv_close ( coder ) < 0) 
+    { 
+	printf("Failed to close iconv\n");
+	return XML_STATUS_ERROR; 
+    }
+    info->data = NULL;
+    info->convert = NULL;
+    info->release = NULL;
+    return XML_STATUS_OK;
 } 
 
 
