@@ -1,3 +1,3 @@
 #!/bin/sh
 clear
-g++ -lexpat test.cpp
+g++ -lexpat -o expt-test *.cpp
