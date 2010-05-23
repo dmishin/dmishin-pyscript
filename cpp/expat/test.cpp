@@ -15,40 +15,96 @@
 #include <stdio.h>
 #include <expat.h>
 #include <iconv.h>
+#include <string>
+#include <cassert>
 
 #define BUFFSIZE	8192
 
 char Buff[BUFFSIZE];
 
-int Depth;
+////////////////////////////////////////////////
+// C++ wrapper for the expat (yeah, the self-made one )
+//////////////////////////////////////////////
+class ExpatParser{
+private:
+    XML_Parser parser;
 
-void
-start(void *data, const char *el, const char **attr) {
-    int i;
+    static int  handle_unknown_xml_encoding (void *encodingHandleData, 
+					     const XML_Char * name, 
+					     XML_Encoding * info) ;
+    
+    static void start_handler(void *data, const char *el, const char **attr);
+    static void end_handler(void *data, const char *el);
+    static void character_handler( void* data, const char * chars, int len );
+public:
+    ExpatParser();
+    virtual ~ExpatParser();
 
-    for (i = 0; i < Depth; i++)
-	printf("  ");
+    int current_line();
+    std::string get_error_message();
+    XML_Status parse( const char * buff, int len, bool done);
 
-    printf("%s", el);
+    virtual void start( const char * el, const char **attr) = 0;
+    virtual void end( const char * el) = 0;
+    virtual void character( const char * chars, int len ) = 0;
+};
 
-    for (i = 0; attr[i]; i += 2) {
-	printf(" %s='%s'", attr[i], attr[i + 1]);
+///C++ wrapper implementation
+ExpatParser::ExpatParser()
+{
+    parser = XML_ParserCreate( NULL );
+    assert( parser );
+    XML_SetUserData( parser, this );
+    XML_SetElementHandler( parser, ExpatParser::start_handler, ExpatParser::end_handler );
+    XML_SetUnknownEncodingHandler( parser, ExpatParser::handle_unknown_xml_encoding, NULL );
+    XML_SetCharacterDataHandler( parser, ExpatParser::character_handler );
+}
+ExpatParser::~ExpatParser()
+{
+    if (parser){
+	XML_ParserFree( parser );
+	parser = NULL;
     }
+}
+int ExpatParser::current_line()
+{		    
+    assert( parser );
+    return (int)XML_GetCurrentLineNumber( parser );
+}
+std::string ExpatParser::get_error_message()
+{
+    assert( parser );
+    return XML_ErrorString(XML_GetErrorCode( parser ));
+}
+void ExpatParser::start_handler(void *data, const char *el, const char **attr)
+{
+    ExpatParser * self = reinterpret_cast<ExpatParser*>(data);
+    assert( self );
+    self->start( el, attr);
+}
+void ExpatParser::end_handler(void *data, const char *el)
+{
+    ExpatParser * self = reinterpret_cast<ExpatParser*>(data);
+    assert( self );
+    self->end( el );
+}
+void ExpatParser::character_handler( void* data, const char * chars, int len )
+{
+    ExpatParser * self = reinterpret_cast<ExpatParser*>(data);
+    assert( self );
+    self->character( chars, len );
+}
 
-    printf("\n");
-    Depth++;
-}  /* End of start handler */
+XML_Status ExpatParser::parse( const char * data, int len, bool done )
+{
+    assert( parser ); assert( len >= 0 );
+    return XML_Parse( parser, data, len, (int)done );
+}
 
-void
-end(void *data, const char *el) {
-    Depth--;
-}  /* End of end handler */
-
-int 
-handle_unknown_xml_encoding (void *encodingHandleData, 
-			     const XML_Char * name, 
-			     XML_Encoding * info) 
-{ 
+int ExpatParser::handle_unknown_xml_encoding (void *encodingHandleData, 
+						     const XML_Char * name, 
+						     XML_Encoding * info) 
+{
     const size_t BUFFER_SUZE = 8;
 
     char out_buffer[ BUFFER_SUZE ];
@@ -93,20 +149,43 @@ handle_unknown_xml_encoding (void *encodingHandleData,
     info->convert = NULL;
     info->release = NULL;
     return XML_STATUS_OK;
-} 
+}
+///////////////////////////////////////////////
+// Concreate parser implementation
+///////////////////////////////////////////////
 
+class OutlinePrinter: public ExpatParser{
+    int Depth;
+public:
+    OutlinePrinter(): Depth(0){};
+    virtual void start( const char * el, const char **attr );
+    virtual void end( const char * el );
+    virtual void character( const char * data, int len ) {};
+};
 
+void OutlinePrinter::start( const char * el, const char ** attr )
+{
+    int i;
 
+    for (i = 0; i < Depth; i++)
+	printf("  ");
 
-int
-main(int argc, char **argv) {
-    XML_Parser p = XML_ParserCreate(NULL);
-    if (! p) {
-	fprintf(stderr, "Couldn't allocate memory for parser\n");
-	exit(-1);
+    printf("%s", el);
+
+    for (i = 0; attr[i]; i += 2) {
+	printf(" %s='%s'", attr[i], attr[i + 1]);
     }
-    XML_SetElementHandler(p, start, end);
-    XML_SetUnknownEncodingHandler( p, handle_unknown_xml_encoding, NULL);
+
+    printf("\n");
+    Depth++;
+}
+void OutlinePrinter::end( const char * el )
+{
+    Depth--;
+}
+
+int main(int argc, char **argv) {
+    OutlinePrinter p;
     
     for (;;) {
 	int done;
@@ -119,10 +198,10 @@ main(int argc, char **argv) {
 	}
 	done = feof(stdin);
 
-	if (! XML_Parse(p, Buff, len, done)) {
+	if (! p.parse( Buff, len, done) ) {
 	    fprintf(stderr, "Parse error at line %d:\n%s\n",
-		    (int)XML_GetCurrentLineNumber(p),
-		    XML_ErrorString(XML_GetErrorCode(p)));
+		    p.current_line(),
+		    p.get_error_message().c_str() );
 	    exit(-1);
 	}
 
