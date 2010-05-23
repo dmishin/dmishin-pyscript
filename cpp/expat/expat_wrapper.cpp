@@ -53,11 +53,11 @@ XML_Status ExpatParser::parse( const char * data, int len, bool done )
     assert( parser ); assert( len >= 0 );
     return XML_Parse( parser, data, len, (int)done );
 }
-int ExpatParser::handle_unknown_xml_encoding (void *encodingHandleData, 
-						     const XML_Char * name, 
-						     XML_Encoding * info) 
+int ExpatParser::handle_unknown_xml_encoding ( void *encodingHandleData, 
+					       const XML_Char * name, 
+					       XML_Encoding * info) 
 {
-    const size_t BUFFER_SUZE = 8;
+    const size_t BUFFER_SUZE = 4;
 
     char out_buffer[ BUFFER_SUZE ];
     iconv_t coder = iconv_open ("UCS-2LE", name); 
@@ -70,7 +70,8 @@ int ExpatParser::handle_unknown_xml_encoding (void *encodingHandleData,
 	char * p_in_buffer = &in_buffer;
 	size_t in_buffer_avail = 1;//1 byte available
 	char * p_out_buffer = out_buffer;
-	size_t out_buffer_avail =  BUFFER_SUZE;//8 bytes are freee
+	size_t out_buffer_avail =  BUFFER_SUZE;//4 bytes are freee
+
 	int result = iconv( coder,
 			    &p_in_buffer, &in_buffer_avail, 
 			    &p_out_buffer, &out_buffer_avail );

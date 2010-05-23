@@ -17,7 +17,6 @@
 #include <string>
 #include "expat_wrapper.hpp"
 #define BUFFSIZE 8192
-
 char Buff[BUFFSIZE];
 
 ///////////////////////////////////////////////
@@ -57,7 +56,7 @@ int main(int argc, char **argv) {
     OutlinePrinter p;
     
     for (;;) {
-	int done;
+	bool done;
 	int len;
 
 	len = fread(Buff, 1, BUFFSIZE, stdin);
