@@ -15,6 +15,7 @@ private:
     Workers workers;
     volatile bool running;
     volatile bool stopRequested;
+    BalancedWorker::TimeType reachingTimeInterval;
 public:
     Balancer( int numWorkers );
     ~Balancer();
@@ -32,10 +33,17 @@ public:
     //Retuen mean time value for all workers (each worker has its own time)
     BalancedWorker::TimeType averageTime()const;
     int timeGap()const;
+
+    //workers access. Deprecated. Use only for testing.
+    BalancedWorker & getWorker( int idx ){ return *workers[idx]; };
 private:
     void createWorkers( int numWorkers );
+    void runWorkers();//start main loop thread in the each worker.
     //Main loop of the load balancer thread.
     void balanceLoop();
+    typedef std::vector< int > SizesVector;
+    //Performs the tasks shuffing, according to the calculated values.
+    void rebalanceTasks( const SizesVector &oldSizes, const SizesVector &newSizes);
 };
 
 

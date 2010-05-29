@@ -4,6 +4,8 @@
    Its main purpose if to execute infinitely a list of tasks
  */
 #include <vector>
+#include<boost/thread.hpp>
+
 class Simulated;
 class BalancedWorker{
 public:
@@ -21,7 +23,7 @@ public:
     BalancedWorker();
     ~BalancedWorker();
 
-    BalancedWorker::TimeType run();     //start simulation
+    BalancedWorker::TimeType run();     //main simulation loop
     void requestStop(){ stopRequested = true; }; //
 
     void add( Simulated* task );        //Add task to the queue (synchronous)
@@ -44,6 +46,28 @@ private:
     void simulate(); 
     //Remove task from the queue, non-sync.
     void remove( Queue::iterator pos );
+    //Thread machinery
+private:
+    boost::thread workerThread;// the thread, executing the worker code.
+public:
+   /**Wait, until thread finish its work
+     It may be good idea to request stop before calling this, or waiting can become infinite.
+    */
+    void wait();
+    /*Start the thread*/
+    void runThread();
 };
+/**Compare two time marks, 
+   Taking in account that overflow of the time counter can occur*
+   assumed, that both time marks are somewhere near the t0
+*/
+struct TimeLess{
+    BalancedWorker::TimeType t0;
+    TimeLess( BalancedWorker::TimeType t0_ ): t0(t0_){};
+    bool operator()(BalancedWorker::TimeType t1, BalancedWorker::TimeType t2)const{
+	return static_cast<int>(t1-t0) < static_cast<int>(t2-t0);
+    };
+};
+
 
 #endif /* _BALANCED_WORKER_H_ */

@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "balanced_worker.hpp"
 #include "simulated.hpp"
+#include <boost/bind.hpp>
 
 BalancedWorker::BalancedWorker()
 {
@@ -19,8 +20,9 @@ BalancedWorker::~BalancedWorker()
 BalancedWorker::TimeType BalancedWorker::run()
 {
     TimeType startTime = time;
+    stopRequested = false;
     while( true ){
-	if ( stopRequested || timerSet && time == stopTime )
+	if ( stopRequested || (timerSet && (time == stopTime) ) )
 	    break;
 	simulate();
 	time ++;
@@ -63,4 +65,20 @@ bool BalancedWorker::remove( Simulated * task )    //Slow method for manual task
 	return false;
     remove( pos );
     return true;
+}
+
+//////////////// Thread-related machinery ////////////////
+/**Create thread, executing the main loop
+ */
+void BalancedWorker::runThread()
+{
+    boost::thread thrd( boost::bind( &BalancedWorker::run, this ) );
+    workerThread.swap( thrd ); //move-assignment is not working bu some strange reason. OK, let's be explicit.
+}
+/**Wait, until thread finish its work
+   It may be good idea to request stop before calling this, or waiting can become infinite.
+*/
+void BalancedWorker::wait()
+{
+    workerThread.join();
 }
