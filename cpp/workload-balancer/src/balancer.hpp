@@ -16,6 +16,7 @@ private:
     volatile bool running;
     volatile bool stopRequested;
     BalancedWorker::TimeType reachingTimeInterval;
+    int rebalanceIntervalMs;
 public:
     Balancer( int numWorkers );
     ~Balancer();
@@ -25,6 +26,13 @@ public:
     bool isRunning()const { return running; };
     void requestStop();
     void waitAll();
+
+    int getRebalanceInterval()const{ return rebalanceIntervalMs; };
+    void setRebalanceInterval( int msec ){ rebalanceIntervalMs=msec; };
+
+    //Rebalancer parameters. Characteristic time ( in simulation cycles ) of the balancing process
+    BalancedWorker::TimeType getJoinTime()const { return reachingTimeInterval; };
+    void setJoinTime( BalancedWorker::TimeType t ){ reachingTimeInterval = t; };
 
     //Stop timer manipulation
     void setTimer( BalancedWorker::TimeType stopTime );

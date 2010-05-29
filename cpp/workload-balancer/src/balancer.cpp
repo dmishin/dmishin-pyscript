@@ -23,6 +23,7 @@ Balancer::Balancer( int numWorkers )
     stopRequested = false;
     createWorkers( numWorkers );
     reachingTimeInterval = 1000;//workers should converge in 1000 steps
+    rebalanceIntervalMs = 1000;
     TRACE( "Started balancer" );
 }
 
@@ -182,16 +183,26 @@ void Balancer::balanceLoop()
 		//throughput is too low. 
 		//Now each updated quantity N' can be calculated as:
 		// N_i' = sumN * (QT[i] / sumQT)
+		double k = sumN / sumQT;
 		double roundingErrorAccum = 0;
+		int sumN1 = 0;
 		for( int i = 0; i < N; ++i ){
-		    double newSizeExact = sumN * (throughput[i] / sumQT);
+		    double newSizeExact = k  * throughput[i];
 		    sizesNew[i] = sizes1[i] + greedyRound( -sizes1[i] + roundingErrorAccum + 
 							  newSizeExact );
 		    roundingErrorAccum = newSizeExact - sizesNew[i]; //account the rounding error for the next step
+		    sumN1 += sizesNew[i];
 		}
 		//OK, new sizes calculated!
 		//Now check the results.
-		assert( std::accumulate(sizesNew.begin(), sizesNew.end(), 0) == sumN ); //except for the division by zero cases, it must be 0
+		if (sumN1 != sumN ){//tracing
+		    TRACE("LOST TASKS:");
+		    TRACE("Catch time:"<<T0);
+		    for (int i = 0; i < N; ++ i){
+			TRACE( "#"<<i<<"T0="<<times0[i]<<" T1="<<times1[i]<<" N0="<<sizes0[i]<<" N1="<<sizes1[i]<<" Q/T="<<throughput[i] );
+		    }
+		}
+		assert( sumN1 == sumN ); //except for the division by zero cases, it must be 0
 		
 		//and perform the task shuffling
 		rebalanceTasks( sizes1, sizesNew );
@@ -202,7 +213,7 @@ void Balancer::balanceLoop()
 	sizes1.swap( sizes0 );
 	//do a pause before next iteratoin
 	//boost::thread::sleep(boost::posix_time::milliseconds( 1000 ) );//sleep one second.
-	boost::this_thread::sleep( boost::posix_time::milliseconds( 1000 ) );//sleep one second.
+	boost::this_thread::sleep( boost::posix_time::milliseconds( rebalanceIntervalMs ) );//sleep one second.
     };
     TRACE( "End loop" );
 }
