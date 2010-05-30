@@ -174,22 +174,20 @@ void Balancer::balanceLoop()
 	    double sumQT = 0;//sum of the throughput values
 	    for( int i = 0; i<N; ++i){
 		double Q_T = ((sizes0[i]+sizes1[i]) * static_cast<int>(times1[i]-times0[i]))/
-		    static_cast<double>( T0 - times0[i] );
+		    static_cast<double>( T0 - times1[i] );
 		throughput[i] = Q_T; // Q/T
 		sumQT += Q_T;
 	    }
 	    int sumN = std::accumulate(sizes1.begin(), sizes1.end(), 0);
 	    if ( sumN > 0 && sumQT > 1e-12 ){ //TODO: eps? not really importan though.
-		//throughput is too low. 
 		//Now each updated quantity N' can be calculated as:
 		// N_i' = sumN * (QT[i] / sumQT)
 		double k = sumN / sumQT;
 		double roundingErrorAccum = 0;
 		int sumN1 = 0;
 		for( int i = 0; i < N; ++i ){
-		    double newSizeExact = k  * throughput[i];
-		    sizesNew[i] = sizes1[i] + greedyRound( -sizes1[i] + roundingErrorAccum + 
-							  newSizeExact );
+		    double newSizeExact = k  * throughput[i] + roundingErrorAccum; //add error from the previous step
+		    sizesNew[i] = sizes1[i] + greedyRound( -sizes1[i] + newSizeExact );
 		    roundingErrorAccum = newSizeExact - sizesNew[i]; //account the rounding error for the next step
 		    sumN1 += sizesNew[i];
 		}
