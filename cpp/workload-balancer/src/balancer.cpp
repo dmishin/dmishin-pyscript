@@ -12,6 +12,7 @@
 
 #ifdef TRACE_BALANCER
 #include <iostream>
+#include <iomanip>
 #define TRACE( x ) { std::cout << "BLR:" << x << std::endl; std::cout.flush(); }
 #else
 #define TRACE( x ) {}
@@ -116,6 +117,56 @@ int Balancer::timeGap()const
     return dt_max - dt_min;
 }
 
+struct const_multiplier: public std::unary_function<double, double>
+{
+    double k;
+    const_multiplier( double k_ ): k(k_){};
+    double operator()( double x ){ return x*k; };
+};
+/**Given a set of floating point numbers such that their sum is integer,
+   rounds each of them so that the sum became the same
+*/
+struct PairComparatorMore{
+    typedef std::pair<double, int> arg_type;
+    bool operator()( const arg_type &x0, const arg_type &x1 ){
+	return x0.first > x1.first;
+    }
+};
+
+/**Round several values, trying to make minimal change to their sum and to their individual values
+   |sum(x)-sum(r)| < 0.5
+   If the sum of the values is integer, sum of the output is the same as the sum of the input.
+   elements are modified by minimal possible value
+*/
+void optimalRound( const std::vector<double> &x, std::vector<int> &r )
+{
+    typedef std::vector< std::pair<double, int> > indexed_vector;//vector of coubles with indices
+    indexed_vector remainders(x.size()); //remainders and their indices
+    assert( x.size() == r.size() );
+    //step 1: round to the lower bound
+    double sx = 0.0;
+    int sr = 0.0;
+    int N = x.size();
+    for( int i = 0; i<N; ++i ){
+	double xr = floor(x[i]);
+	r[i] = static_cast<int>(xr);
+	remainders[i] = std::make_pair( x[i] - xr, i );
+	sx += x[i];
+	sr += xr;
+    }
+    double defect = sx - sr; //how much is left
+    //sort remainders and their indices to get the biggest remainders first
+    std::sort( remainders.begin(), remainders.end(), PairComparatorMore() );
+    //now add ones to the rounded values with highest remainders. When total defect become less than 0.5 by absolute value, then algorithm is stopped
+    indexed_vector::const_iterator 
+	i=remainders.begin(), e=remainders.end();
+    while( fabs( defect ) > 0.5 && i != e ){
+	r[ i->second ] ++; //second contains index of the element
+	defect -= 1.0;
+	++i;
+    }
+    assert( fabs( defect ) <= 0.5 );
+}
 //Main loop of the load balancer thread.
 void Balancer::balanceLoop()
 {
@@ -130,6 +181,7 @@ void Balancer::balanceLoop()
     SizesVector sizes1( N );
 
     std::vector< double > throughput( N );
+    std::vector< double > exactSizes( N );
     SizesVector sizesNew( N );//new sizes would be stored here
 
     bool isFirstStep = true;
@@ -174,19 +226,15 @@ void Balancer::balanceLoop()
 		//Now each updated quantity N' can be calculated as:
 		// N_i' = sumN * (QT[i] / sumQT)
 		double k = sumN / sumQT;
-		double roundingErrorAccum = 0;
-		int sumN1 = 0;
-		for( int i = 0; i < N; ++i ){
-		    double newSizeExact = k  * throughput[i] + roundingErrorAccum; //add error from the previous step
-		    sizesNew[i] = round( newSizeExact );
-		    roundingErrorAccum = newSizeExact - sizesNew[i]; //account the rounding error for the next step
-		    sumN1 += sizesNew[i];
-		}
+		std::transform( throughput.begin(), throughput.end(), exactSizes.begin(), const_multiplier( k ) );
+		optimalRound( exactSizes, sizesNew );
 		//OK, new sizes calculated!
 		//Now check the results.
-		if (sumN1 != sumN ){//tracing
+#ifdef TRACE_BALANCER
+		int sumN1 = std::accumulate( sizesNew.begin(), sizesNew.end(), 0);
+		if ( sumN1 != sumN ){//tracing
 		    TRACE("LOST TASKS:");
-		    TRACE("Catch time:"<<T0<<" remaining err:"<<roundingErrorAccum);
+		    TRACE("Catch time:"<<T0);
 		    for (int i = 0; i < N; ++ i){
 			TRACE( "#"<<i<<"T0="<<times0[i]<<" T1="<<times1[i]<<" N0="<<sizes0[i]<<" N1="<<sizes1[i]<<" Q/T="<<throughput[i] );
 		    }
@@ -196,7 +244,8 @@ void Balancer::balanceLoop()
 		    }
 		    TRACE("Defect sum(Nnew)-sum(N) = "<<sumN1-sumN);
 		}
-		assert( sumN1 == sumN ); //except for the division by zero cases, it must be 0
+#endif
+		assert( std::accumulate( sizesNew.begin(), sizesNew.end(), 0) == sumN ); //except for the division by zero cases, it must be 0
 		
 		//and perform the task shuffling
 		rebalanceTasks( sizes1, sizesNew );
