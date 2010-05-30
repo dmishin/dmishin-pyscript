@@ -116,15 +116,6 @@ int Balancer::timeGap()const
     return dt_max - dt_min;
 }
 
-/**Rounding, trying to preserve 0 when possible
- */
-int greedyRound( double x )
-{
-    if ( x > -1 && x < 1 )
-	return 0; //0 is greedy
-    else
-	return round( x );
-}
 //Main loop of the load balancer thread.
 void Balancer::balanceLoop()
 {
@@ -187,7 +178,7 @@ void Balancer::balanceLoop()
 		int sumN1 = 0;
 		for( int i = 0; i < N; ++i ){
 		    double newSizeExact = k  * throughput[i] + roundingErrorAccum; //add error from the previous step
-		    sizesNew[i] = sizes1[i] + greedyRound( -sizes1[i] + newSizeExact );
+		    sizesNew[i] = round( newSizeExact );
 		    roundingErrorAccum = newSizeExact - sizesNew[i]; //account the rounding error for the next step
 		    sumN1 += sizesNew[i];
 		}
@@ -195,10 +186,15 @@ void Balancer::balanceLoop()
 		//Now check the results.
 		if (sumN1 != sumN ){//tracing
 		    TRACE("LOST TASKS:");
-		    TRACE("Catch time:"<<T0);
+		    TRACE("Catch time:"<<T0<<" remaining err:"<<roundingErrorAccum);
 		    for (int i = 0; i < N; ++ i){
 			TRACE( "#"<<i<<"T0="<<times0[i]<<" T1="<<times1[i]<<" N0="<<sizes0[i]<<" N1="<<sizes1[i]<<" Q/T="<<throughput[i] );
 		    }
+		    TRACE("calculated new sizes:");
+		    for (int i = 0; i < N; ++ i){
+			TRACE("#"<<i<<" Nnew="<<sizesNew[i] );
+		    }
+		    TRACE("Defect sum(Nnew)-sum(N) = "<<sumN1-sumN);
 		}
 		assert( sumN1 == sumN ); //except for the division by zero cases, it must be 0
 		
