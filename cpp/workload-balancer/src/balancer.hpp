@@ -8,7 +8,7 @@ class Simulated;
  */
 class Balancer{
 public:
-    //Complec data types
+    //Complex data types
     typedef std::vector< BalancedWorker* > Workers;
 private:
     //Data fields
@@ -17,6 +17,13 @@ private:
     volatile bool stopRequested;
     BalancedWorker::TimeType reachingTimeInterval;
     int rebalanceIntervalMs;
+
+    //Task pool. Stores the tasks before they are consumed by the workers
+    //access to the task pool is synchronized
+    typedef std::vector<Simulated*> TaskPool;
+    TaskPool taskPool;
+    boost::mutex taskPoolMutex;
+
 public:
     Balancer( int numWorkers );
     ~Balancer();
@@ -44,6 +51,25 @@ public:
 
     //workers access. Deprecated. Use only for testing.
     BalancedWorker & getWorker( int idx ){ return *workers[idx]; };
+
+    //Used by workers to get or put tasks to the pool
+    struct QueueAccessor{
+	Balancer &parent;
+	QueueAccessor( Balancer &parent_);
+	~QueueAccessor();
+    };
+    struct QueuePutter: public QueueAccessor{
+	QueuePutter( Balancer& parent_ ): QueueAccessor( parent_ ){};
+	void operator()( Simulated * task );
+    };
+    struct QueueGetter: public QueueAccessor{
+	QueueGetter( Balancer &parent_ ): QueueAccessor( parent_ ){};
+	bool empty()const;
+	Simulated * operator()();
+    };
+    QueuePutter putter(){ return QueuePutter( *this ); };
+    QueueGetter getter(){ return QueueGetter( *this ); };
+	
 private:
     void createWorkers( int numWorkers );
     void runWorkers();//start main loop thread in the each worker.

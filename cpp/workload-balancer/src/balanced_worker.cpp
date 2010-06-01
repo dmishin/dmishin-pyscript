@@ -1,15 +1,18 @@
 #include <cassert>
 #include <algorithm>
+#include <boost/bind.hpp>
 #include "balanced_worker.hpp"
 #include "simulated.hpp"
-#include <boost/bind.hpp>
+#include "balancer.hpp"
 
-BalancedWorker::BalancedWorker()
+BalancedWorker::BalancedWorker( Balancer & parent_ )
+    :parent( parent_ )
 {
     time = 0;
     stopTime = 0;
     timerSet = false; //if true, simulation will stop, when time reaches stopTime
     stopRequested = false; //set to true to finish the loop
+    requestedRebalancing = 0;//by default - no rebalancing is needed
 }
 
 BalancedWorker::~BalancedWorker()
@@ -26,6 +29,8 @@ BalancedWorker::TimeType BalancedWorker::run()
 	    break;
 	simulate();
 	time ++;
+	//check, whether there are any rebalance requests
+	updateBalance();
     }
     return time - startTime;
 }
@@ -56,6 +61,19 @@ void BalancedWorker::add( Simulated* task )        //Add task to the queue (sync
     queue.push_back( task );
 }
 
+/**Pop one task from the queue. Probably, popping random task may be effective, but I am not sure yet.
+ */
+Simulated * BalancedWorker::popOneTask()
+{
+    if (! empty() ){
+	Simulated * rval = queue.back();
+	queue.pop_back();
+	return rval;
+    }else{
+	return NULL;
+    }
+}
+
 bool BalancedWorker::remove( Simulated * task )    //Slow method for manual task removal. True if successes. synchronous.
 {
     assert( task );
@@ -81,4 +99,29 @@ void BalancedWorker::runThread()
 void BalancedWorker::wait()
 {
     workerThread.join();
+}
+
+void BalancedWorker::updateBalance()
+{
+    int request = requestedRebalancing;
+    requestedRebalancing = 0;
+
+    if ( request > 0){
+	//get additional tasks
+	Balancer::QueueGetter getter = parent.getter();
+	for( ; request > 0 && !getter.empty(); --request ){
+	    add( getter() );
+	}
+    }else if( request < 0){
+	//return some tasks
+	Balancer::QueuePutter putter = parent.putter();
+	for( ; request < 0 && !empty(); ++request ){
+	    putter( popOneTask() );
+	}
+    }
+}	
+       
+void BalancedWorker::requestRebalance( int workloadChange )
+{
+    requestedRebalancing = workloadChange;
 }

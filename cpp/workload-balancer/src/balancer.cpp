@@ -48,7 +48,7 @@ void Balancer::createWorkers( int numWorkers )
     assert( workers.size() == 0 );
     assert( numWorkers > 0 );
     for( int i = 0; i < numWorkers; ++i ){
-	workers.push_back( new BalancedWorker() );
+	workers.push_back( new BalancedWorker( *this ) );
     }
 }
 
@@ -255,7 +255,6 @@ void Balancer::balanceLoop()
 	times1.swap( times0 );
 	sizes1.swap( sizes0 );
 	//do a pause before next iteratoin
-	//boost::thread::sleep(boost::posix_time::milliseconds( 1000 ) );//sleep one second.
 	boost::this_thread::sleep( boost::posix_time::milliseconds( rebalanceIntervalMs ) );//sleep one second.
     };
     TRACE( "End loop" );
@@ -291,5 +290,40 @@ void Balancer::rebalanceTasks( const Balancer::SizesVector &oldSizes, const Bala
     }
     TRACE( ss.str() );
 #endif
-    //TODO
+    for( size_t i = 0; i < oldSizes.size(); ++ i){
+	workers[i]->requestRebalance( newSizes[i] - oldSizes[i] );
+    };
+}
+
+
+////////////// Putter and getter ////////////////
+Balancer::QueueAccessor::QueueAccessor( Balancer &parent_)
+    :parent( parent_ )
+{
+    //acquire lock
+    parent.taskPoolMutex.lock();
+}
+Balancer::QueueAccessor::~QueueAccessor()
+{
+    //release lock
+    parent.taskPoolMutex.unlock();
+}
+void Balancer::QueuePutter::operator()( Simulated * task )
+{
+    assert( task );
+    parent.taskPool.push_back( task );
+}
+bool Balancer::QueueGetter::empty()const
+{
+    return parent.taskPool.empty();
+}
+Simulated * Balancer::QueueGetter::operator()()
+{
+    if (!empty()){
+	Simulated* rval = parent.taskPool.back();
+	parent.taskPool.pop_back();
+	return rval;
+    }else{
+	return NULL;
+    }
 }

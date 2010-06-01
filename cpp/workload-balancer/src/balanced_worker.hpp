@@ -7,6 +7,7 @@
 #include<boost/thread.hpp>
 
 class Simulated;
+class Balancer;
 class BalancedWorker{
 public:
     //Complex types
@@ -14,13 +15,15 @@ public:
     typedef unsigned long TimeType;
 private:
     //data members
+    Balancer & parent;
     Queue queue; //lsit of tasks
     volatile TimeType time;
     volatile TimeType stopTime;
     volatile bool timerSet; //if true, simulation will stop, when time reaches stopTime
     volatile bool stopRequested; //set to true to finish the loop
+    volatile int requestedRebalancing; //If positive, worker must get some additional tasks to increase load. If negative, worker must return sume tasks to the pool
 public:
-    BalancedWorker();
+    BalancedWorker( Balancer& parent_ );
     ~BalancedWorker();
 
     BalancedWorker::TimeType run();     //main simulation loop
@@ -28,6 +31,8 @@ public:
 
     void add( Simulated* task );        //Add task to the queue (synchronous)
     bool remove( Simulated * task );    //Slow method for manual task removal. True if successes. synchronous.
+    int size()const{ return queue.size(); };                  //Size of the queue
+    bool empty()const{ return queue.empty(); }; //is queue empty or not
     
     BalancedWorker::TimeType getTime()const        { return time; };
     void setTime( BalancedWorker::TimeType time_ ) { time = time_; };
@@ -39,14 +44,17 @@ public:
     BalancedWorker::TimeType getTimer() const { return stopTime; };
     bool isTimerSet()const { return timerSet; };
 
-    int size()const{ return queue.size(); };                  //Size of the queue
-
+    //Balancing. Called by balancer to request workload change
+    void requestRebalance( int workloadChange );
 private:
     //Internal operation details
     void simulate(); 
     //Remove task from the queue, non-sync.
     void remove( Queue::iterator pos );
-    //Thread machinery
+    /**Pop one task from the queue. Probably, popping random task may be effective, but I am not sure yet.*/
+    Simulated * popOneTask();
+    //Check, whether rebalance request is pending, and perform rebalancing.
+    void updateBalance(); 
 private:
     boost::thread workerThread;// the thread, executing the worker code.
 public:
