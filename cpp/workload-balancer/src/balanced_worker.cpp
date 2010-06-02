@@ -119,6 +119,7 @@ void BalancedWorker::updateBalance()
 	    putter( popOneTask() );
 	}
     }
+    requestedRebalancing += request;//return unfulfilled request
 }	
        
 void BalancedWorker::requestRebalance( int workloadChange )
