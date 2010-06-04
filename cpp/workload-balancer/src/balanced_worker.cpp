@@ -20,7 +20,7 @@ BalancedWorker::~BalancedWorker()
 }
 
 //main loop
-BalancedWorker::TimeType BalancedWorker::run()
+TimeType BalancedWorker::run()
 {
     TimeType startTime = time;
     stopRequested = false;

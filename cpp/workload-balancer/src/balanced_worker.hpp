@@ -5,6 +5,7 @@
  */
 #include <vector>
 #include<boost/thread.hpp>
+#include "balancer_types.hpp"
 
 class Simulated;
 class Balancer;
@@ -12,7 +13,6 @@ class BalancedWorker{
 public:
     //Complex types
     typedef std::vector< Simulated* > Queue;
-    typedef unsigned long TimeType;
 private:
     //data members
     Balancer & parent;
@@ -26,7 +26,7 @@ public:
     BalancedWorker( Balancer& parent_ );
     ~BalancedWorker();
 
-    BalancedWorker::TimeType run();     //main simulation loop
+    TimeType run();     //main simulation loop
     void requestStop(){ stopRequested = true; }; //
 
     void add( Simulated* task );        //Add task to the queue (synchronous)
@@ -34,14 +34,14 @@ public:
     int size()const{ return queue.size(); };                  //Size of the queue
     bool empty()const{ return queue.empty(); }; //is queue empty or not
     
-    BalancedWorker::TimeType getTime()const        { return time; };
-    void setTime( BalancedWorker::TimeType time_ ) { time = time_; };
+    TimeType getTime()const        { return time; };
+    void setTime( TimeType time_ ) { time = time_; };
     
     //Stop time - a moment in time, when stop requested.
-    void setTimer( BalancedWorker::TimeType stime ) { stopTime = stime; timerSet = true; }; 
-    void setTimerRelative( BalancedWorker::TimeType dt ) { stopTime = time + dt; timerSet = true; };
+    void setTimer( TimeType stime ) { stopTime = stime; timerSet = true; }; 
+    void setTimerRelative( TimeType dt ) { stopTime = time + dt; timerSet = true; };
     void disableTimer(){ timerSet = false; };
-    BalancedWorker::TimeType getTimer() const { return stopTime; };
+    TimeType getTimer() const { return stopTime; };
     bool isTimerSet()const { return timerSet; };
 
     //Balancing. Called by balancer to request workload change
@@ -70,9 +70,9 @@ public:
    assumed, that both time marks are somewhere near the t0
 */
 struct TimeLess{
-    BalancedWorker::TimeType t0;
-    TimeLess( BalancedWorker::TimeType t0_ ): t0(t0_){};
-    bool operator()(BalancedWorker::TimeType t1, BalancedWorker::TimeType t2)const{
+    TimeType t0;
+    TimeLess( TimeType t0_ ): t0(t0_){};
+    bool operator()(TimeType t1, TimeType t2)const{
 	return static_cast<int>(t1-t0) < static_cast<int>(t2-t0);
     };
 };

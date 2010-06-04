@@ -5,6 +5,7 @@
 #include "balanced_worker.hpp"
 #include "balancer.hpp"
 #include "simulated.hpp"
+#include "balance_method.hpp"
 
 class DummyTask: public Simulated
 {
@@ -43,6 +44,7 @@ int main(int argc, char *argv[])
 
     cout<<"Creating balance loader with "<<N<<" workers"<<endl;
     Balancer balancer( N );
+    balancer.setMethod( std::auto_ptr<BalanceMethod>( new BM_Simple( 1000 ) ) );//1000 is a catchup time
 
     //putting wasks to the workers
     for( int i = 0; i < N; ++i ){
