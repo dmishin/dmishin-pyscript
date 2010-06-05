@@ -13,6 +13,7 @@ BalancedWorker::BalancedWorker( Balancer & parent_ )
     timerSet = false; //if true, simulation will stop, when time reaches stopTime
     stopRequested = false; //set to true to finish the loop
     requestedRebalancing = 0;//by default - no rebalancing is needed
+    idleSleepTime = 50;//sleep 50 ms between idle cycles, when there are no tasks
 }
 
 BalancedWorker::~BalancedWorker()
@@ -27,11 +28,20 @@ TimeType BalancedWorker::run()
     while( true ){
 	if ( stopRequested || (timerSet && (time == stopTime) ) )
 	    break;
-	simulate();
-	time ++;
 	//check, whether there are any rebalance requests
 	updateBalance();
+	if ( empty() ){
+	    //Queue is empty - instead of working, sleep on mutex
+	    //do a pause before next iteration to reduce processo load (Actually, wait on semaphore may be better, but there are some complications)
+	    boost::this_thread::sleep( boost::posix_time::milliseconds( idleSleepTime ) );
+	}else{ //there is work to do
+	    simulate();
+	    time ++;
+	}
     }
+    //after the end of the work, return all tasks
+    requestRebalance( -queue.size() );
+    updateBalance();
     return time - startTime;
 }
 
@@ -57,7 +67,6 @@ void BalancedWorker::remove( BalancedWorker::Queue::iterator pos )
 void BalancedWorker::add( Simulated* task )        //Add task to the queue (synchronous)
 {
     assert( task );
-    //TODO: lock
     queue.push_back( task );
 }
 
@@ -108,9 +117,14 @@ void BalancedWorker::updateBalance()
 
     if ( request > 0){
 	//get additional tasks
+	bool wasEmpty = empty();
 	Balancer::QueueGetter getter = parent.getter();
 	for( ; request > 0 && !getter.empty(); --request ){
 	    add( getter() );
+	}
+	if ( wasEmpty && !empty() ){
+	    //reset time to the current default time of the runner
+	    time = parent.averageTime();
 	}
     }else if( request < 0){
 	//return some tasks
@@ -125,4 +139,6 @@ void BalancedWorker::updateBalance()
 void BalancedWorker::requestRebalance( int workloadChange )
 {
     requestedRebalancing = workloadChange;
+    //If the thread currently waiting for the new tasks,
+    //then there is time to wake it.
 }

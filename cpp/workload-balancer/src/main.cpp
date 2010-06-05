@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
     cout<<"Creating balance loader with "<<N<<" workers"<<endl;
     Balancer balancer( N );
     balancer.setMethod( std::auto_ptr<BalanceMethod>( new BM_Simple( 1000 ) ) );//1000 is a catchup time
+    //balancer.setMethod( std::auto_ptr<BalanceMethod>( new BM_Linear( 0.6/100 ) ) );//increase workload in 1.5, if the worker runs away on 100 steps
 
     //putting wasks to the workers
     for( int i = 0; i < N; ++i ){

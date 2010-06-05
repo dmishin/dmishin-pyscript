@@ -92,11 +92,19 @@ TimeType Balancer::averageTime()const
     Workers::const_iterator i = workers.begin();
     TimeType t0 = (*i)->getTime();
     int sum_dt = 0; //can be positive and negative
+    int count = 0;
     for( ++i; i != workers.end(); ++i ){
-	int dt = static_cast<int>( (*i)->getTime() - t0 );
-	sum_dt += dt;
+	if (! (*i)->empty() ){
+	    int dt = static_cast<int>( (*i)->getTime() - t0 );
+	    sum_dt += dt;
+	    count ++;
+	}
     }
-    return t0 + static_cast<TimeType>( sum_dt / workers.size() );
+    if (count > 0 ){
+	return t0 + static_cast<TimeType>( sum_dt / count );
+    }else{
+	return workers.front()->getTime();
+    }
 }
 
 int Balancer::timeGap()const
@@ -156,6 +164,12 @@ void Balancer::balanceLoop()
 	    //perform balancing
 	    SizesVector & sizesNew = method->calculate( sizes0, times0, sizes1, times1 );
 	    //and perform the task shuffling
+#ifdef TRACE_BALANCER
+	    TimeType Tmax = *std::max_element( times1.begin(), times1.end() );
+	    TimeType Tmin = *std::min_element( times1.begin(), times1.end() ); 
+	    TRACE( "Tmax="<<Tmax<<" Tmin="<<Tmin<<" Gap="<<(Tmax-Tmin) );
+#endif
+	    //Now calculate T0. it must be after the T1 by some value, probably, several times more than difference between tmax and Tmin
 	    rebalanceTasks( sizes1, sizesNew );
 	}
 	//store current values for the next step
@@ -168,6 +182,7 @@ void Balancer::balanceLoop()
 }
 void Balancer::start()
 {
+    initialPopulate(); //put tasks from the queue to the workers
     runWorkers();
     running = true;
 
@@ -201,6 +216,20 @@ void Balancer::rebalanceTasks( const SizesVector &oldSizes, const SizesVector &n
     for( size_t i = 0; i < oldSizes.size(); ++ i){
 	workers[i]->requestRebalance( newSizes[i] - oldSizes[i] );
     };
+}
+
+//called before start of the main loop, to put tasks form the queue to the workers
+void Balancer::initialPopulate()
+{
+    assert( workers.size() > 0 );
+    TaskPool::iterator i, e = taskPool.end();
+    Workers::iterator iw = workers.begin();
+    for( i = taskPool.begin(); i!=e; ++i ){
+	(*iw)->add( *i );
+	iw ++;
+	if (iw == workers.end() )
+	    iw = workers.begin();
+    }
 }
 
 

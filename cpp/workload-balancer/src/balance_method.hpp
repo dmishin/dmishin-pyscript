@@ -40,4 +40,22 @@ private:
     
 };
 
+/**Dynamic balancer, changing workload according to the currend gap
+   workload increase is proportional to the time difference.
+ */
+class BM_Linear: public BalanceMethod{
+private:
+    double k;
+public:
+    BM_Linear( double k_ );
+    //First call
+    virtual void first( const SizesVector & N0, const TimesVector & T0);
+
+    //called to calculate balance
+    virtual SizesVector & calculate( const SizesVector &N0, const TimesVector T0, 
+				     const SizesVector &N1, const TimesVector T1 );
+    virtual ~BM_Linear(){};
+private:
+};
+
 #endif /* _BALANCE_METHOD_H_ */

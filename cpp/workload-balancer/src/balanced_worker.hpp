@@ -22,6 +22,9 @@ private:
     volatile bool timerSet; //if true, simulation will stop, when time reaches stopTime
     volatile bool stopRequested; //set to true to finish the loop
     volatile int requestedRebalancing; //If positive, worker must get some additional tasks to increase load. If negative, worker must return sume tasks to the pool
+
+    int idleSleepTime; //sleep time in ms to sleep between idle cycles
+
 public:
     BalancedWorker( Balancer& parent_ );
     ~BalancedWorker();
@@ -65,17 +68,5 @@ public:
     /*Start the thread*/
     void runThread();
 };
-/**Compare two time marks, 
-   Taking in account that overflow of the time counter can occur*
-   assumed, that both time marks are somewhere near the t0
-*/
-struct TimeLess{
-    TimeType t0;
-    TimeLess( TimeType t0_ ): t0(t0_){};
-    bool operator()(TimeType t1, TimeType t2)const{
-	return static_cast<int>(t1-t0) < static_cast<int>(t2-t0);
-    };
-};
-
 
 #endif /* _BALANCED_WORKER_H_ */

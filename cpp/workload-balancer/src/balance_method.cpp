@@ -97,9 +97,7 @@ SizesVector & BM_Simple::calculate( const SizesVector &N0, const TimesVector T0,
     //calculate the Tmax - moment of time, when allworkers should hypotetically synchronize
     //It must be later. Find the last time
     TimeType Tmax = *std::max_element( T1.begin(), T1.end() );
-    TimeType Tmin = *std::min_element( T1.begin(), T1.end() ); 
     
-    TRACE( "Tmax="<<Tmax<<" Tmin="<<Tmin<<" Gap="<<(Tmax-Tmin) );
     //Now calculate T0. it must be after the T1 by some value, probably, several times more than difference between tmax and Tmin
     TimeType Tend = Tmax + catchTimeInterval;
 
@@ -133,4 +131,49 @@ void BM_Simple::updateSize( size_t N )
     N2.resize( N );
     throughput.resize( N );
     exactSizes.resize( N );
+}
+
+
+/////////////////////////////////////////////////////////////////
+/// BM_Linear
+/////////////////////////////////////////////////////////////////
+BM_Linear::BM_Linear( double k_ )
+{
+    k = k_;
+}
+//First call
+void BM_Linear::first( const SizesVector & N0, const TimesVector & T0)
+{
+    assert( T0.size() == N0.size() );
+    N2.resize( N0.size() );
+}
+
+//called to calculate balance
+SizesVector & BM_Linear::calculate( const SizesVector &N0, const TimesVector T0, 
+				    const SizesVector &N1, const TimesVector T1 )
+{
+    assert( T1.size() > 0 );
+    int N = T1.size();
+    //find runners that have moved forward too far 
+    // their load must be increased, increase coefficient is proportional to the run-over time and k.
+    // recalculate and round-up enw counts.
+    
+    //get minimal time
+    TimeType Tmin = *std::min_element( T1.begin(), T1.end(), TimeLess( T1[0] ) );
+    std::vector<double> exactSizes(N); //unrounded times
+    double sum_sizes = 0;
+    for( int i = 0; i < N; ++i ){
+	TimeType dt = T1[i] - Tmin;
+	double new_size = N1[i] * ( 1 + std::min( k*dt, 0.5 ) );//increasing, but not more that in 1.5 times
+	exactSizes[i] = new_size;
+	sum_sizes += new_size;
+    }
+    //scale down sizes, to make their sum equal to the original
+    double k_norm = std::accumulate(N1.begin(), N1.end(), 0) / sum_sizes;
+    
+    std::transform( exactSizes.begin(), exactSizes.end(), exactSizes.begin(), const_multiplier( k_norm ) );
+    //Round up sizes
+
+    optimalRound( exactSizes, N2 );
+    return N2;
 }

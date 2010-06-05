@@ -81,6 +81,8 @@ private:
     void balanceLoop();
     //Performs the tasks shuffing, according to the calculated values.
     void rebalanceTasks( const SizesVector &oldSizes, const SizesVector &newSizes);
+    //called before start of the main loop, to put tasks form the queue to the workers
+    void initialPopulate();
 };
 
 
