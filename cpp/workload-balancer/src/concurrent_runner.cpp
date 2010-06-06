@@ -3,7 +3,11 @@
 #include <cassert>
 #include "concurrent_runner.hpp"
 #include "simulated.hpp"
+#include "my_boost_util.hpp"
 
+#define DO_TRACE
+#define TRACE_NAME "[CRN]"
+#include "trace.hpp"
 
 ConcurrentRunner::ConcurrentRunner( size_t numThreads )
 {
@@ -114,9 +118,11 @@ void ConcurrentRunner::removeDeadTasks()
     }
     //OK, iCurrent points to the new end.
     //Cut the queue.
+    int nRemoved = range_size (iCurrent, queue.end() );
     std::for_each( iCurrent, queue.end(), 
 		   boost::bind( &ConcurrentRunner::Task::deleteMutex, _1 ) ); //delete mutexes for the deleted tasks
     queue.erase( iCurrent, queue.end() );
+    TRACE( "Time:"<<time<<" Cleanup:" << nRemoved <<" tasks removed, "<<queue.size()<<" tasks left" );
 }
 
 /**Runner runs this loop to clean up dead tasks from the queue periodically
@@ -133,10 +139,13 @@ void ConcurrentRunner::cleanupLoop()
 
 void ConcurrentRunner::run()
 {
+    TRACE("Starting cleanup loop" )
     runThreads( numWorkers );
     cleanupLoop(); //loop is finished, when stop is requested
     stopThreads();
+    TRACE( "Cleanup thread finished" )
 }
+
 void ConcurrentRunner::requestStop()
 {
     stopRequested = true;
@@ -160,6 +169,7 @@ ConcurrentRunner::Worker::~Worker()
 void ConcurrentRunner::Worker::mainLoop()
 {
     assert( ! running );
+    TRACE( "Worker #"<<index+1<<" started");
     size_t N = index + 1;
     
     running = true;
