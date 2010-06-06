@@ -168,7 +168,7 @@ void ConcurrentRunner::Worker::mainLoop()
 	//In the beginning of the cycle, gain read access to the queue
 	boost::shared_lock<boost::shared_mutex> lockQueue( owner.queueMutex );
 	for( size_t i0 = 0; i0 < N; ++i0 ){//i0 is the index of the first task
-	    for ( size_t i = i0; i <= owner.queue.size(); i += N){
+	    for ( size_t i = i0; i < owner.queue.size(); i += N){
 		Task & task = owner.queue[i];
 		boost::lock_guard<boost::mutex> lockTask( *task.mutex );//acquire mutex of the individual task
 		if (! task.task ) //task slot is empty - just skip it.
