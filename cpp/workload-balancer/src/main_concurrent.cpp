@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
     }
 
     cout<<"Starting simulation threads ..."<<endl;
+    cout.flush();
     
     runner.run();
 

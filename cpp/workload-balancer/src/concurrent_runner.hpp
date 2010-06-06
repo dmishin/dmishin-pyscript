@@ -42,8 +42,8 @@ private:
 	Simulated* task;
 	boost::mutex * mutex;
 	explicit Task( Simulated* task_): task(task_), mutex( new boost::mutex ){};
-	~Task(){ delete mutex; };
 	bool equals( Simulated * t )const { return t == task; }
+	void deleteMutex(){ delete mutex; mutex = NULL;} ;
     };
     typedef std::vector< Task > TaskQueue;
     TaskQueue queue;

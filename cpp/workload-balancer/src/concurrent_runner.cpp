@@ -23,7 +23,7 @@ ConcurrentRunner::~ConcurrentRunner()
 void ConcurrentRunner::add( Simulated * task )
 {
     //locking the queue exclusively
-    boost::lock_guard<boost::shared_mutex> lock( queueMutex );
+    boost::unique_lock<boost::shared_mutex> lock( queueMutex );
     queue.push_back( Task( task ) ); //create new task and lock for it and push it back to the queue
 }
 //remove task from the queue (slow)
@@ -114,6 +114,8 @@ void ConcurrentRunner::removeDeadTasks()
     }
     //OK, iCurrent points to the new end.
     //Cut the queue.
+    std::for_each( iCurrent, queue.end(), 
+		   boost::bind( &ConcurrentRunner::Task::deleteMutex, _1 ) ); //delete mutexes for the deleted tasks
     queue.erase( iCurrent, queue.end() );
 }
 
