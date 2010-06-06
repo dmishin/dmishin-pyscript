@@ -25,6 +25,8 @@ bool DummyTask::simulate()
 	    sum += x;
 	}
     }
+    if ( rand() %1000 == 1 )
+	return false;
     age += 1;
     return true; //simulate infinitely
 }

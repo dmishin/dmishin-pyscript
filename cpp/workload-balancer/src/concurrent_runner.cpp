@@ -114,7 +114,8 @@ void ConcurrentRunner::removeDeadTasks()
 	if ( iCurrent == iLast )
 	    break; //nothing to replace.
 	//empty place inside and free task found
-	*iCurrent = *iLast;
+	iCurrent->task = iLast->task;
+	iLast->task = NULL;
     }
     //Now iCurrent may either point to empty task or to alive task.
     if ( iCurrent->task != NULL ){
