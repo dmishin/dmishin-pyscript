@@ -50,6 +50,8 @@ private:
 
     boost::shared_mutex queueMutex; //mutex for syncing queue modifications
     boost::mutex runnerDataMutex;
+    boost::mutex queueExclusiveAccessMutex;
+
 //Worker queue
     struct Worker{
 	ConcurrentRunner & owner;

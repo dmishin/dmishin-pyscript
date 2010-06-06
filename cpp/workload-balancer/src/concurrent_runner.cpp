@@ -34,7 +34,7 @@ void ConcurrentRunner::add( Simulated * task )
 bool ConcurrentRunner::remove( Simulated * task)
 {
     //locking the queue exclusively
-    boost::lock_guard<boost::shared_mutex> lock( queueMutex );
+    boost::unique_lock<boost::shared_mutex> lock( queueMutex );
     TaskQueue::iterator iItem = std::find_if( queue.begin(), queue.end(), 
 					      boost::bind( &ConcurrentRunner::Task::equals, _1, task));
     if ( iItem != queue.end() ){
@@ -92,7 +92,11 @@ void ConcurrentRunner::remove( TaskQueue::iterator iTask )
 void ConcurrentRunner::removeDeadTasks()
 {
     //gain read-write access to the queue
+    //before getting it, signal workers to release the queue
+    queueExclusiveAccessMutex.lock();
     boost::unique_lock<boost::shared_mutex> lock( queueMutex );
+    queueExclusiveAccessMutex.unlock();
+
     TaskQueue::iterator iCurrent = queue.begin();
     TaskQueue::iterator iLast = queue.end(); --iLast;
     while ( iCurrent != iLast ){
@@ -176,7 +180,12 @@ void ConcurrentRunner::Worker::mainLoop()
     while (! owner.stopRequested ){
 	//TODO count removed tasks
 	//In the beginning of the cycle, gain read access to the queue
+	
+	owner.queueExclusiveAccessMutex.lock();  //the idea is : when other thread wants exclusive accss, it locks on this mutex first.
+	owner.queueExclusiveAccessMutex.unlock();// so it is used to signal that other thread wants queue access now.
+
 	boost::shared_lock<boost::shared_mutex> lockQueue( owner.queueMutex );
+
 	for( size_t i0 = 0; i0 < N; ++i0 ){//i0 is the index of the first task
 	    for ( size_t i = i0; i < owner.queue.size(); i += N){
 		Task & task = owner.queue[i];
