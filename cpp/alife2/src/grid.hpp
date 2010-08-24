@@ -7,6 +7,7 @@
 #include "grid_item.hpp"
 #include "item_enumerator.hpp"
 #include <string>
+#include <boost/thread.hpp>
 
 namespace alife2{
     class Grid;
@@ -18,26 +19,18 @@ namespace alife2{
      */
     class Grid{
     private:
-	typedef std::vector< float > CellBorders;
-
-	CellBorders horizontalCellBorders;
-	CellBorders verticalCellBorders;
-
 	float width, height;//real width and height of the grid;
 	float cellWidth, cellHeight;
 	int numCols, numRows;//number of cells
 
-	typedef std::vector< GridCell > Cells;
+	//typedef std::vector< GridCell > Cells;
+	typedef simple_array< GridCell > Cells;
 	Cells cells; //cell data
 	int population;
 
 	GridCell & getCell( int col, int row );
 	const GridCell & getCell( int col, int row )const{ return const_cast<Grid*>(this)->getCell( col, row ); };
-	GridCell & getLastCell();
-	const GridCell & getLastCell()const{ return const_cast<Grid*>(this)->getLastCell(); };
 	
-	/**Find the cell by the object coordinates*/
-	GridCell & findCell( const vec2 & vec );
 	std::pair<int, int> hrzCellIndexRange( float x0, float x1 );
 	std::pair<int, int> vrtCellIndexRange( float y0, float y1 );
 
@@ -54,7 +47,8 @@ namespace alife2{
 	vec2 getCellSize()const{ return vec2( cellWidth, cellHeight ); };
 	
 	/**Updating items in cells*/
-	void update();
+	/**Find the cell by the object coordinates*/
+	GridCell * findCell( const vec2 & vec );
 	void putItem( GridItem * item );//Put item to the grid;
 	void removeItem( GridItem * item );//Remove item from the grid;
 
@@ -72,8 +66,15 @@ namespace alife2{
     /**Cell is one element of the grid*/
     class GridCell{
     public:
+	typedef boost::shared_mutex MutexType;
+	typedef boost::unique_lock< boost::shared_mutex > WriteLockType;
+	typedef boost::shared_lock< boost::shared_mutex > ReadLockType;
+	//Synchronization semaphores
+	MutexType cellAccessMutex; //use to synchronize access to he cell contents.
+
 	//Data fields
 	int  col, row; //position of the cell in the grid
+	vec2 topLeft; //position of the top-left corner
 	Grid * grid;//owner
 
 	//Grid items
@@ -82,25 +83,17 @@ namespace alife2{
 
 	/**This method is used instead of constructor, because array of cells would be created*/
 	void init( int col_, int row_, Grid* owner_ );
-	void initOutside( Grid* owner_ );
 
-	/**Outside cell is a special cell, used for storing items outside the main grid*/
-	bool isOutisde()const{ return col == -1 || row == -1; };
-	
 	const Grid* getGrid()const{ return grid; };
 	Grid* getGrid(){ return grid; };
 
 	//Cell geometry
 	vec2 getSize()const{ return grid->getCellSize(); };
 	vec2 getCenter()const{ return getTopLeft() + 0.5f * getSize(); };
-	vec2 getTopLeft()const{ 
-	    vec2 size = grid->getCellSize();
-	    return vec2( size.x*col, size.y*row );
-	};
-	vec2 getBottomRight() const{
-	    vec2 size = grid->getCellSize();
-	    return vec2( size.x*(col + 1), size.y*(row + 1) );
-	};
+	vec2 getTopLeft()const{ return topLeft; }
+
+	vec2 getBottomRight() const{ return getTopLeft() + getSize(); }
+
 	//Check, whether the cell contains the vector
 	bool contains( const vec2 &v )const;
 

@@ -12,5 +12,4 @@ alife2_SOURCES = main.cpp point.hpp rotation.hpp rotation.cpp util.hpp \
 	glut_view.hpp glut_view.cpp \
 	simulator.hpp simulator.cpp \
 	geometry_io.hpp geometry_io.cpp \
-	ticker.hpp \
-	grid_mt.hpp
+	ticker.hpp

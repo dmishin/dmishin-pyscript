@@ -2,7 +2,7 @@
 #ifndef _WORLD_H_
 #define _WORLD_H_
 //#include "grid.hpp"
-#include "grid_mt.hpp"
+#include "grid.hpp"
 #include "simulated.hpp"
 #include "point.hpp"
 #include "ticker.hpp"
@@ -19,17 +19,13 @@ namespace alife2{
 
 	rectangle bounds;
 
-
-	ticker gridMobilesTicker;
-	ticker gridFoodTicker;
-
 	//Grid initialization code
 	void initGrids( float width, float height, float cellSize );
 	void initParameters();
 
     public:
-	GridMt gridMobiles;
-	GridMt gridFood;
+	Grid gridMobiles;
+	Grid gridFood;
 	
 	World( float width, float height, float cellSize);
 	//Get the walue of the simulation time step

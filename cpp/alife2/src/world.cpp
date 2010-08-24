@@ -9,8 +9,6 @@ void World::initParameters()
     timeStep = 0.05f;
     friction = 0.1f;
     rotationFriction = 0.1f;
-    gridMobilesTicker.set_period( 0.5 );
-    gridFoodTicker.set_period( 1000 );
 }
 
 World::World( float width, float height, float cellSize)
@@ -29,13 +27,6 @@ void World::initGrids( float width, float height, float cellSize )
 //Implementation of the Simulated
 void World::simulate()
 {
-    if (gridMobilesTicker.step( timeStep ) ){
-	//updating mobiles grid
-	gridMobiles.update();
-    };
-    if (gridFoodTicker.step( timeStep ) ){
-	//update food grid
-    };
 }
 
 void World::add( Mobile * mobile )

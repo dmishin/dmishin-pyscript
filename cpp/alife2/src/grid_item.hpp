@@ -14,13 +14,18 @@ namespace alife2{
     class GridItem: public Located{ //inherits protected poistion
       protected:
 	GridCell *pOwnerCell;
+	Grid* pOwner;
       public:
 	GridItem();
 	GridItem( const vec2& pos );
+	virtual ~GridItem();
 	
-	virtual ~GridItem(){};
 	GridCell* getOwnerCell();
+	Grid* getOwner();
+	void setOwner( Grid* pNewOwner );
 	void setOwnerCell( GridCell* pCell );
+
+	void updateCell();
     };
 };
 

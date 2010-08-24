@@ -3,6 +3,7 @@
 #define _UTIL_H_
 
 #include <math.h>
+#include <algorithm>
 
 namespace alife2{
     //Math utilities for float calculations
@@ -70,6 +71,42 @@ namespace alife2{
 #define FOR_RANGE( var, begin, end ) \
     for( int var = (begin); var < (end); ++(var) )
 
+//Useful class
+template< class ElementT >
+struct simple_array{
+    ElementT * pData;
+    size_t size_;
+
+    simple_array() { pData = NULL; size_ = 0; };
+    simple_array( size_t size ){ _create( size ); };
+    size_t size()const{ return size_; };
+    ElementT& operator[]( int idx ){ return pData[idx]; };
+    const ElementT& operator[]( int idx)const{ return pData[idx]; };
+    ~simple_array(){ delete[] pData; };
+
+    //move-constructor
+    simple_array( simple_array<ElementT>& arr ){ (*this) = arr; };
+    simple_array<ElementT> & operator=( simple_array<ElementT>& arr ){ 
+	std::swap( pData, arr.pData ); 
+	return *this;
+    };
+
+    //Support for the stl-like iterators
+    typedef ElementT * iterator;
+    typedef const ElementT * const_iterator;
+    iterator begin(){ return pData; };
+    iterator end(){ return pData + size_; };
+
+    //Managing data in the array
+    void create( size_t size_ ){ clear(); _create( size_ ); }
+    void clear(){ delete[] pData; pData = NULL; }
+
+private:
+    void _create( size_t new_size ){
+	size_ = new_size;
+	pData = new ElementT[ new_size ];
+    };
+};
 
 
 #endif /* _UTIL_H_ */

@@ -38,26 +38,13 @@ void Grid::initGrid( float width_, float height_, float cellSize)
     cellWidth = width_ / numCols;
     cellHeight = height_ / numRows;
 
-    //Init cell borders
-    verticalCellBorders.resize( numCols );
-    for (int col = 0; col < numCols; ++col){
-	verticalCellBorders[ col ] = (col + 1)*cellWidth;
-    }
-
-    horizontalCellBorders.resize( numCols );
-    for (int row = 0; row < numRows; ++row ){
-	horizontalCellBorders[ row ] = (row + 1)*cellHeight;
-    }
-
     //Init cells
-    cells.resize( numCols* numRows + 1); //add one additional cell
+    cells.create( numCols * numRows );
     for (int col = 0; col < numCols; ++col){
 	for (int row = 0; row < numRows; ++row ){
-	    GridCell & cell = getCell( col, row );
-	    cell.init( col, row, this );
+	    getCell( col, row ).init( col, row, this );
 	}
     }
-    getLastCell().initOutside( this ); //last cell is an outside cell.
 }
 
 GridCell & Grid::getCell( int col, int row )
@@ -67,79 +54,45 @@ GridCell & Grid::getCell( int col, int row )
     return cells[ col + row * numCols ];
 }
 
-GridCell & Grid::getLastCell()
-{
-    return cells[ cells.size() - 1 ]; //TODO: some better code?
-}
-
-
 
 /**Find the cell by the object coordinates*/
-GridCell & Grid::findCell( const vec2 & vec )
+GridCell * Grid::findCell( const vec2 & vec )
 {
     using namespace std;
     int col = int(floor( vec.x / cellWidth ) );
     int row = int(floor( vec.y / cellHeight ) );
     
     if ( col >=0 && col < numCols && row >= 0 && row < numRows ) {
-	return getCell( col, row );
-    }else{
-	return getLastCell();
-    }
-}
-
-/**Updating items in cells: 
- *for each item in each cell, 
- * check, whether it belongs to the gight cell, 
- * and if needed - put it to the right one*/
-void Grid::update()
-{
-    typedef std::vector< GridItem* >  ItemVector; //TODO: isn't it performance loss?
-    ItemVector repositionedItems;
-
-    Cells::iterator i;
-    for( i = cells.begin(); i != cells.end(); ++i ){
-	GridCell & cell = *i;
-	//iterate items inside cell
-	//TODO: Grab cell monitor?
-	GridCell::Items::iterator iItem = cell.items.begin();
-	while ( iItem != cell.items.end() ){
-	    GridItem * item = *iItem;
-	    if ( cell.contains( item->getLocation() ) ){
-		++iItem;
-		continue; //OK, item is inside the cell;
-	    }else{
-		//Item is outside the cell and must be updated
-		cell.items.erase( iItem++ );
-		repositionedItems.push_back( item );
-	    }
-	}
-    }
-    //Now put the repositioned items back to the grid
-    
-    for ( ItemVector::iterator i = repositionedItems.begin(); i != repositionedItems.end(); ++i ){
-	population --;
-	putItem( *i );
-    }	
+	return &getCell( col, row );
+    }else
+	return NULL;
 }
 
 void Grid::putItem( GridItem * item )
 {
     assert( item );
+    item->setOwner( this );
+    
     //first get the cell reference for this item
-    GridCell & cell = findCell( item->getLocation() );
-    cell.addItem( item );
+    GridCell * cell = findCell( item->getLocation() );
+    item->setOwnerCell( cell );
+    if ( cell ){
+	cell->addItem( item );
+    }
+     
     population ++;
 }
 
 void Grid::removeItem( GridItem * item )
 {
     assert( item ); //item is real 
-    assert( item->getOwnerCell() );//and owner cell is right
-    assert( item->getOwnerCell()->getGrid() == this );//and item belongs to this grid
+    assert( item->getOwner() == this ); //item is inside this cell
 
-    item->getOwnerCell()->removeItem( item );
-    item->setOwnerCell( NULL );//item does not belongs to anything anymore.
+    if ( item->getOwnerCell() ){ //item needs to be removed from cell
+	item->getOwnerCell()->removeItem( item );
+	item->setOwnerCell( NULL );//item does not belongs to anything anymore.
+	item->setOwner( NULL );
+    }
     population --;
 }
 #include <iostream>
@@ -149,6 +102,7 @@ int Grid::enumerateInRectangle( const rectangle & r, ItemEnumerator & enumerator
     int count = 0;
     int leftBound, rightBound; 
     tie( leftBound, rightBound ) = hrzCellIndexRange( r.left(), r.right() );
+
     int topBound, bottomBound;
     tie( topBound, bottomBound ) = vrtCellIndexRange( r.top(), r.bottom() );
 
@@ -225,6 +179,5 @@ std::string Grid::toString()const
 	}
 	ostream<<"]\n";
     }
-    ostream<<"Outside cells population:"<<getLastCell().getPopulation();
     return ostream.str();
 }

@@ -51,6 +51,8 @@ void Mobile::simulate()
     float rotFrictionForce = sqr(angleSpeed) * world->getRotFriction();
     angleSpeed -= signum( angleSpeed ) * rotFrictionForce * dt / inertionMoment;
 
+    //Mobile is a cell dweller - update reference to the inhabited cell
+    updateCell();
 
 }
 
