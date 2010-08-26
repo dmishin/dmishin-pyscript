@@ -6,6 +6,7 @@
 #include <boost/thread.hpp>
 #include <set>
 #include <vector>
+#include <deque>
 
 namespace alife2{
     class Simulator{
@@ -13,33 +14,34 @@ namespace alife2{
 	int lastWorkerIndex;
 	volatile bool stopRequested;
 	volatile bool isRunning;
-	int simulationChunkSteps;//how many steps to run before sync
-	boost::barrier simulationSyncBarrier;//barrier, used to synchronize several simulation threads
+
     public:
 	class Worker;
 	typedef std::vector< Worker* > Workers;
 	Workers workers;
 
+	typedef std::vector< Simulated* > Queue;
+
+	/**Queues with tasks, waiting for simulateion and tasks, returned from simulateors. They are swapped sometimes*/
+	Queue putQueue, getQueue;
+	boost::mutex putQueueMutex, getQueueMutex;
+	typedef boost::unique_lock< boost::mutex > QueueLockT;
+
 
 	class Worker{
 	public:
 	    int iterations;
-	    int index;//worker index
-	    typedef std::set<Simulated*> WorkQueue;
+	    int index;//worker number
+
 	    Simulator * owner;
 	    boost::thread thread;
-	    WorkQueue queue;
-
-	    boost::mutex queueAccessMutex;
 
 	    Worker( Simulator *owner, int index_);
-	    void add( Simulated * item );
-	    void remove( Simulated * item );
 	    void operator()(); //main function
 	    void run();
 	};
 	
-	Simulator( int nWorkers, int simulateBy );
+	Simulator( int nWorkers );
 	virtual ~Simulator();
 
 	/**Add the item to the one of the workers*/
@@ -50,6 +52,12 @@ namespace alife2{
 	void waitAll();
 	/**Request all simulators to stop. After this, call waitAll() to wit, until all simulator threads finish*/
 	void requestStop();
+    protected:
+	/**SYnchronized method for use by workers: get next free task.*/
+	Simulated* getNextTask();
+	/**Synchronized method for use by workers: return task to the queue*/
+	void returnTask( Simulated * task );
+
     };
 };
 

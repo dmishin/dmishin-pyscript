@@ -106,13 +106,10 @@ int Grid::enumerateInRectangle( const rectangle & r, ItemEnumerator & enumerator
     int topBound, bottomBound;
     tie( topBound, bottomBound ) = vrtCellIndexRange( r.top(), r.bottom() );
 
-//    std::cout<<r.left()<<":"<<r.right()<<"|"<<r.top()<<":"<<r.bottom()<<std::endl;
-//    std::cout<<"bounds:"<<leftBound<<":"<<rightBound<<"|"<<topBound<<":"<<bottomBound<<std::endl;
-//    std::cout.flush();
-
     for( int x = leftBound; x <= rightBound; ++x ){
 	for( int y = topBound; y <= bottomBound; ++y ){
 	    GridCell & cell = getCell( x, y );
+	    GridCell::ReadLockType lock( cell.cellAccessMutex );
 	    for( GridCell::Items::iterator i = cell.items.begin(); i != cell.items.end(); ++i){
 		assert( *i );//Item must be non-null
 		if ( r.contains( (*i)->getLocation() ) ){
@@ -152,6 +149,7 @@ int Grid::enumerateInCircle( const circle & c, ItemEnumerator & enumerator )
     for( int x = leftBound; x <= rightBound; ++x ){
 	for( int y = topBound; y <= bottomBound; ++y ){
 	    GridCell & cell = getCell( x, y );
+	    GridCell::ReadLockType lock( cell.cellAccessMutex );
 	    for( GridCell::Items::iterator i = cell.items.begin(); i != cell.items.end(); ++i){
 		assert( *i );//Item must be non-null
 		if ( c.contains( (*i)->getLocation() ) ){

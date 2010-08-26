@@ -27,11 +27,11 @@ void Mobile::initParameters()
     inertionMoment = 1.0f;
 }
 /**Implementation of the SImulated*/
-void Mobile::simulate()
+bool Mobile::simulate()
 {
     assert( world );
 
-    float dt = world->getSimulationStep();//TODO: get the time step from the world
+    float dt = world->getSimulationStep();
 
     simulateMotors();
     simulateBrain();
@@ -54,6 +54,7 @@ void Mobile::simulate()
     //Mobile is a cell dweller - update reference to the inhabited cell
     updateCell();
 
+    return true;//TODO: energy > 0
 }
 
 void Mobile::simulateMotors()

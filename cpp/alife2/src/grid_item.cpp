@@ -39,6 +39,7 @@ void GridItem::setOwnerCell( GridCell* pCell )
 void GridItem::updateCell()
 {
     assert( pOwner );//Owner must be defined
+    //TODO: use cell.is_inside instead
     GridCell * cell = pOwner->findCell( getLocation() );
     if ( cell != pOwnerCell ){
 	//Moved to anouther cell

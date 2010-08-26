@@ -25,8 +25,9 @@ void World::initGrids( float width, float height, float cellSize )
     gridFood.initGrid( width, height, cellSize );
 }
 //Implementation of the Simulated
-void World::simulate()
+bool World::simulate()
 {
+    return true; //World never finishes
 }
 
 void World::add( Mobile * mobile )

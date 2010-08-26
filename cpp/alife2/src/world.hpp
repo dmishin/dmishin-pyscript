@@ -45,7 +45,7 @@ namespace alife2{
 	void add( Food* food );
 
 	//Implementation of the Simulated
-	virtual void simulate();
+	virtual bool simulate();
 
 	//Apply world geometry to the mobile: force it to stay inside the world bounds
 	void applyBounds( Mobile & mob );

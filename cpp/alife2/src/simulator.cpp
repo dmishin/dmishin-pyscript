@@ -15,41 +15,18 @@ Simulator::Worker::Worker( Simulator *owner_, int index_ )
     iterations = 0;
     index = index_;
 }
-void Simulator::Worker::add( Simulated * item )
-{
-    assert( item );
-//    std::cout<<"Add item to the worker"<<index<<std::endl; std::cout.flush();
-    boost::mutex::scoped_lock lock( queueAccessMutex );
-    assert( queue.find( item ) == queue.end() );
-    queue.insert( item );
-}
-void Simulator::Worker::remove( Simulated * item )
-{
-    assert( item );
-    boost::mutex::scoped_lock lock( queueAccessMutex );
-    int removed_cnt = queue.erase( item );
-    assert( removed_cnt == 1 );
-}
 void Simulator::Worker::operator()()
 {
     while (! owner->stopRequested ){
-	//TODO: repeat simulation round several times?
-	//TODO: load balancing.
-
-	//ensure that while simulating, nobody will corrupt the queue
-	{
-	    boost::mutex::scoped_lock lock( queueAccessMutex );
-	    FOR_RANGE( i, 0, owner->simulationChunkSteps ){
-		WorkQueue::iterator i = queue.begin();
-		while ( i!= queue.end()){
-		    (*i)->simulate();
-		    ++i;
-		}
+	Simulated* task = owner->getNextTask();
+	if ( task ){
+	    if ( task->simulate() ){
+		owner->returnTask( task );
 	    }
+	}else{
+	    //TODO: owner has no task: wait?
 	}
 	iterations += 1;
-	//After performing the simulation, wait for other threads on the barrier
-	owner->simulationSyncBarrier.wait();
     }
 }
 void Simulator::Worker::run()
@@ -58,14 +35,10 @@ void Simulator::Worker::run()
     thread = boost::thread( boost::ref(*this) ); //reference to the callable in the boost thread is copies, so use reference.
 }
 	
-Simulator::Simulator( int nWorkers, int simulateBy )
-    :simulationSyncBarrier( nWorkers) //number of threads, that would be waiting on barrier
-     
+Simulator::Simulator( int nWorkers )
 {
     isRunning = false;
     stopRequested = false;
-    lastWorkerIndex = 0;
-    simulationChunkSteps = simulateBy;
 
     workers.reserve( nWorkers );//to avoid unneeded memory re-allocations
     FOR_RANGE( i, 0, nWorkers ){
@@ -89,12 +62,7 @@ Simulator::~Simulator()
 
 void Simulator::add( Simulated * item )
 {
-//    std::cout<<"Add "<<long(item)<<" num workers:"<<workers.size()<<" worker idx="<<lastWorkerIndex<<std::endl;
-    assert( workers.size() > 0 ); //add a task to the next worker
-    lastWorkerIndex = (lastWorkerIndex + 1)%workers.size();
-    assert( lastWorkerIndex >= 0);
-    Worker & worker = *workers[ lastWorkerIndex ];
-    worker.add( item );
+    returnTask( item );
 }
 /**Create worker threads and run simulation for N steps*/
 void Simulator::run( int numSteps )
@@ -123,3 +91,31 @@ void Simulator::requestStop()
     stopRequested = true;
 };
 
+
+/**SYnchronized method for use by workers: get next free task.*/
+Simulated* Simulator::getNextTask()
+{
+    QueueLockT lock ( getQueueMutex );
+    if ( getQueue.empty() ){
+	//there are no items to get. try to swap queues...
+	QueueLockT ( putQueueMutex );
+	if ( putQueue.empty() ){
+	    //Both queues are empty - nothing to get.
+	    return NULL;
+	}else{
+	    //perform queue swap
+	    putQueue.swap( getQueue );
+	}
+    }
+    Simulated* rval = getQueue.back();
+    getQueue.pop_back();
+    return rval;
+}
+/**Synchronized method for use by workers: return task to the queue*/
+void Simulator::returnTask( Simulated * task )
+{
+    assert( task );
+    //Puttig task to the put queue
+    QueueLockT lock( putQueueMutex );
+    putQueue.push_back( task );
+}

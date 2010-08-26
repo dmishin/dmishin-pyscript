@@ -29,14 +29,14 @@ void GridCell::addItem( GridItem * itm )
 {
     assert( ! hasItem( itm ) );
     //Create lock
-    WriteLockType( cellAccessMutex );
+    WriteLockType lock( cellAccessMutex );
     items.insert( itm );
 }
 //remove item from grid
 void GridCell::removeItem( GridItem *itm )
 {
     assert( itm );
-    WriteLockType( cellAccessMutex );
+    WriteLockType lock( cellAccessMutex );
     int num_erased = items.erase( itm );
     assert( num_erased == 1 );//Failed to erase. Item not found?
 }

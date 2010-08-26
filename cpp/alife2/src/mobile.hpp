@@ -35,7 +35,7 @@ namespace alife2{
 	Mobile( const vec2 &pos, float angle );
 	virtual ~Mobile();
 	/**Implementation of the SImulated*/
-	virtual void simulate();
+	virtual bool simulate();
 	
 	//Mobile parameters access
 	void setWorld( World* w);

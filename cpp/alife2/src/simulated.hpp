@@ -5,7 +5,7 @@ namespace alife2{
     /**Objects, implementing this interface support step-by-step discrete time simulation*/
     class Simulated{
     public:
-	virtual void simulate() = 0;
+	virtual bool simulate() = 0;
     };
 };
 
