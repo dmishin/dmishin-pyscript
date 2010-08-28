@@ -52,7 +52,7 @@ bool Mobile::simulate()
     angleSpeed -= signum( angleSpeed ) * rotFrictionForce * dt / inertionMoment;
 
     //Mobile is a cell dweller - update reference to the inhabited cell
-    updateCell();
+    //updateCell();
 
     return true;//TODO: energy > 0
 }

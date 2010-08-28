@@ -98,7 +98,7 @@ Simulated* Simulator::getNextTask()
     QueueLockT lock ( getQueueMutex );
     if ( getQueue.empty() ){
 	//there are no items to get. try to swap queues...
-	QueueLockT ( putQueueMutex );
+	QueueLockT lock1 ( putQueueMutex );
 	if ( putQueue.empty() ){
 	    //Both queues are empty - nothing to get.
 	    return NULL;
